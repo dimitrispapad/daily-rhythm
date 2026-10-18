@@ -39,7 +39,9 @@ Open the link in Safari, tap **Share** → **Add to Home Screen**. It opens full
 
 ## Change the routine
 
-Everything lives in **`plan.js`**: the days, blocks, meals and goals. Edit it on GitHub (pencil icon) and commit. A GitHub Action then checks the plan for mistakes (overlapping times, typos in times), rebuilds `Daily-Rhythm.ics` and republishes the site in about a minute.
+Everything lives in **`plan.js`**: the days, blocks, meals and goals. Edit it on GitHub (pencil icon) and commit. A GitHub Action then checks the plan for mistakes (overlapping times, typos in times), rebuilds `Daily-Rhythm.ics` and publishes the site to the `gh-pages` branch in about a minute.
+
+One-time setting: **Settings → Pages → Source: Deploy from a branch → `gh-pages` / `(root)`**.
 
 A block looks like this:
 
@@ -66,5 +68,5 @@ app.js                 the app logic
 sw.js                  offline support
 manifest.webmanifest   home-screen install
 scripts/build.js       checks the plan and writes Daily-Rhythm.ics
-.github/workflows/     builds and publishes to GitHub Pages
+.github/workflows/     builds and publishes to the gh-pages branch
 ```

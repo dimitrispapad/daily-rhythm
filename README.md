@@ -16,12 +16,12 @@ My hour-by-hour week, built around one question: *how can people live better liv
 
 ## The rules that hold the week together
 
-- Work happens 08:00–18:00, Monday to Friday. **18:00 is STOP WORK.**
-- Tuesday and Thursday mornings belong to my own future: applications and behavioural science.
-- Gym on Monday, Wednesday and Friday at 18:30, outdoors on Saturday.
-- Friends on Tuesday, Friday and Saturday evenings. Family on Sunday.
+- **Gym 08:00–09:00 every weekday** (strength Mon/Wed/Fri, lighter cardio Tue/Thu), then shower and a protein breakfast.
+- **SimasiaAI 09:30–18:00**, Monday to Friday. **18:00 is STOP WORK.**
+- Monday, Wednesday and Thursday evenings belong to my own future (Mastery): applications, study and posts, talks and conversations.
+- Friends on Tuesday, Friday and Saturday evenings. Family on Sunday. A lunch with someone doing the work every Friday.
 - Poetry on Thursday night and Sunday morning.
-- Saturday has no work. The weekly review is Sunday at 17:00.
+- Saturday has no work. The weekly review (with the money check) is Sunday at 17:00.
 
 ## Apple Calendar
 
@@ -32,6 +32,23 @@ The site publishes a calendar feed at
 - **Mac:** Calendar → File → New Calendar Subscription, paste the address, set Auto-refresh to *Every hour*.
 
 Because it's a subscription, the calendar updates by itself whenever `plan.js` changes here.
+
+## My iPhone calendar inside the app
+
+The app also reads my real calendar, so appointments, meetings and parties show up in **Today** and **Week**. When one clashes with the routine, the block it covers is crossed out, and for the gym or a Mastery evening the app suggests where to move it.
+
+How it works: every 15 minutes a GitHub Action reads my iCloud calendar link, keeps the next 5 weeks, **encrypts** them with my passphrase and publishes `events.enc.json`. The site is public, but without the passphrase nobody can read the events. The app decrypts them on my phone.
+
+One-time setup:
+
+1. **iPhone:** Calendar → Calendars → ⓘ next to the calendar → turn on **Public Calendar** → **Share Link…** → Copy. Repeat for each calendar (Home, Work…).
+2. **GitHub:** this repo → Settings → Secrets and variables → Actions → **New repository secret**:
+   - `ICLOUD_CALENDAR_URLS`: the link(s), one per line
+   - `CAL_PASSPHRASE`: a passphrase I choose
+3. Actions → **Build and publish** → **Run workflow** (or wait 15 minutes).
+4. In the app: **Setup** → type the passphrase → **Unlock**. Once per device.
+
+To stop: delete the two secrets and turn off Public Calendar on the iPhone (that also invalidates the old link).
 
 ## Install on the iPhone
 
@@ -56,7 +73,7 @@ To check locally: `node scripts/build.js`.
 
 ## Privacy
 
-Ticks, counters and backups stay on the device in the browser's storage. Nothing is sent anywhere. The repository is public, so the routine itself is visible to anyone with the link.
+Ticks, counters and backups stay on the device in the browser's storage. Calendar events are published only in encrypted form. The repository is public, so the routine itself is visible to anyone with the link.
 
 ## Files
 
@@ -68,5 +85,7 @@ app.js                 the app logic
 sw.js                  offline support
 manifest.webmanifest   home-screen install
 scripts/build.js       checks the plan and writes Daily-Rhythm.ics
+scripts/ical.js        reads .ics calendars, including repeating events
+scripts/sync-calendar.js  fetches the iCloud calendar and encrypts it
 .github/workflows/     builds and publishes to the gh-pages branch
 ```

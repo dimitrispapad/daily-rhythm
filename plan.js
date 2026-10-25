@@ -1,105 +1,106 @@
 // Dimitris Daily Rhythm: the plan. Shared by the app (browser) and the .ics builder (node).
 // Categories: ritual, food, deep (Mastery: your own future), work (SimasiaAI), body, people, create, rest
+// Weekdays: gym 08:00, SimasiaAI 09:30–18:00, Mastery evenings Mon/Wed/Thu.
 (function (root) {
   const B = (id, s, e, cat, t, d, o) => Object.assign({ id, s, e, cat, t, d, cal: true }, o || {});
 
-  const morning = (k) => [
-    B(k + "-wake", "07:00", "07:30", "ritual", "Wake, water, light", "Glass of water, open the window, 10 min stretching. Phone stays on airplane mode until 07:30.", { cal: false }),
-    B(k + "-bf", "07:30", "08:00", "food", "Breakfast + today's 3 priorities", "Eat without a screen. Write the 3 things that would make today a win.")
+  // Weekday frame: train 08:00–09:00, SimasiaAI 09:30–18:00, own future in the evening.
+  const morning = (k, gymName, gymFocus) => [
+    B(k + "-wake", "07:00", "07:30", "ritual", "Wake, water, pre-gym fuel", "Glass of water, a banana or toast with honey, coffee. Phone stays on airplane mode.", { cal: false }),
+    B(k + "-go", "07:30", "08:00", "ritual", "Head to the gym", "Bag packed the night before. On the way, say today's 3 priorities out loud or as a voice note.", { cal: false }),
+    B(k + "-gym", "08:00", "09:00", "body", "Gym: " + gymName, gymFocus, { tag: "gym", alarm: 30 }),
+    B(k + "-bf", "09:00", "09:30", "food", "Shower + protein breakfast", "Eat within an hour of training. See Food for today's plate.")
   ];
-  const midday = (k) => [
-    B(k + "-lunch", "12:30", "13:15", "food", "Lunch", "Away from the desk. See Food for today's plate."),
-    B(k + "-walk", "13:15", "13:45", "body", "20-minute walk outside", "Daylight and movement reset the afternoon. No calls.", { cal: false })
+  const workday = (k, w) => [
+    B(k + "-w1", "09:30", "11:30", "work", w[0][0], w[0][1], { alarm: 10 }),
+    B(k + "-b1", "11:30", "11:45", "rest", "Break", "Stand up, water, look out the window. No phone.", { cal: false }),
+    B(k + "-w2", "11:45", "13:00", "work", w[1][0], w[1][1]),
+    ...(w.lunch || [
+      B(k + "-lunch", "13:00", "13:45", "food", "Lunch", "Away from the desk. See Food for today's plate."),
+      B(k + "-walk", "13:45", "14:00", "body", "Short walk outside", "Daylight resets the afternoon. No calls.", { cal: false })
+    ]),
+    B(k + "-w3", "14:00", "16:00", "work", w[2][0], w[2][1]),
+    B(k + "-snack", "16:00", "16:15", "food", "Snack + stretch", "Fruit and nuts, stand up, refill water.", { cal: false }),
+    B(k + "-w4", "16:15", "18:00", "work", w[3][0], w[3][1]),
+    B(k + "-stop", "18:00", "18:15", "ritual", "STOP WORK", "Shutdown ritual: write tomorrow's top 3, close the laptop, send one message to a friend. Work ends here.", { tag: "stop", alarm: 10 })
   ];
-  const snack = (k) => B(k + "-snack", "16:00", "16:15", "food", "Snack + stretch", "Fruit and nuts, stand up, refill water.", { cal: false });
-  const shutdown = (k) => B(k + "-stop", "18:00", "18:15", "ritual", "STOP WORK", "Shutdown ritual: write tomorrow's top 3, close the laptop, send one message to a friend. Work ends here.", { tag: "stop", alarm: 10 });
   const night = (k, s) => [
-    B(k + "-wind", s || "22:00", "23:00", "rest", "Wind down", "Screens off by 22:30. Read a book, prepare tomorrow's clothes and bag.", { alarm: 5 }),
-    B(k + "-sleep", "23:00", "24:00", "rest", "Sleep", "8 hours. Same time every weekday.", { cal: false })
+    B(k + "-wind", s || "22:00", "23:00", "rest", "Wind down", "Screens off by 22:30. Pack the gym bag, read a book.", { alarm: 5 }),
+    B(k + "-sleep", "23:00", "24:00", "rest", "Sleep", "8 hours. Same time every weekday, because the gym starts at 08:00.", { cal: false })
   ];
   const dinner = (k, s, e) => B(k + "-dinner", s || "20:00", e || "20:45", "food", "Dinner", "See Food for tonight.");
-  const gym = (k, name, focus) => B(k + "-gym", "18:30", "19:45", "body", "Gym: " + name, focus, { tag: "gym", alarm: 30 });
 
   const days = {
     mon: { name: "Monday", short: "Mon", theme: "Build week momentum", blocks: [
-      ...morning("mon"),
-      B("mon-d1", "08:00", "10:00", "work", "Deep work: SimasiaAI pipeline", "Proposals and the week's sales plan. Notifications off, door closed."),
-      B("mon-b1", "10:00", "10:15", "rest", "Break", "Walk, water, no phone.", { cal: false }),
-      B("mon-w1", "10:15", "12:30", "work", "SimasiaAI: client calls & needs analysis", "Listen first: what does this organisation actually need?"),
-      ...midday("mon"),
-      B("mon-w2", "13:45", "16:00", "work", "SimasiaAI: delivery sync with Stergios & team", "Weekly priorities, blockers, go-live dates."),
-      snack("mon"),
-      B("mon-w3", "16:15", "18:00", "work", "Email & admin, batched", "Inbox to zero, invoices, scheduling. Shallow work lives here, not in the morning."),
-      shutdown("mon"),
-      gym("mon", "Strength A", "Push + core: bench or push-ups, overhead press, dips, plank. 60–75 min."),
+      ...morning("mon", "Strength A", "Push + core: bench or push-ups, overhead press, dips, plank."),
+      ...workday("mon", [
+        ["SimasiaAI deep work: pipeline & week plan", "Proposals and the week's sales plan. Notifications off, door closed."],
+        ["SimasiaAI: client calls & needs analysis", "Listen first: what does this organisation actually need?"],
+        ["SimasiaAI: delivery sync with Stergios & team", "Weekly priorities, blockers, go-live dates."],
+        ["SimasiaAI: email & admin, batched", "Inbox to zero, invoices, scheduling. Shallow work lives here."]
+      ]),
+      B("mon-m1", "18:30", "20:00", "deep", "Mastery: applications", "Target 2 per week toward 10 by 17 Nov. Tailor the CV (industry or academic switch).", { tag: "mastery", alarm: 10 }),
       dinner("mon"),
-      B("mon-eve", "20:45", "22:00", "rest", "Free evening", "Music, a series, cooking, nothing to optimise."),
+      B("mon-eve", "20:45", "22:00", "rest", "Free evening", "Music, a series, cooking. Nothing to optimise.", { cal: false }),
       ...night("mon")
     ]},
-    tue: { name: "Tuesday", short: "Tue", theme: "Mastery morning #1", blocks: [
-      ...morning("tue"),
-      B("tue-d1", "08:00", "10:00", "deep", "Mastery: job & programme applications", "Target 2–3 per week toward 10 by 17 Nov. Tailor the CV (industry or academic switch).", { tag: "mastery" }),
-      B("tue-b1", "10:00", "10:15", "rest", "Break", "Walk, water, no phone.", { cal: false }),
-      B("tue-d2", "10:15", "12:30", "deep", "Mastery: study behavioural science", "Track A reading or course. Keep notes in one place; one idea you could post about.", { tag: "mastery" }),
-      ...midday("tue"),
-      B("tue-w1", "13:45", "16:00", "work", "SimasiaAI: client calls & follow-ups", "Every open conversation gets a next step and a date."),
-      snack("tue"),
-      B("tue-w2", "16:15", "18:00", "work", "SimasiaAI: operations", "Contracts, delivery checklists, the part-time agreement draft."),
-      shutdown("tue"),
+    tue: { name: "Tuesday", short: "Tue", theme: "Clients and friends", blocks: [
+      ...morning("tue", "Cardio & mobility", "30 min run or swim, then 20 min mobility. Light day for the muscles."),
+      ...workday("tue", [
+        ["SimasiaAI deep work: proposals & contracts", "Write and send. Every open deal gets a next step and a date."],
+        ["SimasiaAI: client calls & follow-ups", "Calls and replies. Write down their exact words."],
+        ["SimasiaAI: operations", "Delivery checklists, contracts, the part-time agreement draft."],
+        ["SimasiaAI: email & admin, batched", "Close the loops from today's calls."]
+      ]),
       B("tue-free", "18:15", "19:00", "rest", "Transition", "Shower, change, phone back to people mode.", { cal: false }),
       B("tue-friends", "19:00", "22:00", "people", "Friends night", "Dinner or coffee with a friend. Phone face down. Ask one real question.", { tag: "friends" }),
-      ...night("tue", "22:00")
+      ...night("tue")
     ]},
-    wed: { name: "Wednesday", short: "Wed", theme: "Voice: write and pitch", blocks: [
-      ...morning("wed"),
-      B("wed-d1", "08:00", "10:00", "deep", "Write a post (LinkedIn / site)", "One pillar: Build, Research, Speak or Write. Start from a person and a need. Target 2 posts by 17 Nov.", { tag: "mastery" }),
-      B("wed-b1", "10:00", "10:15", "rest", "Break", "Walk, water, no phone.", { cal: false }),
-      B("wed-w1", "10:15", "12:30", "work", "SimasiaAI: prospecting & proposals", "New organisations: patient associations, disability groups, institutions."),
-      ...midday("wed"),
-      B("wed-w2", "13:45", "16:00", "work", "SimasiaAI: calls & demos", "Demo, listen, write down their exact words."),
-      snack("wed"),
-      B("wed-w3", "16:15", "18:00", "deep", "Speaking: pitch talks & events", "One talk pitched by 17 Nov. Organisers, forums, universities.", { tag: "mastery" }),
-      shutdown("wed"),
-      gym("wed", "Strength B", "Pull + legs: rows, pull-ups or lat pulldown, squats, lunges. 60–75 min."),
+    wed: { name: "Wednesday", short: "Wed", theme: "Grow the pipeline, write", blocks: [
+      ...morning("wed", "Strength B", "Pull + legs: rows, pull-ups or lat pulldown, squats, lunges."),
+      ...workday("wed", [
+        ["SimasiaAI deep work: prospecting", "New organisations: patient associations, disability groups, institutions."],
+        ["SimasiaAI: calls & demos", "Demo, listen, write down their exact words."],
+        ["SimasiaAI: client work", "Requirements, RAG design choices, human-centred evaluation."],
+        ["SimasiaAI: email & admin, batched", "Inbox to zero."]
+      ]),
+      B("wed-m1", "18:30", "20:00", "deep", "Mastery: study + write a post", "Behavioural science reading, then one post (Build, Research, Speak or Write). Target 2 posts by 17 Nov.", { tag: "mastery", alarm: 10 }),
       dinner("wed"),
       B("wed-eve", "20:45", "22:00", "create", "Read for pleasure", "Fiction, poetry, or the book you're studying. No laptop."),
       ...night("wed")
     ]},
-    thu: { name: "Thursday", short: "Thu", theme: "Mastery morning #2", blocks: [
-      ...morning("thu"),
-      B("thu-d1", "08:00", "10:00", "deep", "Mastery: applications", "Second application block of the week. Send, log it, move the counter.", { tag: "mastery" }),
-      B("thu-b1", "10:00", "10:15", "rest", "Break", "Walk, water, no phone.", { cal: false }),
-      B("thu-d2", "10:15", "12:30", "deep", "Mastery: study + website & CV", "Behavioural science, then one improvement to dimitrispapadakis.gr or the CV.", { tag: "mastery" }),
-      ...midday("thu"),
-      B("thu-w1", "13:45", "16:00", "work", "SimasiaAI: client work", "Requirements, RAG design choices, human-centred evaluation."),
-      snack("thu"),
-      B("thu-w2", "16:15", "18:00", "work", "SimasiaAI: operations & email", "Close the loops opened this week."),
-      shutdown("thu"),
-      B("thu-move", "18:30", "19:30", "body", "Easy movement", "Run, swim or yoga. Light, for the head as much as the body."),
+    thu: { name: "Thursday", short: "Thu", theme: "Deliver, then speak and write", blocks: [
+      ...morning("thu", "Easy cardio or yoga", "Easy run, swim or a yoga class. For the head as much as the body."),
+      ...workday("thu", [
+        ["SimasiaAI deep work: client delivery", "Test the assistants like a user would. What did they misunderstand?"],
+        ["SimasiaAI: client calls", "Check-ins with live clients."],
+        ["SimasiaAI: operations", "Contracts, delivery dates, team support."],
+        ["SimasiaAI: close the week's loops", "Everything opened this week gets an answer."]
+      ]),
+      B("thu-m1", "18:30", "19:30", "deep", "Mastery: talks & conversations", "Pitch one talk (target 1 by 17 Nov). Message one person doing the work you want to do.", { tag: "mastery", alarm: 10 }),
+      B("thu-free", "19:30", "20:00", "rest", "Free", "Walk, call home, nothing planned.", { cal: false }),
       dinner("thu"),
       B("thu-write", "20:45", "22:00", "create", "Write: poetry", "Γράφω. Free writing, a poem, or a reflection. No editing tonight.", { tag: "write" }),
       ...night("thu")
     ]},
-    fri: { name: "Friday", short: "Fri", theme: "Close the week well", blocks: [
-      ...morning("fri"),
-      B("fri-d1", "08:00", "10:00", "work", "Deep work: SimasiaAI product & evaluation", "Test the assistants like a user would. What did they misunderstand?"),
-      B("fri-b1", "10:00", "10:15", "rest", "Break", "Walk, water, no phone.", { cal: false }),
-      B("fri-w1", "10:15", "12:30", "work", "SimasiaAI: delivery", "Ship one visible improvement to a client."),
-      ...midday("fri"),
-      B("fri-conv", "13:45", "14:45", "people", "Conversation with someone doing the work", "Behavioural science, communication, policy. Target 4 by 17 Nov. Ask: how did you get here?", { tag: "conversation" }),
-      B("fri-w2", "14:45", "16:00", "work", "SimasiaAI: weekly wrap", "What moved, what slipped, next week's top 3."),
-      snack("fri"),
-      B("fri-money", "16:15", "17:30", "deep", "Money check", "Floor and target. Savings toward 6 months (the gate to the next stage).", { tag: "mastery" }),
-      B("fri-inbox", "17:30", "18:00", "work", "Inbox zero", "Leave nothing for the weekend."),
-      shutdown("fri"),
-      gym("fri", "Full body", "Deadlift or hip hinge, push, pull, carries. Finish strong."),
-      B("fri-dinner", "20:00", "20:45", "food", "Dinner", "See Food for tonight."),
+    fri: { name: "Friday", short: "Fri", theme: "Ship, then celebrate", blocks: [
+      ...morning("fri", "Full body", "Deadlift or hip hinge, push, pull, carries. Finish the week strong."),
+      ...workday("fri", Object.assign([
+        ["SimasiaAI deep work: product & evaluation", "Ship one visible improvement to a client."],
+        ["SimasiaAI: delivery", "Demos, fixes, go-lives."],
+        ["SimasiaAI: client work", "What's left for this week's deliveries."],
+        ["SimasiaAI: weekly wrap & inbox zero", "What moved, what slipped, next week's top 3. Leave nothing for the weekend."]
+      ], { lunch: [
+        B("fri-conv", "13:00", "14:00", "people", "Lunch with someone doing the work", "Behavioural science, communication, policy. Target 4 by 17 Nov. Ask: how did you get here?", { tag: "conversation" })
+      ]})),
+      B("fri-rest", "18:15", "20:00", "rest", "Rest before the night", "Shower, nap, music.", { cal: false }),
+      dinner("fri"),
       B("fri-out", "21:00", "24:00", "people", "Friends / night out", "Social night. Enjoy it fully, work is closed.", { tag: "friends" })
     ]},
     sat: { name: "Saturday", short: "Sat", theme: "No work. Body, people, play", blocks: [
       B("sat-wake", "08:30", "09:00", "ritual", "Slow wake", "No alarm if you can. Water, coffee, window.", { cal: false }),
       B("sat-bf", "09:00", "10:00", "food", "Long breakfast", "See Food."),
-      B("sat-out", "10:00", "12:30", "body", "Outdoors: hike, swim or long walk", "Mountain, sea or a new neighbourhood. Counts as a training day.", { tag: "gym" }),
+      B("sat-out", "10:00", "12:30", "body", "Outdoors: hike, swim or long walk", "Mountain, sea or a new neighbourhood. A bonus training day.", { tag: "gym" }),
       B("sat-lunch", "13:00", "14:30", "food", "Lunch with friends or family", "Taverna or home. Share plates."),
       B("sat-rest", "14:30", "16:30", "rest", "Rest", "Nap, read, music.", { cal: false }),
       B("sat-hobby", "17:00", "19:00", "create", "Hobby: culture & curiosity", "Museum, cinema, theatre, a bookshop, or a new skill."),
@@ -112,7 +113,7 @@
       B("sun-prep", "11:00", "12:30", "food", "Market + meal prep", "Cook one pot of legumes and one protein for Mon–Wed lunches."),
       B("sun-family", "13:00", "14:30", "people", "Family lunch / call home", "Call family in Crete if you're apart.", { tag: "friends" }),
       B("sun-free", "14:30", "17:00", "rest", "Free afternoon", "Friends, sea, rest. Your choice.", { cal: false }),
-      B("sun-review", "17:00", "18:00", "deep", "Weekly review & plan", "Open Goals: score the week, pick next week's 3 outcomes, check the calendar.", { tag: "review", alarm: 10 }),
+      B("sun-review", "17:00", "18:00", "deep", "Weekly review, money & plan", "Open Goals: score the week. Money: floor and target, savings toward 6 months. Check next week's calendar and pick 3 outcomes.", { tag: "review", alarm: 10 }),
       B("sun-walk", "18:30", "19:30", "body", "Evening walk", "Clear the head before the week."),
       dinner("sun"),
       B("sun-read", "21:00", "22:00", "create", "Read", "A book, not a feed."),
@@ -120,19 +121,20 @@
     ]}
   };
 
-  // Meals: Mediterranean, Greek kitchen. No numbers to count, just good plates.
+  // Meals: Mediterranean, Greek kitchen. Breakfast comes after the 08:00 gym on weekdays.
   const meals = {
-    mon: { b: "Greek yogurt, honey, walnuts, berries", l: "Revithia (chickpeas) with lemon, big salad, feta, wholegrain bread", s: "Apple + a handful of almonds", d: "Grilled chicken, roasted vegetables, rice (post-gym)" },
-    tue: { b: "2 eggs, wholegrain toast, tomato, olive oil", l: "Fakes (lentils) with a splash of vinegar, salad, olives", s: "Yogurt with fruit", d: "Out with friends: grilled fish or meat + salad, share plates" },
-    wed: { b: "Oats with milk, banana, cinnamon, a spoon of tahini", l: "Baked fish, horta (greens), potatoes", s: "Pear + walnuts", d: "Homemade souvlaki: pita, tzatziki, salad (post-gym)" },
+    mon: { b: "Greek yogurt, honey, walnuts, berries + 2 boiled eggs", l: "Revithia (chickpeas) with lemon, big salad, feta, wholegrain bread", s: "Apple + a handful of almonds", d: "Grilled chicken, roasted vegetables, rice" },
+    tue: { b: "2–3 eggs, wholegrain toast, tomato, olive oil", l: "Fakes (lentils) with a splash of vinegar, salad, olives", s: "Yogurt with fruit", d: "Out with friends: grilled fish or meat + salad, share plates" },
+    wed: { b: "Oats with milk, banana, cinnamon, a spoon of tahini + yogurt", l: "Baked fish, horta (greens), potatoes", s: "Pear + walnuts", d: "Homemade souvlaki: pita, tzatziki, salad" },
     thu: { b: "Yogurt bowl with honey, fruit, oats", l: "Fasolada (bean soup), sardines or feta, bread", s: "Carrots + hummus", d: "Vegetable omelette, salad, wholegrain bread" },
-    fri: { b: "Eggs, avocado or tomato toast", l: "Chicken with bulgur salad (or gemista)", s: "Fruit + nuts", d: "Salmon or chicken, quinoa, greens (post-gym, before going out)" },
+    fri: { b: "Eggs, avocado or tomato toast", l: "Lunch out with your conversation: grilled protein + salad", s: "Fruit + nuts", d: "Salmon or chicken, quinoa, greens (before going out)" },
     sat: { b: "Strapatsada (eggs with tomato), bread, coffee", l: "Taverna: mezedes to share, grilled protein, horiatiki", s: "Fruit", d: "Out with friends, or a light salad with cheese and bread" },
     sun: { b: "Yogurt, honey, fruit, a koulouri", l: "Family lunch: oven chicken & potatoes, salad", s: "Nuts or fruit", d: "Light: soup or salad; prepare Monday's lunch" }
   };
   const foodRules = [
+    "Before the 08:00 gym: something small and easy (banana, toast with honey) and water.",
+    "After the gym: protein breakfast within an hour (eggs, yogurt).",
     "Half the plate vegetables, a quarter protein, a quarter whole grains or legumes.",
-    "Protein at every meal: yogurt, eggs, legumes, fish, chicken.",
     "Olive oil as the main fat. Legumes 3 times a week, fish twice.",
     "Water 2 litres a day; a glass at wake-up and before every meal.",
     "Coffee before 14:00 so it doesn't steal your sleep.",
@@ -156,8 +158,8 @@
       { k: "agreement", t: "SimasiaAI part-time agreement written", target: 1 }
     ]},
     weekly: [
-      { tag: "gym", t: "Training sessions", target: 4 },
-      { tag: "mastery", t: "Mastery blocks done", target: 6 },
+      { tag: "gym", t: "Training sessions", target: 5 },
+      { tag: "mastery", t: "Mastery evenings done", target: 3 },
       { tag: "stop", t: "Stopped work at 18:00", target: 5 },
       { tag: "friends", t: "Time with friends & family", target: 3 },
       { tag: "write", t: "Writing sessions", target: 2 },
@@ -210,7 +212,7 @@
       "BEGIN:STANDARD", "TZOFFSETFROM:+0300", "TZOFFSETTO:+0200", "TZNAME:EET", "DTSTART:19701025T040000", "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU", "END:STANDARD",
       "END:VTIMEZONE"
     ];
-    const stamp = "20261018T080000Z";
+    const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
     for (const k of ORDER) {
       for (const b of days[k].blocks) {
         if (!b.cal) continue;

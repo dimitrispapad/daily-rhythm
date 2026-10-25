@@ -1,11 +1,15 @@
 name: Build and publish
 
-# Checks plan.js, builds Daily-Rhythm.ics, and publishes the site to the gh-pages branch.
-# GitHub Pages serves that branch at https://dimitrispapad.github.io/daily-rhythm/
+# Checks plan.js, builds Daily-Rhythm.ics, reads the iCloud calendar (encrypted),
+# and publishes the site to the gh-pages branch, which GitHub Pages serves at
+# https://dimitrispapad.github.io/daily-rhythm/
+# Runs on every change to main, and every 15 minutes to pick up new calendar events.
 
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -13,7 +17,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   publish:
@@ -30,12 +34,19 @@ jobs:
           mkdir _site
           cp -r index.html styles.css plan.js app.js sw.js manifest.webmanifest Daily-Rhythm.ics icons _site/
           touch _site/.nojekyll
+      - name: Read the iCloud calendar
+        id: cal
+        env:
+          ICLOUD_CALENDAR_URLS: ${{ secrets.ICLOUD_CALENDAR_URLS }}
+          CAL_PASSPHRASE: ${{ secrets.CAL_PASSPHRASE }}
+        run: node scripts/sync-calendar.js
       - name: Publish to gh-pages
+        if: github.event_name != 'schedule' || steps.cal.outputs.changed == 'true'
         run: |
           cd _site
           git init -q -b gh-pages
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -q -m "Publish ${GITHUB_SHA::7}"
+          git commit -q -m "Publish ${GITHUB_SHA::7} (${{ github.event_name }})"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" gh-pages

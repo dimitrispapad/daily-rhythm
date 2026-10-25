@@ -1,0 +1,970 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Dimitris Papadakis//Daily Rhythm//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Daily Rhythm
+X-WR-TIMEZONE:Europe/Athens
+BEGIN:VTIMEZONE
+TZID:Europe/Athens
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0300
+TZNAME:EEST
+DTSTART:19700329T030000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0300
+TZOFFSETTO:+0200
+TZNAME:EET
+DTSTART:19701025T040000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:rhythm-mon-gym@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T080000
+DTEND;TZID=Europe/Athens:20261019T090000
+RRULE:FREQ=WEEKLY
+SUMMARY:Gym: Strength A
+DESCRIPTION:Body · Push + core: bench or push-ups\, overhead press\, dips
+ \, plank.
+CATEGORIES:Body
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Gym: Strength A
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-mon-bf@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T090000
+DTEND;TZID=Europe/Athens:20261019T093000
+RRULE:FREQ=WEEKLY
+SUMMARY:Shower + protein breakfast
+DESCRIPTION:Food · Eat within an hour of training. See Food for today's p
+ late.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-mon-w1@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T093000
+DTEND;TZID=Europe/Athens:20261019T113000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI deep work: pipeline & week plan
+DESCRIPTION:SimasiaAI · Proposals and the week's sales plan. Notification
+ s off\, door closed.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:SimasiaAI deep work: pipeline & week plan
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-mon-w2@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T114500
+DTEND;TZID=Europe/Athens:20261019T130000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: client calls & needs analysis
+DESCRIPTION:SimasiaAI · Listen first: what does this organisation actuall
+ y need?
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-mon-lunch@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T130000
+DTEND;TZID=Europe/Athens:20261019T134500
+RRULE:FREQ=WEEKLY
+SUMMARY:Lunch
+DESCRIPTION:Food · Away from the desk. See Food for today's plate.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-mon-w3@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T140000
+DTEND;TZID=Europe/Athens:20261019T160000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: delivery sync with Stergios & team
+DESCRIPTION:SimasiaAI · Weekly priorities\, blockers\, go-live dates.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-mon-w4@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T161500
+DTEND;TZID=Europe/Athens:20261019T180000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: email & admin\, batched
+DESCRIPTION:SimasiaAI · Inbox to zero\, invoices\, scheduling. Shallow wo
+ rk lives here.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-mon-stop@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T180000
+DTEND;TZID=Europe/Athens:20261019T181500
+RRULE:FREQ=WEEKLY
+SUMMARY:STOP WORK
+DESCRIPTION:Ritual · Shutdown ritual: write tomorrow's top 3\, close the 
+ laptop\, send one message to a friend. Work ends here.
+CATEGORIES:Ritual
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:STOP WORK
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-mon-m1@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T183000
+DTEND;TZID=Europe/Athens:20261019T200000
+RRULE:FREQ=WEEKLY
+SUMMARY:Mastery: applications
+DESCRIPTION:Mastery · Target 2 per week toward 10 by 17 Nov. Tailor the C
+ V (industry or academic switch).
+CATEGORIES:Mastery
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Mastery: applications
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-mon-dinner@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T200000
+DTEND;TZID=Europe/Athens:20261019T204500
+RRULE:FREQ=WEEKLY
+SUMMARY:Dinner
+DESCRIPTION:Food · See Food for tonight.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-mon-wind@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261019T220000
+DTEND;TZID=Europe/Athens:20261019T230000
+RRULE:FREQ=WEEKLY
+SUMMARY:Wind down
+DESCRIPTION:Rest · Screens off by 22:30. Pack the gym bag\, read a book.
+CATEGORIES:Rest
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Wind down
+TRIGGER:-PT5M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-tue-gym@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261020T080000
+DTEND;TZID=Europe/Athens:20261020T090000
+RRULE:FREQ=WEEKLY
+SUMMARY:Gym: Cardio & mobility
+DESCRIPTION:Body · 30 min run or swim\, then 20 min mobility. Light day f
+ or the muscles.
+CATEGORIES:Body
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Gym: Cardio & mobility
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-tue-bf@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261020T090000
+DTEND;TZID=Europe/Athens:20261020T093000
+RRULE:FREQ=WEEKLY
+SUMMARY:Shower + protein breakfast
+DESCRIPTION:Food · Eat within an hour of training. See Food for today's p
+ late.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-tue-w1@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261020T093000
+DTEND;TZID=Europe/Athens:20261020T113000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI deep work: proposals & contracts
+DESCRIPTION:SimasiaAI · Write and send. Every open deal gets a next step 
+ and a date.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:SimasiaAI deep work: proposals & contracts
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-tue-w2@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261020T114500
+DTEND;TZID=Europe/Athens:20261020T130000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: client calls & follow-ups
+DESCRIPTION:SimasiaAI · Calls and replies. Write down their exact words.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-tue-lunch@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261020T130000
+DTEND;TZID=Europe/Athens:20261020T134500
+RRULE:FREQ=WEEKLY
+SUMMARY:Lunch
+DESCRIPTION:Food · Away from the desk. See Food for today's plate.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-tue-w3@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261020T140000
+DTEND;TZID=Europe/Athens:20261020T160000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: operations
+DESCRIPTION:SimasiaAI · Delivery checklists\, contracts\, the part-time a
+ greement draft.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-tue-w4@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261020T161500
+DTEND;TZID=Europe/Athens:20261020T180000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: email & admin\, batched
+DESCRIPTION:SimasiaAI · Close the loops from today's calls.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-tue-stop@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261020T180000
+DTEND;TZID=Europe/Athens:20261020T181500
+RRULE:FREQ=WEEKLY
+SUMMARY:STOP WORK
+DESCRIPTION:Ritual · Shutdown ritual: write tomorrow's top 3\, close the 
+ laptop\, send one message to a friend. Work ends here.
+CATEGORIES:Ritual
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:STOP WORK
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-tue-friends@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261020T190000
+DTEND;TZID=Europe/Athens:20261020T220000
+RRULE:FREQ=WEEKLY
+SUMMARY:Friends night
+DESCRIPTION:People · Dinner or coffee with a friend. Phone face down. Ask
+  one real question.
+CATEGORIES:People
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-tue-wind@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261020T220000
+DTEND;TZID=Europe/Athens:20261020T230000
+RRULE:FREQ=WEEKLY
+SUMMARY:Wind down
+DESCRIPTION:Rest · Screens off by 22:30. Pack the gym bag\, read a book.
+CATEGORIES:Rest
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Wind down
+TRIGGER:-PT5M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-gym@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T080000
+DTEND;TZID=Europe/Athens:20261021T090000
+RRULE:FREQ=WEEKLY
+SUMMARY:Gym: Strength B
+DESCRIPTION:Body · Pull + legs: rows\, pull-ups or lat pulldown\, squats\
+ , lunges.
+CATEGORIES:Body
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Gym: Strength B
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-bf@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T090000
+DTEND;TZID=Europe/Athens:20261021T093000
+RRULE:FREQ=WEEKLY
+SUMMARY:Shower + protein breakfast
+DESCRIPTION:Food · Eat within an hour of training. See Food for today's p
+ late.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-w1@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T093000
+DTEND;TZID=Europe/Athens:20261021T113000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI deep work: prospecting
+DESCRIPTION:SimasiaAI · New organisations: patient associations\, disabil
+ ity groups\, institutions.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:SimasiaAI deep work: prospecting
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-w2@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T114500
+DTEND;TZID=Europe/Athens:20261021T130000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: calls & demos
+DESCRIPTION:SimasiaAI · Demo\, listen\, write down their exact words.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-lunch@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T130000
+DTEND;TZID=Europe/Athens:20261021T134500
+RRULE:FREQ=WEEKLY
+SUMMARY:Lunch
+DESCRIPTION:Food · Away from the desk. See Food for today's plate.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-w3@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T140000
+DTEND;TZID=Europe/Athens:20261021T160000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: client work
+DESCRIPTION:SimasiaAI · Requirements\, RAG design choices\, human-centred
+  evaluation.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-w4@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T161500
+DTEND;TZID=Europe/Athens:20261021T180000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: email & admin\, batched
+DESCRIPTION:SimasiaAI · Inbox to zero.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-stop@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T180000
+DTEND;TZID=Europe/Athens:20261021T181500
+RRULE:FREQ=WEEKLY
+SUMMARY:STOP WORK
+DESCRIPTION:Ritual · Shutdown ritual: write tomorrow's top 3\, close the 
+ laptop\, send one message to a friend. Work ends here.
+CATEGORIES:Ritual
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:STOP WORK
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-m1@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T183000
+DTEND;TZID=Europe/Athens:20261021T200000
+RRULE:FREQ=WEEKLY
+SUMMARY:Mastery: study + write a post
+DESCRIPTION:Mastery · Behavioural science reading\, then one post (Build\
+ , Research\, Speak or Write). Target 2 posts by 17 Nov.
+CATEGORIES:Mastery
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Mastery: study + write a post
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-dinner@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T200000
+DTEND;TZID=Europe/Athens:20261021T204500
+RRULE:FREQ=WEEKLY
+SUMMARY:Dinner
+DESCRIPTION:Food · See Food for tonight.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-eve@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T204500
+DTEND;TZID=Europe/Athens:20261021T220000
+RRULE:FREQ=WEEKLY
+SUMMARY:Read for pleasure
+DESCRIPTION:Create · Fiction\, poetry\, or the book you're studying. No l
+ aptop.
+CATEGORIES:Create
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-wed-wind@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261021T220000
+DTEND;TZID=Europe/Athens:20261021T230000
+RRULE:FREQ=WEEKLY
+SUMMARY:Wind down
+DESCRIPTION:Rest · Screens off by 22:30. Pack the gym bag\, read a book.
+CATEGORIES:Rest
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Wind down
+TRIGGER:-PT5M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-gym@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T080000
+DTEND;TZID=Europe/Athens:20261022T090000
+RRULE:FREQ=WEEKLY
+SUMMARY:Gym: Easy cardio or yoga
+DESCRIPTION:Body · Easy run\, swim or a yoga class. For the head as much 
+ as the body.
+CATEGORIES:Body
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Gym: Easy cardio or yoga
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-bf@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T090000
+DTEND;TZID=Europe/Athens:20261022T093000
+RRULE:FREQ=WEEKLY
+SUMMARY:Shower + protein breakfast
+DESCRIPTION:Food · Eat within an hour of training. See Food for today's p
+ late.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-w1@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T093000
+DTEND;TZID=Europe/Athens:20261022T113000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI deep work: client delivery
+DESCRIPTION:SimasiaAI · Test the assistants like a user would. What did t
+ hey misunderstand?
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:SimasiaAI deep work: client delivery
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-w2@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T114500
+DTEND;TZID=Europe/Athens:20261022T130000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: client calls
+DESCRIPTION:SimasiaAI · Check-ins with live clients.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-lunch@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T130000
+DTEND;TZID=Europe/Athens:20261022T134500
+RRULE:FREQ=WEEKLY
+SUMMARY:Lunch
+DESCRIPTION:Food · Away from the desk. See Food for today's plate.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-w3@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T140000
+DTEND;TZID=Europe/Athens:20261022T160000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: operations
+DESCRIPTION:SimasiaAI · Contracts\, delivery dates\, team support.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-w4@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T161500
+DTEND;TZID=Europe/Athens:20261022T180000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: close the week's loops
+DESCRIPTION:SimasiaAI · Everything opened this week gets an answer.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-stop@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T180000
+DTEND;TZID=Europe/Athens:20261022T181500
+RRULE:FREQ=WEEKLY
+SUMMARY:STOP WORK
+DESCRIPTION:Ritual · Shutdown ritual: write tomorrow's top 3\, close the 
+ laptop\, send one message to a friend. Work ends here.
+CATEGORIES:Ritual
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:STOP WORK
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-m1@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T183000
+DTEND;TZID=Europe/Athens:20261022T193000
+RRULE:FREQ=WEEKLY
+SUMMARY:Mastery: talks & conversations
+DESCRIPTION:Mastery · Pitch one talk (target 1 by 17 Nov). Message one pe
+ rson doing the work you want to do.
+CATEGORIES:Mastery
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Mastery: talks & conversations
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-dinner@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T200000
+DTEND;TZID=Europe/Athens:20261022T204500
+RRULE:FREQ=WEEKLY
+SUMMARY:Dinner
+DESCRIPTION:Food · See Food for tonight.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-write@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T204500
+DTEND;TZID=Europe/Athens:20261022T220000
+RRULE:FREQ=WEEKLY
+SUMMARY:Write: poetry
+DESCRIPTION:Create · Γράφω. Free writing\, a poem\, or a reflection.
+  No editing tonight.
+CATEGORIES:Create
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-thu-wind@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261022T220000
+DTEND;TZID=Europe/Athens:20261022T230000
+RRULE:FREQ=WEEKLY
+SUMMARY:Wind down
+DESCRIPTION:Rest · Screens off by 22:30. Pack the gym bag\, read a book.
+CATEGORIES:Rest
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Wind down
+TRIGGER:-PT5M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-fri-gym@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261023T080000
+DTEND;TZID=Europe/Athens:20261023T090000
+RRULE:FREQ=WEEKLY
+SUMMARY:Gym: Full body
+DESCRIPTION:Body · Deadlift or hip hinge\, push\, pull\, carries. Finish 
+ the week strong.
+CATEGORIES:Body
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Gym: Full body
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-fri-bf@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261023T090000
+DTEND;TZID=Europe/Athens:20261023T093000
+RRULE:FREQ=WEEKLY
+SUMMARY:Shower + protein breakfast
+DESCRIPTION:Food · Eat within an hour of training. See Food for today's p
+ late.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-fri-w1@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261023T093000
+DTEND;TZID=Europe/Athens:20261023T113000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI deep work: product & evaluation
+DESCRIPTION:SimasiaAI · Ship one visible improvement to a client.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:SimasiaAI deep work: product & evaluation
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-fri-w2@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261023T114500
+DTEND;TZID=Europe/Athens:20261023T130000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: delivery
+DESCRIPTION:SimasiaAI · Demos\, fixes\, go-lives.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-fri-conv@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261023T130000
+DTEND;TZID=Europe/Athens:20261023T140000
+RRULE:FREQ=WEEKLY
+SUMMARY:Lunch with someone doing the work
+DESCRIPTION:People · Behavioural science\, communication\, policy. Target
+  4 by 17 Nov. Ask: how did you get here?
+CATEGORIES:People
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-fri-w3@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261023T140000
+DTEND;TZID=Europe/Athens:20261023T160000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: client work
+DESCRIPTION:SimasiaAI · What's left for this week's deliveries.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-fri-w4@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261023T161500
+DTEND;TZID=Europe/Athens:20261023T180000
+RRULE:FREQ=WEEKLY
+SUMMARY:SimasiaAI: weekly wrap & inbox zero
+DESCRIPTION:SimasiaAI · What moved\, what slipped\, next week's top 3. Le
+ ave nothing for the weekend.
+CATEGORIES:SimasiaAI
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-fri-stop@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261023T180000
+DTEND;TZID=Europe/Athens:20261023T181500
+RRULE:FREQ=WEEKLY
+SUMMARY:STOP WORK
+DESCRIPTION:Ritual · Shutdown ritual: write tomorrow's top 3\, close the 
+ laptop\, send one message to a friend. Work ends here.
+CATEGORIES:Ritual
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:STOP WORK
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-fri-dinner@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261023T200000
+DTEND;TZID=Europe/Athens:20261023T204500
+RRULE:FREQ=WEEKLY
+SUMMARY:Dinner
+DESCRIPTION:Food · See Food for tonight.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-fri-out@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261023T210000
+DTEND;TZID=Europe/Athens:20261024T000000
+RRULE:FREQ=WEEKLY
+SUMMARY:Friends / night out
+DESCRIPTION:People · Social night. Enjoy it fully\, work is closed.
+CATEGORIES:People
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sat-bf@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261024T090000
+DTEND;TZID=Europe/Athens:20261024T100000
+RRULE:FREQ=WEEKLY
+SUMMARY:Long breakfast
+DESCRIPTION:Food · See Food.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sat-out@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261024T100000
+DTEND;TZID=Europe/Athens:20261024T123000
+RRULE:FREQ=WEEKLY
+SUMMARY:Outdoors: hike\, swim or long walk
+DESCRIPTION:Body · Mountain\, sea or a new neighbourhood. A bonus trainin
+ g day.
+CATEGORIES:Body
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sat-lunch@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261024T130000
+DTEND;TZID=Europe/Athens:20261024T143000
+RRULE:FREQ=WEEKLY
+SUMMARY:Lunch with friends or family
+DESCRIPTION:Food · Taverna or home. Share plates.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sat-hobby@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261024T170000
+DTEND;TZID=Europe/Athens:20261024T190000
+RRULE:FREQ=WEEKLY
+SUMMARY:Hobby: culture & curiosity
+DESCRIPTION:Create · Museum\, cinema\, theatre\, a bookshop\, or a new sk
+ ill.
+CATEGORIES:Create
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sat-night@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261024T200000
+DTEND;TZID=Europe/Athens:20261025T000000
+RRULE:FREQ=WEEKLY
+SUMMARY:Evening with friends
+DESCRIPTION:People · Dinner out or at home. Invest in the people who matt
+ er.
+CATEGORIES:People
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sun-bf@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261018T090000
+DTEND;TZID=Europe/Athens:20261018T093000
+RRULE:FREQ=WEEKLY
+SUMMARY:Breakfast
+DESCRIPTION:Food · See Food.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sun-write@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261018T093000
+DTEND;TZID=Europe/Athens:20261018T110000
+RRULE:FREQ=WEEKLY
+SUMMARY:Write: poetry & surprise notebook
+DESCRIPTION:Create · What surprised you this week? What did you enjoy? No
+ tes feed your flow.
+CATEGORIES:Create
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sun-prep@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261018T110000
+DTEND;TZID=Europe/Athens:20261018T123000
+RRULE:FREQ=WEEKLY
+SUMMARY:Market + meal prep
+DESCRIPTION:Food · Cook one pot of legumes and one protein for Mon–Wed 
+ lunches.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sun-family@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261018T130000
+DTEND;TZID=Europe/Athens:20261018T143000
+RRULE:FREQ=WEEKLY
+SUMMARY:Family lunch / call home
+DESCRIPTION:People · Call family in Crete if you're apart.
+CATEGORIES:People
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sun-review@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261018T170000
+DTEND;TZID=Europe/Athens:20261018T180000
+RRULE:FREQ=WEEKLY
+SUMMARY:Weekly review\, money & plan
+DESCRIPTION:Mastery · Open Goals: score the week. Money: floor and target
+ \, savings toward 6 months. Check next week's calendar and pick 3 outcome
+ s.
+CATEGORIES:Mastery
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Weekly review\, money & plan
+TRIGGER:-PT10M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sun-walk@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261018T183000
+DTEND;TZID=Europe/Athens:20261018T193000
+RRULE:FREQ=WEEKLY
+SUMMARY:Evening walk
+DESCRIPTION:Body · Clear the head before the week.
+CATEGORIES:Body
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sun-dinner@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261018T200000
+DTEND;TZID=Europe/Athens:20261018T204500
+RRULE:FREQ=WEEKLY
+SUMMARY:Dinner
+DESCRIPTION:Food · See Food for tonight.
+CATEGORIES:Food
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sun-read@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261018T210000
+DTEND;TZID=Europe/Athens:20261018T220000
+RRULE:FREQ=WEEKLY
+SUMMARY:Read
+DESCRIPTION:Create · A book\, not a feed.
+CATEGORIES:Create
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sun-wind@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261018T220000
+DTEND;TZID=Europe/Athens:20261018T230000
+RRULE:FREQ=WEEKLY
+SUMMARY:Wind down
+DESCRIPTION:Rest · Screens off by 22:30. Pack the gym bag\, read a book.
+CATEGORIES:Rest
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Wind down
+TRIGGER:-PT5M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-sprint-review@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20261117T170000
+DTEND;TZID=Europe/Athens:20261117T180000
+SUMMARY:30-day sprint review
+DESCRIPTION:10 applications\, 4 conversations\, 1 talk pitched\, 2 posts\,
+  SimasiaAI agreement. Score it and set the next 30 days.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:30-day sprint review
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rhythm-decision-2027@dimitrispapadakis.gr
+DTSTAMP:20261025T131512Z
+DTSTART;TZID=Europe/Athens:20270831T100000
+DTEND;TZID=Europe/Athens:20270831T110000
+SUMMARY:Decision: Track A or Track B
+DESCRIPTION:Take Track B only with a fully funded\, MSCA-level offer on yo
+ ur question. Otherwise Track A.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Decision: Track A or Track B
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+END:VCALENDAR

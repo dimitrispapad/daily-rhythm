@@ -1,0 +1,2016 @@
+<title>PraxisAI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=Noto+Serif+Display:ital,wght@0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: a calm control room. Desktop = left rail + one working column; phone = top bar, bottom tabs, capture button.
+   One accent (Aegean) for action, pomegranate only for "now / needs you". Area colours tag work, never decorate. */
+:root{
+  --bg:#F3F6FA; --surface:#FFFFFF; --sunk:#E9EEF6; --ink:#10153A; --muted:#5D6690; --line:#DCE2EE;
+  --brand:#2337C6; --brand-ink:#FFFFFF; --brand-soft:#E4E8FB; --now:#C8284E; --now-soft:#FBE7EC;
+  --good:#0B7A5E; --warn:#A06A00; --shadow:0 1px 2px rgba(16,21,58,.06),0 8px 24px rgba(16,21,58,.06);
+  --a-simasia:#2337C6; --a-career:#6B3FC0; --a-money:#0B7A5E; --a-mind:#1B78AD; --a-create:#B4572E; --a-body:#A07400; --a-life:#5B6B2E;
+  --display:"Noto Serif Display", Georgia, "Times New Roman", serif;
+  --ui:"Commissioner", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:ui-monospace, "SF Mono", Menlo, monospace;
+  --r:14px; --r-sm:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A1035; --surface:#111947; --sunk:#0D1440; --ink:#EEF1FB; --muted:#9AA3CC; --line:#253068;
+  --brand:#8391FF; --brand-ink:#0A1035; --brand-soft:#1C2766; --now:#FF6F8F; --now-soft:#3A1734;
+  --good:#4FD1AE; --warn:#E8B547; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --a-simasia:#8C99FF; --a-career:#B39BFF; --a-money:#4FD1AE; --a-mind:#6CC4F2; --a-create:#F09A6E; --a-body:#E8B547; --a-life:#B5C46B;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0A1035; --surface:#111947; --sunk:#0D1440; --ink:#EEF1FB; --muted:#9AA3CC; --line:#253068;
+  --brand:#8391FF; --brand-ink:#0A1035; --brand-soft:#1C2766; --now:#FF6F8F; --now-soft:#3A1734;
+  --good:#4FD1AE; --warn:#E8B547; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --a-simasia:#8C99FF; --a-career:#B39BFF; --a-money:#4FD1AE; --a-mind:#6CC4F2; --a-create:#F09A6E; --a-body:#E8B547; --a-life:#B5C46B;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.5;margin:0;font-variant-numeric:tabular-nums;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--bg)}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+h1{font-family:var(--display);font-weight:600;font-size:30px;line-height:1.15;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:600;font-size:21px;line-height:1.2}
+h3{font-size:15px;font-weight:650;line-height:1.3}
+p{margin:0}
+a{color:var(--brand)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.eyebrow{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:650}
+.num{font-family:var(--display);font-weight:600}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh;
+  padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
+.rail{position:sticky;top:env(safe-area-inset-top,0px);height:calc(100vh - env(safe-area-inset-top,0px));overflow-y:auto;
+  border-right:1px solid var(--line);padding:18px 12px 16px 16px;display:flex;flex-direction:column;gap:14px;background:var(--bg)}
+.brandrow{display:flex;align-items:center;gap:10px;padding:2px 6px}
+.brandrow b{font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.01em}
+.brandrow span{display:block;font-size:12px;color:var(--muted)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav .grp{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:650;padding:12px 10px 4px}
+.nav a{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:9px;color:var(--ink);text-decoration:none;font-weight:500;font-size:14.5px}
+.nav a:hover{background:var(--sunk)}
+.nav a[aria-current="page"]{background:var(--brand-soft);color:var(--brand);font-weight:650}
+.nav a .ico{width:18px;height:18px;flex:none;opacity:.85}
+.nav a .badge{margin-left:auto;font-size:11.5px;font-weight:700;background:var(--now);color:#fff;border-radius:999px;padding:1px 7px}
+.rail-foot{margin-top:auto;display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--muted);padding:0 6px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:6px;vertical-align:1px}
+.dot.ok{background:var(--good)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--now)}
+
+.main{min-width:0;padding:22px max(16px,env(safe-area-inset-right,0px)) 120px 28px}
+.page{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pagehead .sub{color:var(--muted);margin-top:4px;max-width:62ch}
+.topbar{display:none}
+.tabbar{display:none}
+
+/* ---------- search ---------- */
+.search{position:relative}
+.search input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.6}
+.results{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);z-index:30;max-height:60vh;overflow:auto;padding:6px;min-width:260px}
+.results button{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:8px}
+.results button:hover,.results button:focus-visible{background:var(--sunk)}
+
+/* ---------- building blocks ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card.flat{box-shadow:none}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row.between{justify-content:space-between}
+.stack{display:flex;flex-direction:column;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid transparent;background:var(--brand);color:var(--brand-ink);font-weight:600;padding:8px 14px;border-radius:10px;font-size:14px;line-height:1.2;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.05)}
+.btn.ghost{background:transparent;color:var(--brand);border-color:var(--line)}
+.btn.ghost:hover{background:var(--sunk)}
+.btn.quiet{background:transparent;color:var(--muted);border-color:transparent;padding:6px 8px}
+.btn.quiet:hover{color:var(--ink);background:var(--sunk)}
+.btn.danger{background:transparent;color:var(--now);border-color:var(--line)}
+.btn.big{padding:12px 20px;font-size:16px;border-radius:12px}
+.btn.sm{padding:5px 10px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.ai::before{content:"";width:12px;height:12px;background:currentColor;-webkit-mask:var(--spark) center/contain no-repeat;mask:var(--spark) center/contain no-repeat}
+:root{--spark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1l2.6 7.4L22 11l-7.4 2.6L12 21l-2.6-7.4L2 11l7.4-2.6z'/%3E%3C/svg%3E")}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.chip.area{color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent)}
+.chip.late{color:var(--now);background:var(--now-soft)}
+.chip.soon{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.chip.good{color:var(--good);background:color-mix(in srgb,var(--good) 13%,transparent)}
+.chip.brand{color:var(--brand);background:var(--brand-soft)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.pill{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;color:var(--muted)}
+.pill[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);background:var(--sunk)}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;background:var(--sunk);border-radius:12px;padding:4px;align-self:flex-start;max-width:100%}
+.tabs button{border:0;background:transparent;padding:7px 14px;border-radius:9px;font-weight:600;font-size:14px;color:var(--muted);white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.empty{border:1.5px dashed var(--line);border-radius:var(--r);padding:20px;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:8px;align-items:center}
+.empty b{color:var(--ink)}
+.note{font-size:13px;color:var(--muted)}
+.banner{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 14px;font-size:13.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner.warn{border-color:color-mix(in srgb,var(--warn) 45%,var(--line));background:color-mix(in srgb,var(--warn) 8%,var(--surface))}
+.banner.bad{border-color:color-mix(in srgb,var(--now) 40%,var(--line));background:var(--now-soft)}
+.bar{height:8px;border-radius:8px;background:var(--sunk);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:8px;background:var(--brand)}
+.bar.good>i{background:var(--good)}
+.bar.now>i{background:var(--now)}
+.kpi{display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .v{font-family:var(--display);font-size:28px;line-height:1.1;font-weight:600}
+.kpi .l{font-size:12.5px;color:var(--muted)}
+.kpi.alert .v{color:var(--now)}
+.sep{height:1px;background:var(--line);border:0;margin:0}
+
+/* forms */
+.input,select.input,textarea.input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface);min-width:0}
+textarea.input{resize:vertical;min-height:70px;line-height:1.5}
+.input:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 20%,transparent)}
+.addrow{display:flex;gap:8px;flex-wrap:wrap}
+.addrow .input{flex:1 1 200px}
+.addrow select.input{flex:0 1 170px}
+.addrow input[type=date].input{flex:0 1 160px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:var(--muted)}
+label.f > .input{font-weight:400;color:var(--ink);font-size:15px}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fgrid .wide{grid-column:1/-1}
+
+/* item cards / rows */
+.list{display:flex;flex-direction:column}
+.it{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 4px;border-bottom:1px solid var(--line)}
+.it:last-child{border-bottom:0}
+.it .t{font-weight:600;line-height:1.35;overflow-wrap:anywhere;cursor:pointer;background:none;border:0;padding:0;text-align:left}
+.it .t:hover{color:var(--brand)}
+.it .m{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;align-items:center}
+.it .s{color:var(--muted);font-size:13.5px;margin-top:3px;overflow-wrap:anywhere}
+.it.done .t{text-decoration:line-through;color:var(--muted)}
+.tick{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center;padding:0;margin-top:1px;flex:none}
+.tick svg{opacity:0}
+.tick[aria-pressed="true"]{background:var(--good);border-color:var(--good)}
+.tick[aria-pressed="true"] svg{opacity:1}
+.tick:hover{border-color:var(--good)}
+.areadot{width:10px;height:10px;border-radius:3px;background:var(--ac);display:inline-block;flex:none}
+
+/* kanban */
+.board{display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.col{background:var(--sunk);border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:8px;min-height:120px}
+.col.drop{outline:2px dashed var(--brand);outline-offset:-4px}
+.col-h{display:flex;justify-content:space-between;align-items:center;font-weight:650;font-size:13px;padding:2px 4px;color:var(--muted)}
+.kc{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--ac);border-radius:10px;padding:9px 10px;display:flex;flex-direction:column;gap:6px;cursor:grab}
+.kc .t{font-weight:600;font-size:14px;line-height:1.35;overflow-wrap:anywhere;background:none;border:0;padding:0;text-align:left}
+.kc.dragging{opacity:.4}
+
+/* focus */
+.focus-hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px}
+.onething{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
+.onething::after{content:"";position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--now) 14%,transparent),transparent 70%);pointer-events:none}
+.onething .ttl{font-family:var(--display);font-size:30px;line-height:1.15;font-weight:600;overflow-wrap:anywhere}
+.step{display:flex;gap:10px;align-items:flex-start;background:var(--sunk);border-radius:12px;padding:12px 14px}
+.step b{display:block;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.timer{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ring{width:118px;height:118px;flex:none;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .rt{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .rt b{font-family:var(--display);font-size:28px;font-weight:600;line-height:1}
+.ring .rt span{font-size:11.5px;color:var(--muted);display:block}
+.calm .hide-calm{display:none!important}
+.routine-now{display:flex;gap:12px;align-items:center}
+.routine-now .bigt{font-family:var(--display);font-size:22px;font-weight:600}
+.habit{display:flex;align-items:center;gap:10px;padding:6px 0}
+.habit .tick{width:28px;height:28px}
+
+/* charts */
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:11px;font-family:var(--ui)}
+.chart .grid line{stroke:var(--line)}
+.hbar{display:grid;grid-template-columns:minmax(80px,140px) minmax(0,1fr) auto;gap:10px;align-items:center;font-size:13.5px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* deadlines */
+.dl{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.dl:last-child{border-bottom:0}
+.dl .d{font-size:12.5px;font-weight:650;color:var(--muted)}
+.dl .d.late{color:var(--now)}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(10,16,53,.35);z-index:50}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--surface);z-index:51;box-shadow:-10px 0 40px rgba(0,0,0,.18);display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.drawer-h{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.drawer-h .grow{flex:1;min-width:0}
+.drawer-b{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.titlefield{font-family:var(--display);font-size:22px;font-weight:600;border:0;background:transparent;width:100%;padding:4px 0;border-bottom:1px solid transparent}
+.titlefield:focus{outline:none;border-bottom-color:var(--brand)}
+.checklist{display:flex;flex-direction:column;gap:4px}
+.checklist .ci{display:flex;align-items:center;gap:8px}
+.checklist .ci input[type=text]{flex:1;border:0;background:transparent;padding:4px 0;border-bottom:1px solid transparent;min-width:0}
+.checklist .ci input[type=text]:focus{outline:none;border-bottom-color:var(--brand)}
+.checklist .ci.d input[type=text]{text-decoration:line-through;color:var(--muted)}
+.cbx{width:18px;height:18px;accent-color:var(--good);flex:none}
+.ai-out{background:var(--sunk);border-radius:12px;padding:12px 14px;white-space:pre-wrap;font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--now-soft);border-radius:10px;padding:8px 10px;font-size:13.5px}
+
+/* sheet (capture / more) */
+.sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 24px));background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);z-index:52;padding:16px;display:flex;flex-direction:column;gap:12px;max-height:80vh;overflow:auto}
+.fab{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:18px;border:0;background:var(--now);color:#fff;box-shadow:0 6px 20px color-mix(in srgb,var(--now) 40%,transparent);display:grid;place-items:center;z-index:45}
+.fab svg{width:26px;height:26px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:14px;z-index:60;max-width:calc(100% - 32px)}
+
+/* whiteboard */
+.wb-wrap{position:relative;overflow:auto;border:1px solid var(--line);border-radius:var(--r);background:
+  radial-gradient(circle,color-mix(in srgb,var(--muted) 35%,transparent) 1px,transparent 1.5px) 0 0/22px 22px,var(--surface);height:min(70vh,760px);touch-action:pan-x pan-y}
+.wb{position:relative;width:2400px;height:1600px}
+.sticky{position:absolute;width:200px;min-height:120px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.14);display:flex;flex-direction:column;background:var(--sc);color:#1d1d1d}
+.sticky .sh{height:22px;cursor:grab;display:flex;justify-content:flex-end;align-items:center;padding:0 4px;touch-action:none;border-radius:6px 6px 0 0;background:rgba(0,0,0,.06)}
+.sticky .sh button{border:0;background:none;font-size:15px;line-height:1;padding:2px 5px;color:#333;opacity:.6}
+.sticky textarea{flex:1;border:0;background:transparent;resize:none;padding:8px 10px;font:14px/1.4 var(--ui);color:#1d1d1d;min-height:96px}
+.sticky textarea:focus{outline:none}
+.sticky.dragging{box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:5}
+.swatch{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);background:var(--sc);padding:0}
+
+/* chat */
+.chat{display:flex;flex-direction:column;gap:10px}
+.msg{max-width:min(720px,92%);padding:10px 14px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}
+.msg.user{align-self:flex-end;background:var(--brand);color:var(--brand-ink);border-bottom-right-radius:4px}
+.msg.assistant{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}
+.prompts{display:flex;gap:6px;flex-wrap:wrap}
+
+/* writing */
+.writer{position:fixed;inset:0;background:var(--bg);z-index:55;display:flex;flex-direction:column;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.writer .wh{display:flex;align-items:center;gap:10px;max-width:760px;width:100%;margin:0 auto}
+.writer textarea{flex:1;width:100%;max-width:760px;margin:16px auto 0;border:0;background:transparent;resize:none;font:19px/1.75 var(--display);color:var(--ink);padding:8px 0}
+.writer textarea:focus{outline:none}
+.writer input.wt{font:600 24px var(--display);border:0;background:transparent;flex:1;min-width:0}
+.writer input.wt:focus{outline:none}
+
+/* calendar */
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;min-height:150px;min-width:0}
+.day.today{border-color:var(--now);box-shadow:0 0 0 1px var(--now) inset}
+.day h4{font-size:13px;display:flex;justify-content:space-between}
+.day .rt{font-size:11.5px;color:var(--muted);line-height:1.35}
+.ev{font-size:12.5px;border-left:3px solid var(--ac);padding:3px 6px;border-radius:4px;background:color-mix(in srgb,var(--ac) 9%,transparent);overflow-wrap:anywhere;text-align:left;border-top:0;border-right:0;border-bottom:0;color:var(--ink);cursor:pointer}
+
+/* responsive */
+@media (max-width:1100px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.focus-hero{grid-template-columns:1fr}}
+@media (max-width:900px){
+  .shell{display:block;padding:0}
+  .rail{display:none}
+  .topbar{display:flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);align-items:center;gap:10px;
+    padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+  .topbar b{font-family:var(--display);font-size:18px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .main{padding:16px max(16px,env(safe-area-inset-right,0px)) calc(110px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:44;background:var(--surface);border-top:1px solid var(--line);
+    padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+  .tabbar a,.tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--muted);text-decoration:none;border:0;background:none;padding:4px 0}
+  .tabbar [aria-current="page"]{color:var(--brand)}
+  .tabbar svg{width:22px;height:22px}
+  .fab{bottom:calc(76px + env(safe-area-inset-bottom,0px));right:calc(16px + env(safe-area-inset-right,0px))}
+  .toast{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+  .week{grid-template-columns:1fr}
+  .day{min-height:0}
+  h1{font-size:26px}
+}
+@media (max-width:640px){
+  .g2,.g3{grid-template-columns:1fr}
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fgrid{grid-template-columns:1fr}
+  .onething .ttl{font-size:25px}
+  .board{grid-template-columns:repeat(5,minmax(78vw,1fr))}
+  .drawer{width:100%}
+  .kpi .v{font-size:24px}
+}
+
+.colmain{min-width:0}
+</style>
+<div class="shell">
+  <aside class="rail" aria-label="PraxisAI navigation">
+    <div class="brandrow"><svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4 L37 35 H3 Z" fill="none" stroke="var(--brand)" stroke-width="3" stroke-linejoin="round"/><circle cx="20" cy="25" r="4.2" fill="var(--now)"/></svg><div><b>PraxisAI</b><span>Dimitris · personal operations</span></div></div>
+    <div class="search"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="q" placeholder="Search everything" autocomplete="off" aria-label="Search everything"><div class="results" id="results" hidden></div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="rail-foot"><div id="syncline"></div><span>Η τεχνολογία, στο ανθρώπινο μέτρο.</span></div>
+  </aside>
+  <div class="colmain">
+    <header class="topbar"><svg width="26" height="26" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4 L37 35 H3 Z" fill="none" stroke="var(--brand)" stroke-width="3" stroke-linejoin="round"/><circle cx="20" cy="25" r="4.2" fill="var(--now)"/></svg><b id="topname">PraxisAI</b>
+      <button class="btn quiet" data-act="sheet" data-s="search" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></header>
+    <main class="main" id="main"></main>
+  </div>
+</div>
+<nav class="tabbar" id="tabbar" aria-label="Main sections"></nav>
+<button class="fab" data-act="fab" aria-label="Capture a thought"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></button>
+<div id="drawer-host"></div>
+<div id="sheet-host"></div>
+<div id="writer-host"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script>
+// Dimitris Daily Rhythm: the plan. Shared by the app (browser) and the .ics builder (node).
+// Categories: ritual, food, deep (Mastery: your own future), work (SimasiaAI), body, people, create, rest
+// Weekdays: gym 08:00, SimasiaAI 09:30–18:00, Mastery evenings Mon/Wed/Thu.
+(function (root) {
+  const B = (id, s, e, cat, t, d, o) => Object.assign({ id, s, e, cat, t, d, cal: true }, o || {});
+
+  // Weekday frame: train 08:00–09:00, SimasiaAI 09:30–18:00, own future in the evening.
+  const morning = (k, gymName, gymFocus) => [
+    B(k + "-wake", "07:00", "07:30", "ritual", "Wake, water, pre-gym fuel", "Glass of water, a banana or toast with honey, coffee. Phone stays on airplane mode.", { cal: false }),
+    B(k + "-go", "07:30", "08:00", "ritual", "Head to the gym", "Bag packed the night before. On the way, say today's 3 priorities out loud or as a voice note.", { cal: false }),
+    B(k + "-gym", "08:00", "09:00", "body", "Gym: " + gymName, gymFocus, { tag: "gym", alarm: 30 }),
+    B(k + "-bf", "09:00", "09:30", "food", "Shower + protein breakfast", "Eat within an hour of training. See Food for today's plate.")
+  ];
+  const workday = (k, w) => [
+    B(k + "-w1", "09:30", "11:30", "work", w[0][0], w[0][1], { alarm: 10 }),
+    B(k + "-b1", "11:30", "11:45", "rest", "Break", "Stand up, water, look out the window. No phone.", { cal: false }),
+    B(k + "-w2", "11:45", "13:00", "work", w[1][0], w[1][1]),
+    ...(w.lunch || [
+      B(k + "-lunch", "13:00", "13:45", "food", "Lunch", "Away from the desk. See Food for today's plate."),
+      B(k + "-walk", "13:45", "14:00", "body", "Short walk outside", "Daylight resets the afternoon. No calls.", { cal: false })
+    ]),
+    B(k + "-w3", "14:00", "16:00", "work", w[2][0], w[2][1]),
+    B(k + "-snack", "16:00", "16:15", "food", "Snack + stretch", "Fruit and nuts, stand up, refill water.", { cal: false }),
+    B(k + "-w4", "16:15", "18:00", "work", w[3][0], w[3][1]),
+    B(k + "-stop", "18:00", "18:15", "ritual", "STOP WORK", "Shutdown ritual: write tomorrow's top 3, close the laptop, send one message to a friend. Work ends here.", { tag: "stop", alarm: 10 })
+  ];
+  const night = (k, s) => [
+    B(k + "-wind", s || "22:00", "23:00", "rest", "Wind down", "Screens off by 22:30. Pack the gym bag, read a book.", { alarm: 5 }),
+    B(k + "-sleep", "23:00", "24:00", "rest", "Sleep", "8 hours. Same time every weekday, because the gym starts at 08:00.", { cal: false })
+  ];
+  const dinner = (k, s, e) => B(k + "-dinner", s || "20:00", e || "20:45", "food", "Dinner", "See Food for tonight.");
+
+  const days = {
+    mon: { name: "Monday", short: "Mon", theme: "Build week momentum", blocks: [
+      ...morning("mon", "Strength A", "Push + core: bench or push-ups, overhead press, dips, plank."),
+      ...workday("mon", [
+        ["SimasiaAI deep work: pipeline & week plan", "Proposals and the week's sales plan. Notifications off, door closed."],
+        ["SimasiaAI: client calls & needs analysis", "Listen first: what does this organisation actually need?"],
+        ["SimasiaAI: delivery sync with Stergios & team", "Weekly priorities, blockers, go-live dates."],
+        ["SimasiaAI: email & admin, batched", "Inbox to zero, invoices, scheduling. Shallow work lives here."]
+      ]),
+      B("mon-m1", "18:30", "20:00", "deep", "Mastery: applications", "Target 2 per week toward 10 by 17 Nov. Tailor the CV (industry or academic switch).", { tag: "mastery", alarm: 10 }),
+      dinner("mon"),
+      B("mon-eve", "20:45", "22:00", "rest", "Free evening", "Music, a series, cooking. Nothing to optimise.", { cal: false }),
+      ...night("mon")
+    ]},
+    tue: { name: "Tuesday", short: "Tue", theme: "Clients and friends", blocks: [
+      ...morning("tue", "Cardio & mobility", "30 min run or swim, then 20 min mobility. Light day for the muscles."),
+      ...workday("tue", [
+        ["SimasiaAI deep work: proposals & contracts", "Write and send. Every open deal gets a next step and a date."],
+        ["SimasiaAI: client calls & follow-ups", "Calls and replies. Write down their exact words."],
+        ["SimasiaAI: operations", "Delivery checklists, contracts, the part-time agreement draft."],
+        ["SimasiaAI: email & admin, batched", "Close the loops from today's calls."]
+      ]),
+      B("tue-free", "18:15", "19:00", "rest", "Transition", "Shower, change, phone back to people mode.", { cal: false }),
+      B("tue-friends", "19:00", "22:00", "people", "Friends night", "Dinner or coffee with a friend. Phone face down. Ask one real question.", { tag: "friends" }),
+      ...night("tue")
+    ]},
+    wed: { name: "Wednesday", short: "Wed", theme: "Grow the pipeline, write", blocks: [
+      ...morning("wed", "Strength B", "Pull + legs: rows, pull-ups or lat pulldown, squats, lunges."),
+      ...workday("wed", [
+        ["SimasiaAI deep work: prospecting", "New organisations: patient associations, disability groups, institutions."],
+        ["SimasiaAI: calls & demos", "Demo, listen, write down their exact words."],
+        ["SimasiaAI: client work", "Requirements, RAG design choices, human-centred evaluation."],
+        ["SimasiaAI: email & admin, batched", "Inbox to zero."]
+      ]),
+      B("wed-m1", "18:30", "20:00", "deep", "Mastery: study + write a post", "Behavioural science reading, then one post (Build, Research, Speak or Write). Target 2 posts by 17 Nov.", { tag: "mastery", alarm: 10 }),
+      dinner("wed"),
+      B("wed-eve", "20:45", "22:00", "create", "Read for pleasure", "Fiction, poetry, or the book you're studying. No laptop."),
+      ...night("wed")
+    ]},
+    thu: { name: "Thursday", short: "Thu", theme: "Deliver, then speak and write", blocks: [
+      ...morning("thu", "Easy cardio or yoga", "Easy run, swim or a yoga class. For the head as much as the body."),
+      ...workday("thu", [
+        ["SimasiaAI deep work: client delivery", "Test the assistants like a user would. What did they misunderstand?"],
+        ["SimasiaAI: client calls", "Check-ins with live clients."],
+        ["SimasiaAI: operations", "Contracts, delivery dates, team support."],
+        ["SimasiaAI: close the week's loops", "Everything opened this week gets an answer."]
+      ]),
+      B("thu-m1", "18:30", "19:30", "deep", "Mastery: talks & conversations", "Pitch one talk (target 1 by 17 Nov). Message one person doing the work you want to do.", { tag: "mastery", alarm: 10 }),
+      B("thu-free", "19:30", "20:00", "rest", "Free", "Walk, call home, nothing planned.", { cal: false }),
+      dinner("thu"),
+      B("thu-write", "20:45", "22:00", "create", "Write: poetry", "Γράφω. Free writing, a poem, or a reflection. No editing tonight.", { tag: "write" }),
+      ...night("thu")
+    ]},
+    fri: { name: "Friday", short: "Fri", theme: "Ship, then celebrate", blocks: [
+      ...morning("fri", "Full body", "Deadlift or hip hinge, push, pull, carries. Finish the week strong."),
+      ...workday("fri", Object.assign([
+        ["SimasiaAI deep work: product & evaluation", "Ship one visible improvement to a client."],
+        ["SimasiaAI: delivery", "Demos, fixes, go-lives."],
+        ["SimasiaAI: client work", "What's left for this week's deliveries."],
+        ["SimasiaAI: weekly wrap & inbox zero", "What moved, what slipped, next week's top 3. Leave nothing for the weekend."]
+      ], { lunch: [
+        B("fri-conv", "13:00", "14:00", "people", "Lunch with someone doing the work", "Behavioural science, communication, policy. Target 4 by 17 Nov. Ask: how did you get here?", { tag: "conversation" })
+      ]})),
+      B("fri-rest", "18:15", "20:00", "rest", "Rest before the night", "Shower, nap, music.", { cal: false }),
+      dinner("fri"),
+      B("fri-out", "21:00", "24:00", "people", "Friends / night out", "Social night. Enjoy it fully, work is closed.", { tag: "friends" })
+    ]},
+    sat: { name: "Saturday", short: "Sat", theme: "No work. Body, people, play", blocks: [
+      B("sat-wake", "08:30", "09:00", "ritual", "Slow wake", "No alarm if you can. Water, coffee, window.", { cal: false }),
+      B("sat-bf", "09:00", "10:00", "food", "Long breakfast", "See Food."),
+      B("sat-out", "10:00", "12:30", "body", "Outdoors: hike, swim or long walk", "Mountain, sea or a new neighbourhood. A bonus training day.", { tag: "gym" }),
+      B("sat-lunch", "13:00", "14:30", "food", "Lunch with friends or family", "Taverna or home. Share plates."),
+      B("sat-rest", "14:30", "16:30", "rest", "Rest", "Nap, read, music.", { cal: false }),
+      B("sat-hobby", "17:00", "19:00", "create", "Hobby: culture & curiosity", "Museum, cinema, theatre, a bookshop, or a new skill."),
+      B("sat-night", "20:00", "24:00", "people", "Evening with friends", "Dinner out or at home. Invest in the people who matter.", { tag: "friends" })
+    ]},
+    sun: { name: "Sunday", short: "Sun", theme: "Write, prepare, review", blocks: [
+      B("sun-wake", "08:30", "09:00", "ritual", "Slow wake", "Water, coffee, window.", { cal: false }),
+      B("sun-bf", "09:00", "09:30", "food", "Breakfast", "See Food."),
+      B("sun-write", "09:30", "11:00", "create", "Write: poetry & surprise notebook", "What surprised you this week? What did you enjoy? Notes feed your flow.", { tag: "write" }),
+      B("sun-prep", "11:00", "12:30", "food", "Market + meal prep", "Cook one pot of legumes and one protein for Mon–Wed lunches."),
+      B("sun-family", "13:00", "14:30", "people", "Family lunch / call home", "Call family in Crete if you're apart.", { tag: "friends" }),
+      B("sun-free", "14:30", "17:00", "rest", "Free afternoon", "Friends, sea, rest. Your choice.", { cal: false }),
+      B("sun-review", "17:00", "18:00", "deep", "Weekly review, money & plan", "Open Goals: score the week. Money: floor and target, savings toward 6 months. Check next week's calendar and pick 3 outcomes.", { tag: "review", alarm: 10 }),
+      B("sun-walk", "18:30", "19:30", "body", "Evening walk", "Clear the head before the week."),
+      dinner("sun"),
+      B("sun-read", "21:00", "22:00", "create", "Read", "A book, not a feed."),
+      ...night("sun")
+    ]}
+  };
+
+  // Meals: Mediterranean, Greek kitchen. Breakfast comes after the 08:00 gym on weekdays.
+  const meals = {
+    mon: { b: "Greek yogurt, honey, walnuts, berries + 2 boiled eggs", l: "Revithia (chickpeas) with lemon, big salad, feta, wholegrain bread", s: "Apple + a handful of almonds", d: "Grilled chicken, roasted vegetables, rice" },
+    tue: { b: "2–3 eggs, wholegrain toast, tomato, olive oil", l: "Fakes (lentils) with a splash of vinegar, salad, olives", s: "Yogurt with fruit", d: "Out with friends: grilled fish or meat + salad, share plates" },
+    wed: { b: "Oats with milk, banana, cinnamon, a spoon of tahini + yogurt", l: "Baked fish, horta (greens), potatoes", s: "Pear + walnuts", d: "Homemade souvlaki: pita, tzatziki, salad" },
+    thu: { b: "Yogurt bowl with honey, fruit, oats", l: "Fasolada (bean soup), sardines or feta, bread", s: "Carrots + hummus", d: "Vegetable omelette, salad, wholegrain bread" },
+    fri: { b: "Eggs, avocado or tomato toast", l: "Lunch out with your conversation: grilled protein + salad", s: "Fruit + nuts", d: "Salmon or chicken, quinoa, greens (before going out)" },
+    sat: { b: "Strapatsada (eggs with tomato), bread, coffee", l: "Taverna: mezedes to share, grilled protein, horiatiki", s: "Fruit", d: "Out with friends, or a light salad with cheese and bread" },
+    sun: { b: "Yogurt, honey, fruit, a koulouri", l: "Family lunch: oven chicken & potatoes, salad", s: "Nuts or fruit", d: "Light: soup or salad; prepare Monday's lunch" }
+  };
+  const foodRules = [
+    "Before the 08:00 gym: something small and easy (banana, toast with honey) and water.",
+    "After the gym: protein breakfast within an hour (eggs, yogurt).",
+    "Half the plate vegetables, a quarter protein, a quarter whole grains or legumes.",
+    "Olive oil as the main fat. Legumes 3 times a week, fish twice.",
+    "Water 2 litres a day; a glass at wake-up and before every meal.",
+    "Coffee before 14:00 so it doesn't steal your sleep.",
+    "Alcohol only on social nights, and slowly.",
+    "Last meal at least 2 hours before sleep."
+  ];
+
+  const cats = {
+    ritual: "Ritual", food: "Food", deep: "Mastery", work: "SimasiaAI",
+    body: "Body", people: "People", create: "Create", rest: "Rest"
+  };
+
+  const goals = {
+    lifeQuestion: "How can people live better lives, and what must we understand about ourselves, how we communicate and how we decide, to achieve it together?",
+    lifeQuestionGr: "Πώς μπορεί ο άνθρωπος να ζήσει καλύτερα;",
+    sprint: { end: "2026-11-17", items: [
+      { k: "applications", t: "Applications sent", target: 10 },
+      { k: "conversations", t: "Conversations with people doing the work", target: 4 },
+      { k: "talk", t: "Talk pitched", target: 1 },
+      { k: "posts", t: "Posts published", target: 2 },
+      { k: "agreement", t: "SimasiaAI part-time agreement written", target: 1 }
+    ]},
+    weekly: [
+      { tag: "gym", t: "Training sessions", target: 5 },
+      { tag: "mastery", t: "Mastery evenings done", target: 3 },
+      { tag: "stop", t: "Stopped work at 18:00", target: 5 },
+      { tag: "friends", t: "Time with friends & family", target: 3 },
+      { tag: "write", t: "Writing sessions", target: 2 },
+      { tag: "conversation", t: "Conversation with a practitioner", target: 1 },
+      { tag: "review", t: "Weekly review", target: 1 }
+    ],
+    stages: [
+      { name: "Mastery", when: "Now – 2029", age: "28–31", moves: "Paid role close to people, behavioural science study (Track A) or funded PhD (Track B), talks, writing, SimasiaAI 20%.", gate: "Mastery proven, 6 months of savings" },
+      { name: "Voice", when: "2030 – 2033", age: "32–35", moves: "Lead a team or practice, a Greek book on people, a podcast of conversations, invited keynotes, advise policy.", gate: "Invited to set standards, 12 months saved" },
+      { name: "Public life", when: "2034 – 2036", age: "36–38", moves: "Decide on public office or found an institute, mentor, keep writing.", gate: "Review the whole plan in October 2036" }
+    ],
+    decision: { date: "2027-08-31", t: "Track A or Track B", d: "Take Track B only with a fully funded, MSCA-level offer on your question. Otherwise Track A." }
+  };
+
+  // One-off list for today, from your plan "Tomorrow (Sunday 18 October)"
+  const oneOffs = { "2026-10-18": [
+    { id: "o1", t: "Write the life question by hand" },
+    { id: "o2", t: "Map your money: the floor and the target" },
+    { id: "o3", t: "Make the loved / hated lists" },
+    { id: "o4", t: "Block next week's calendar (import the routine)" },
+    { id: "o5", t: "Draft the message to Stergios" },
+    { id: "o6", t: "Merge website PR #3" },
+    { id: "o7", t: "Start the surprise notebook" },
+    { id: "o8", t: "Stop working at 18:00" }
+  ]};
+
+  // ---------- Apple Calendar (.ics) ----------
+  const ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+  // First occurrence of each weekday: Sun 18 Oct 2026 (today), then Mon 19 ... Sat 24 Oct.
+  const FIRST = { sun: "20261018", mon: "20261019", tue: "20261020", wed: "20261021", thu: "20261022", fri: "20261023", sat: "20261024" };
+  const addDay = (ymd) => { const d = new Date(Date.UTC(+ymd.slice(0, 4), +ymd.slice(4, 6) - 1, +ymd.slice(6, 8) + 1)); return d.toISOString().slice(0, 10).replace(/-/g, ""); };
+  const esc = (s) => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  const fold = (line) => {
+    // fold at 74 UTF-8 octets, never splitting a character (RFC 5545)
+    const bytes = (c) => { const n = c.codePointAt(0); return n < 0x80 ? 1 : n < 0x800 ? 2 : n < 0x10000 ? 3 : 4; };
+    const out = []; let cur = "", len = 0;
+    for (const ch of line) {
+      const b = bytes(ch);
+      if (len + b > 74) { out.push(cur); cur = " "; len = 1; }
+      cur += ch; len += b;
+    }
+    out.push(cur); return out.join("\r\n");
+  };
+  function makeICS() {
+    const L = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Dimitris Papadakis//Daily Rhythm//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "X-WR-CALNAME:Daily Rhythm", "X-WR-TIMEZONE:Europe/Athens",
+      "BEGIN:VTIMEZONE", "TZID:Europe/Athens",
+      "BEGIN:DAYLIGHT", "TZOFFSETFROM:+0200", "TZOFFSETTO:+0300", "TZNAME:EEST", "DTSTART:19700329T030000", "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU", "END:DAYLIGHT",
+      "BEGIN:STANDARD", "TZOFFSETFROM:+0300", "TZOFFSETTO:+0200", "TZNAME:EET", "DTSTART:19701025T040000", "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU", "END:STANDARD",
+      "END:VTIMEZONE"
+    ];
+    const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+    for (const k of ORDER) {
+      for (const b of days[k].blocks) {
+        if (!b.cal) continue;
+        const d0 = FIRST[k];
+        const st = d0 + "T" + b.s.replace(":", "") + "00";
+        const en = b.e === "24:00" ? addDay(d0) + "T000000" : d0 + "T" + b.e.replace(":", "") + "00";
+        L.push("BEGIN:VEVENT", "UID:rhythm-" + b.id + "@dimitrispapadakis.gr", "DTSTAMP:" + stamp,
+          "DTSTART;TZID=Europe/Athens:" + st, "DTEND;TZID=Europe/Athens:" + en, "RRULE:FREQ=WEEKLY",
+          fold("SUMMARY:" + esc(b.t)), fold("DESCRIPTION:" + esc(cats[b.cat] + " · " + b.d)),
+          "CATEGORIES:" + esc(cats[b.cat]), "TRANSP:" + (b.cat === "work" || b.cat === "deep" ? "OPAQUE" : "TRANSPARENT"));
+        if (b.alarm) L.push("BEGIN:VALARM", "ACTION:DISPLAY", fold("DESCRIPTION:" + esc(b.t)), "TRIGGER:-PT" + b.alarm + "M", "END:VALARM");
+        L.push("END:VEVENT");
+      }
+    }
+    const once = [
+      { id: "sprint-review", d: "20261117", s: "170000", e: "180000", t: "30-day sprint review", desc: "10 applications, 4 conversations, 1 talk pitched, 2 posts, SimasiaAI agreement. Score it and set the next 30 days." },
+      { id: "decision-2027", d: "20270831", s: "100000", e: "110000", t: "Decision: Track A or Track B", desc: goals.decision.d }
+    ];
+    for (const o of once) {
+      L.push("BEGIN:VEVENT", "UID:rhythm-" + o.id + "@dimitrispapadakis.gr", "DTSTAMP:" + stamp,
+        "DTSTART;TZID=Europe/Athens:" + o.d + "T" + o.s, "DTEND;TZID=Europe/Athens:" + o.d + "T" + o.e,
+        fold("SUMMARY:" + esc(o.t)), fold("DESCRIPTION:" + esc(o.desc)),
+        "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + esc(o.t), "TRIGGER:-P1D", "END:VALARM", "END:VEVENT");
+    }
+    L.push("END:VCALENDAR");
+    return L.join("\r\n") + "\r\n";
+  }
+
+  const PLAN = { days, meals, foodRules, cats, goals, oneOffs, ORDER, makeICS };
+  if (typeof module !== "undefined" && module.exports) module.exports = PLAN; else root.PLAN = PLAN;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+(() => {
+"use strict";
+// ================= utilities =================
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pad = (n) => String(n).padStart(2, "0");
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const ymd = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const today = () => ymd(new Date());
+const parseYmd = (s) => { const [y, m, d] = String(s).split("-").map(Number); return new Date(y, (m || 1) - 1, d || 1); };
+const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
+const daysUntil = (s) => Math.round((parseYmd(s) - parseYmd(today())) / 86400000);
+const monthKey = (s) => String(s).slice(0, 7);
+const nowMin = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
+const toMin = (hm) => { const [h, m] = String(hm).split(":").map(Number); return h * 60 + (m || 0); };
+const weekStart = (s) => { const d = parseYmd(s); const dow = (d.getDay() + 6) % 7; d.setDate(d.getDate() - dow); return ymd(d); };
+const fmtDay = (s) => parseYmd(s).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+const fmtShort = (s) => parseYmd(s).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+const monthName = (k) => parseYmd(k + "-01").toLocaleDateString("en-GB", { month: "short" });
+const relDay = (s) => { const n = daysUntil(s); if (n === 0) return "today"; if (n === 1) return "tomorrow"; if (n === -1) return "yesterday"; if (n < 0) return `${-n} days late`; if (n < 7) return `in ${n} days`; return fmtShort(s); };
+const num = (v) => { const n = parseFloat(String(v == null ? "" : v).replace(",", ".")); return isFinite(n) ? n : 0; };
+const eur = (n, dec) => new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR", minimumFractionDigits: dec ? 2 : 0, maximumFractionDigits: dec ? 2 : 0 }).format(n || 0);
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const decode = (s) => { const t = document.createElement("textarea"); t.innerHTML = String(s || ""); return t.value; };
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch (_) { return null; } };
+const lsSet = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (_) {} };
+const words = (s) => (String(s || "").trim().match(/\S+/g) || []).length;
+const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+const KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+const P = window.PLAN || null;
+
+// ================= life areas & record types =================
+const AREAS = {
+  simasia: "SimasiaAI", career: "Career & PhD", money: "Money", mind: "Mind", create: "Create", body: "Body", life: "Life"
+};
+const ac = (a) => `--ac:var(--a-${AREAS[a] ? a : "life"})`;
+const opt = (pairs) => pairs.map((p) => (Array.isArray(p) ? p : [p, p[0].toUpperCase() + p.slice(1)]));
+const TASK_STATUS = opt([["inbox", "Inbox"], ["next", "Next"], ["doing", "Doing"], ["waiting", "Waiting"], ["done", "Done"]]);
+const PRIO = opt([["1", "High"], ["2", "Normal"], ["3", "Low"]]);
+const LEAD_STAGES = opt([["todo", "To contact"], ["emailed", "Emailed"], ["followup", "Follow-up"], ["replied", "Replied"], ["meeting", "Meeting"], ["proposal", "Proposal"], ["won", "Won"], ["lost", "Lost"]]);
+const INV_STATUS = opt([["draft", "Draft"], ["sent", "Sent"], ["paid", "Paid"]]);
+const OPP_STATUS = opt([["idea", "Idea"], ["research", "Researching"], ["contact", "Contacted"], ["applying", "Applying"], ["submitted", "Submitted"], ["interview", "Interview"], ["offer", "Offer"], ["rejected", "Rejected"], ["closed", "Closed"]]);
+const OPP_KIND = opt([["phd", "PhD"], ["job", "Job"], ["program", "Programme"], ["fellowship", "Fellowship"], ["talk", "Talk / paper"]]);
+const PROJ_STAGE = opt([["idea", "Idea"], ["exploring", "Exploring"], ["active", "Active"], ["parked", "Parked"], ["done", "Done"]]);
+const BOOK_STATUS = opt([["toread", "To read"], ["reading", "Reading"], ["done", "Finished"]]);
+const TXN_KIND = opt([["expense", "Expense"], ["income", "Income"]]);
+const TXN_CATS = ["SimasiaAI", "Salary", "Freelance", "Rent & home", "Food", "Transport", "Gym & health", "Books & learning", "Going out", "Travel", "Subscriptions", "Family", "Savings", "Taxes", "Other"];
+const OFFER_STATUS = opt([["idea", "Idea"], ["shaping", "Shaping"], ["offered", "Offered"], ["live", "Live"]]);
+const WRITE_KIND = opt([["poem", "Poem"], ["prose", "Prose"], ["essay", "Essay / post"], ["idea", "Idea"]]);
+const WRITE_STATUS = opt([["draft", "Draft"], ["revising", "Revising"], ["done", "Finished"]]);
+
+// field: [key, label, kind, options/extra]
+const F = (k, l, t, o) => ({ k, l, t, o });
+const TYPES = {
+  task: { label: "Task", area: "life", fields: [F("area", "Area", "area"), F("status", "Status", "select", TASK_STATUS), F("due", "Due", "date"), F("prio", "Priority", "select", PRIO), F("est", "Minutes it takes", "number"), F("today", "On today's list", "check"), F("step", "Next tiny step", "text", { wide: 1, ph: "The first 2-minute action" }), F("steps", "Steps", "checklist"), F("notes", "Notes", "textarea"), F("link", "Link", "url")] },
+  lead: { label: "Lead", area: "simasia", titleLabel: "Organisation", fields: [F("contact", "Contact person", "text"), F("email", "Email", "email"), F("stage", "Stage", "select", LEAD_STAGES), F("followUp", "Follow up on", "date"), F("lang", "Email language", "select", [["el", "Greek"], ["en", "English"]]), F("source", "Where it came from", "text"), F("notes", "What they need / notes", "textarea")] },
+  invoice: { label: "Invoice", area: "simasia", titleLabel: "Client", fields: [F("number", "Invoice no.", "text"), F("amount", "Amount (€)", "number"), F("status", "Status", "select", INV_STATUS), F("issued", "Issued", "date"), F("due", "Due", "date"), F("email", "Client email", "email"), F("paidOn", "Paid on", "date"), F("notes", "Notes", "textarea")] },
+  meeting: { label: "Meeting", area: "simasia", titleLabel: "Meeting", fields: [F("area", "Area", "area"), F("date", "Date", "date"), F("time", "Time", "time"), F("with", "With", "text"), F("goal", "What I want from it", "textarea", { wide: 1 }), F("questions", "Questions to ask", "textarea", { wide: 1 }), F("materials", "Bring / send before", "textarea", { wide: 1 }), F("prep", "Prep notes", "textarea", { wide: 1 }), F("notes", "What happened / follow-ups", "textarea", { wide: 1 })] },
+  offering: { label: "Offering idea", area: "simasia", fields: [F("product", "Product", "select", opt([["", "—"], ["flow", "fλow"], ["dialogos", "DialogosAI"], ["praxis", "PraxisAI"], ["metron", "MetronAI"], ["new", "New"]])), F("status", "Status", "select", OFFER_STATUS), F("who", "For whom", "text"), F("price", "Price idea", "text"), F("notes", "Thinking", "textarea")] },
+  event: { label: "Event", area: "life", fields: [F("area", "Area", "area"), F("date", "Date", "date"), F("time", "Time", "time"), F("place", "Place", "text"), F("notes", "Notes", "textarea")] },
+  txn: { label: "Transaction", area: "money", titleLabel: "Description", fields: [F("kind", "Type", "select", TXN_KIND), F("amount", "Amount (€)", "number"), F("date", "Date", "date"), F("cat", "Category", "select", TXN_CATS.map((c) => [c, c])), F("notes", "Notes", "textarea")] },
+  opp: { label: "Opportunity", area: "career", fields: [F("kind", "Kind", "select", OPP_KIND), F("org", "Where", "text"), F("deadline", "Deadline", "date"), F("status", "Status", "select", OPP_STATUS), F("fit", "Fit (1–5)", "select", opt([["", "—"], ["5", "5 · perfect"], ["4", "4"], ["3", "3"], ["2", "2"], ["1", "1 · weak"]])), F("next", "Next step", "text", { wide: 1 }), F("link", "Link", "url"), F("notes", "Notes", "textarea")] },
+  path: { label: "Career path", area: "career", fields: [F("why", "Why it pulls me", "textarea", { wide: 1 }), F("against", "What worries me", "textarea", { wide: 1 }), F("next", "Smallest next test", "text", { wide: 1 })] },
+  book: { label: "Book", area: "mind", fields: [F("author", "Author", "text"), F("status", "Status", "select", BOOK_STATUS), F("pages", "Pages", "number"), F("page", "I'm on page", "number"), F("rating", "Rating (1–5)", "select", opt([["", "—"], ["5", "5"], ["4", "4"], ["3", "3"], ["2", "2"], ["1", "1"]])), F("notes", "Why I'm reading it", "textarea")] },
+  booknote: { label: "Book note", area: "mind", titleLabel: "Insight or quote", titleArea: 1, fields: [F("book", "Book", "book"), F("page", "Page", "number"), F("notes", "My own words", "textarea")] },
+  therapy: { label: "Therapy session", area: "mind", titleLabel: "Main lesson", titleArea: 1, fields: [F("date", "Date", "date"), F("practice", "What I practise this week", "textarea", { wide: 1 }), F("feeling", "How I felt", "text"), F("notes", "Notes", "textarea")] },
+  lesson: { label: "Lesson", area: "mind", fields: [F("source", "From (course, person, life)", "text"), F("date", "Date", "date"), F("notes", "Takeaway", "textarea")] },
+  note: { label: "Note", area: "mind", fields: [F("area", "Area", "area"), F("notes", "Note", "textarea")] },
+  writing: { label: "Writing", area: "create", fields: [F("kind", "Kind", "select", WRITE_KIND), F("status", "Status", "select", WRITE_STATUS), F("body", "Text", "textarea", { rows: 10 })] },
+  project: { label: "Project", area: "create", fields: [F("area", "Area", "area"), F("stage", "Stage", "select", PROJ_STAGE), F("why", "Why it matters", "textarea", { wide: 1 }), F("next", "Next step", "text", { wide: 1 }), F("notes", "Notes", "textarea")] },
+  hobby: { label: "Hobby", area: "create", fields: [F("lastDone", "Last time I did it", "date"), F("notes", "Notes", "textarea")] },
+  goal: { label: "Goal", area: "life", fields: [F("area", "Area", "area"), F("current", "Now", "number"), F("target", "Target", "number"), F("unit", "Unit", "text", { ph: "applications, €, books…" }), F("deadline", "By", "date"), F("notes", "Why", "textarea")] },
+  habit: { label: "Habit", area: "body", fields: [F("area", "Area", "area"), F("cue", "After I… (cue)", "text", { wide: 1, ph: "After I pour my coffee" }), F("perWeek", "Times per week", "number"), F("notes", "Why / reward", "textarea")] },
+  capture: { label: "Captured thought", area: "life", titleLabel: "Thought", titleArea: 1, fields: [] }
+};
+const DEFAULTS = {
+  task: { status: "next", prio: "2" }, lead: { stage: "todo", lang: "el" }, invoice: { status: "draft" }, offering: { status: "idea" },
+  txn: { kind: "expense", cat: "Other" }, opp: { kind: "phd", status: "idea" }, book: { status: "toread" }, writing: { kind: "poem", status: "draft", body: "" },
+  project: { stage: "idea" }, goal: { current: 0, target: 1 }, habit: { perWeek: 7, log: {} }
+};
+function isOpen(it) {
+  switch (it.type) {
+    case "task": return it.status !== "done";
+    case "lead": return it.stage !== "won" && it.stage !== "lost";
+    case "invoice": return it.status !== "paid";
+    case "opp": return !["rejected", "closed"].includes(it.status);
+    case "project": return it.stage !== "done";
+    case "book": return it.status !== "done";
+    case "capture": return true;
+    default: return true;
+  }
+}
+// The date that puts an item on the calendar / deadline list
+function dateOf(it) {
+  if (!isOpen(it) && !["meeting", "event"].includes(it.type)) return null;
+  switch (it.type) {
+    case "task": return it.due || null;
+    case "lead": return ["emailed", "followup", "replied", "proposal", "todo"].includes(it.stage) ? it.followUp || null : null;
+    case "invoice": return it.status === "sent" ? it.due || null : null;
+    case "meeting": case "event": return it.date || null;
+    case "opp": return it.deadline || null;
+    case "goal": return it.deadline || null;
+    default: return null;
+  }
+}
+const areaOf = (it) => it.area || (TYPES[it.type] || {}).area || "life";
+
+// ================= store: claude.ai sync, with on-device fallback =================
+const S = { items: new Map(), boards: new Map(), threads: new Map(), meta: new Map(), mode: "loading", loaded: false, cached: true, err: null };
+const COLS = ["items", "boards", "threads", "meta"];
+const LOCAL = "praxis-local-v1";
+let DB = null;
+const dirty = new Set(), inflight = new Set(), again = new Set(), timers = new Map();
+
+function loadLocal() {
+  try {
+    const o = JSON.parse(lsGet(LOCAL) || "null");
+    if (o) for (const c of COLS) S[c] = new Map(Object.entries(o[c] || {}));
+  } catch (_) {}
+}
+let localTimer = null;
+function saveLocal() {
+  clearTimeout(localTimer);
+  localTimer = setTimeout(() => {
+    const o = {}; for (const c of COLS) o[c] = Object.fromEntries(S[c]);
+    lsSet(LOCAL, JSON.stringify(o));
+  }, 250);
+}
+function commit(col, id, debounce) {
+  const path = col + "/" + id;
+  dirty.add(path);
+  clearTimeout(timers.get(path)); timers.delete(path);
+  if (debounce) timers.set(path, setTimeout(() => flush(col, id), 700));
+  else flush(col, id);
+}
+async function flush(col, id) {
+  const path = col + "/" + id;
+  timers.delete(path);
+  if (S.mode !== "cloud") { saveLocal(); dirty.delete(path); return; }
+  if (inflight.has(path)) { again.add(path); return; }
+  inflight.add(path);
+  try {
+    do {
+      again.delete(path);
+      const body = S[col].get(id);
+      await writeOnce(path, body);
+    } while (again.has(path));
+  } catch (e) {
+    writeFailed(e);
+  } finally {
+    inflight.delete(path);
+    if (!timers.has(path)) dirty.delete(path);
+  }
+}
+async function writeOnce(path, body) {
+  const ref = DB.doc(path);
+  try { body ? await ref.set(clone(body)) : await ref.delete(); }
+  catch (e) {
+    if (e && e.code === "unavailable") { await new Promise((r) => setTimeout(r, 600 + Math.random() * 900)); body ? await ref.set(clone(body)) : await ref.delete(); }
+    else throw e;
+  }
+}
+function writeFailed(e) {
+  const c = e && e.code;
+  if (c === "quota_exceeded") toast("Storage is full. Delete old items (done tasks, old captures) to save more.");
+  else if (c === "invalid_argument") toast("That change couldn't be saved (too large or not allowed).");
+  else if (c === "revoked") { S.err = "revoked"; renderAll(); }
+  else toast("Couldn't save just now. Your change is kept on screen; try again in a moment.");
+}
+// public write API
+function upsert(col, id, body, debounce) { body.updated = Date.now(); S[col].set(id, body); commit(col, id, debounce); }
+function del(col, id) { S[col].delete(id); commit(col, id, false); }
+const item = (id) => S.items.get(id);
+function setField(id, k, v, debounce) { const it = item(id); if (!it) return; it[k] = v; upsert("items", id, it, debounce); }
+function createItem(type, fields) {
+  const id = uid();
+  const body = Object.assign({ type, title: "", area: (TYPES[type] || {}).area || "life", created: Date.now() }, clone(DEFAULTS[type] || {}), fields || {});
+  upsert("items", id, body);
+  return id;
+}
+const meta = (id) => S.meta.get(id) || {};
+function setMeta(id, patch, debounce) { const m = Object.assign({}, meta(id), patch); upsert("meta", id, m, debounce); }
+
+async function initStore() {
+  let db = null;
+  try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (_) { db = null; }
+  if (!db) { S.mode = "local"; loadLocal(); S.loaded = true; S.cached = false; renderAll(); return; }
+  DB = db; S.mode = "cloud";
+  const got = new Set();
+  for (const col of COLS) {
+    try {
+      DB.collection(col).onSnapshot((snap) => {
+        const m = new Map();
+        for (const d of snap.docs) {
+          const p = col + "/" + d.id;
+          if (dirty.has(p)) { if (S[col].has(d.id)) m.set(d.id, S[col].get(d.id)); }
+          else { const v = d.data(); if (v) m.set(d.id, clone(v)); }
+        }
+        for (const [id, v] of S[col]) if (!m.has(id) && dirty.has(col + "/" + id)) m.set(id, v);
+        S[col] = m;
+        got.add(col);
+        if (got.size === COLS.length) S.loaded = true;
+        S.cached = !!snap.metadata.fromCache;
+        scheduleRender();
+      }, (e) => { S.err = (e && e.code) || "unavailable"; S.loaded = true; scheduleRender(); });
+    } catch (e) { S.err = "unavailable"; S.loaded = true; }
+  }
+  setTimeout(() => { if (!S.loaded) { S.loaded = true; scheduleRender(); } }, 8000);
+}
+
+// ================= Claude, Gmail, downloads =================
+const CAP = { sample: null, mcp: null, downloads: null, perms: null, owner: true };
+async function initCaps() {
+  if (!window.claude || !window.claude.use) return;
+  const tryUse = (n) => window.claude.use(n).catch(() => null);
+  const [sample, mcp, downloads, perms, user] = await Promise.all(["sample", "mcp", "downloads", "permissions", "user"].map(tryUse));
+  Object.assign(CAP, { sample, mcp, downloads, perms });
+  if (user) { try { CAP.owner = await user.canEdit(); } catch (_) {} }
+  renderAll();
+  if (mcp && perms) {
+    try { const st = await perms.state("mcp:Gmail"); if (st === "granted") loadInbox(false); } catch (_) {}
+  }
+}
+const SAMPLE_COPY = {
+  not_granted: "Claude isn't allowed for PraxisAI yet. Allow it when claude.ai asks, or in the artifact's permissions.",
+  sampling_disabled: "Claude isn't available on this account.", not_declared: "Claude isn't available here.",
+  capability_disabled: "Claude isn't available in this view.", capability_removed: "Claude isn't available in this view.",
+  rate_limited: "Too many requests right now. Wait a minute and try again.", session_expired: "Sign in to claude.ai again, then retry.",
+  refused: "Claude declined that request. Try rewording it.", empty_completion: "Claude returned nothing. Try asking for less.",
+  invalid_json: "Claude's answer couldn't be read. Try again.", prompt_too_large: "That's too much text at once. Try a smaller piece.",
+  upstream_error: "Connection hiccup. Try again."
+};
+const sampleErr = (e) => SAMPLE_COPY[e && e.code] || SAMPLE_COPY.upstream_error;
+function gmailErr(e) {
+  const c = e && e.code;
+  return ({
+    needs_reauth: "Gmail needs reconnecting: claude.ai → Settings → Connectors → Gmail.",
+    server_not_connected: "Gmail isn't connected. Add it in claude.ai → Settings → Connectors.",
+    selection_required: "Choose which Gmail account to use when claude.ai asks.",
+    not_in_manifest: "Gmail is turned off for PraxisAI. Allow it from this page's permissions.",
+    approval_required: "Gmail needs your approval. Tap the button again and choose Allow.",
+    blocked_by_policy: "Your organisation blocks this Gmail action.",
+    server_unavailable: "Gmail didn't answer. Try again in a minute.",
+    tool_error: "Gmail reported a problem: " + ((e && e.message) || "unknown"),
+    capability_disabled: "Gmail isn't available in this view. Open PraxisAI on claude.ai.",
+    not_granted: "Gmail isn't available in this view. Open PraxisAI on claude.ai."
+  })[c] || "Gmail had a problem. Try again.";
+}
+async function gmail(tool, input) {
+  if (!CAP.mcp) throw { code: "capability_disabled" };
+  const r = await CAP.mcp.callTool("Gmail", tool, input);
+  return r && r.payload;
+}
+
+// Short context about Dimitris for Claude prompts (kept small)
+function lifeContext() {
+  const open = [...S.items.values()].filter(isOpen);
+  const top = open.filter((i) => i.type === "task").sort(byUrgency).slice(0, 8).map((t) => `- ${t.title}${t.due ? " (due " + t.due + ")" : ""} [${AREAS[areaOf(t)]}]`).join("\n");
+  const dl = deadlines(30).slice(0, 8).map(({ it, d }) => `- ${d}: ${it.title} (${TYPES[it.type].label})`).join("\n");
+  const m = moneySnapshot();
+  const goals = [...S.items.values()].filter((i) => i.type === "goal").map((g) => `- ${g.title}: ${g.current || 0}/${g.target || 0} ${g.unit || ""}`).join("\n");
+  const about = meta("settings").aboutMe || "About me: (no profile yet; add one in Settings).";
+  return `${about}
+Today is ${fmtDay(today())}.
+Top open tasks:
+${top || "- none"}
+Upcoming deadlines:
+${dl || "- none"}
+Goals:
+${goals || "- none"}
+Money this month: income ${eur(m.inc)}, spent ${eur(m.exp)}, unpaid invoices ${eur(m.unpaid)}.`;
+}
+
+// ================= derived data =================
+function byUrgency(a, b) {
+  const da = a.due || dateOf(a) || "9999", db_ = b.due || dateOf(b) || "9999";
+  const sa = (a.status === "doing" ? 0 : 1), sb = (b.status === "doing" ? 0 : 1);
+  return sa - sb || (da < db_ ? -1 : da > db_ ? 1 : 0) || (num(a.prio || 2) - num(b.prio || 2)) || (a.created || 0) - (b.created || 0);
+}
+const all = (type) => [...S.items.entries()].filter(([, v]) => !type || v.type === type).map(([id, v]) => Object.assign({ id }, v));
+function deadlines(days) {
+  const lim = addDays(today(), days), out = [];
+  for (const [id, it] of S.items) { const d = dateOf(it); if (d && d <= lim) out.push({ it: Object.assign({ id }, it), d }); }
+  return out.sort((a, b) => (a.d < b.d ? -1 : a.d > b.d ? 1 : 0));
+}
+function todayTasks() {
+  const t = today();
+  return all("task").filter((x) => x.status !== "done" && (x.today === true || (x.due && x.due <= t) || x.status === "doing")).sort(byUrgency);
+}
+function focusItem() {
+  const f = meta("focus").current;
+  if (f && item(f) && isOpen(item(f))) return Object.assign({ id: f }, item(f));
+  return todayTasks()[0] || all("task").filter((x) => x.status === "next").sort(byUrgency)[0] || null;
+}
+function moneySnapshot(mk) {
+  const k = mk || monthKey(today());
+  const s = meta("settings").money || {};
+  let inc = 0, exp = 0;
+  for (const it of S.items.values()) if (it.type === "txn" && monthKey(it.date || "") === k) { if (it.kind === "income") inc += num(it.amount); else exp += num(it.amount); }
+  let unpaid = 0, overdue = 0;
+  for (const it of S.items.values()) if (it.type === "invoice" && it.status !== "paid") { unpaid += num(it.amount); if (it.status === "sent" && it.due && it.due < today()) overdue += num(it.amount); }
+  const floor = num(s.floor), savings = num(s.savings);
+  return { inc, exp, net: inc - exp, unpaid, overdue, floor, target: num(s.target) || 3000, savings, runway: floor > 0 ? savings / floor : null, goalMonths: num(s.goalMonths) || 6 };
+}
+function monthsBack(n) { const out = []; const d = parseYmd(today()); d.setDate(1); for (let i = n - 1; i >= 0; i--) { const x = new Date(d); x.setMonth(d.getMonth() - i); out.push(ymd(x).slice(0, 7)); } return out; }
+function focusDays() { return meta("focusLog").days || {}; }
+function routineNow() {
+  if (!P) return null;
+  const d = new Date(), k = KEYS[d.getDay()], m = nowMin();
+  const bl = P.days[k].blocks;
+  return { day: P.days[k], cur: bl.find((b) => toMin(b.s) <= m && m < toMin(b.e)), next: bl.find((b) => toMin(b.s) > m), k };
+}
+
+// ================= small components =================
+const ICON = {
+  check: '<svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>',
+  search: '<svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+};
+const NAV_ICON = (d) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ICONS = {
+  focus: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>',
+  overview: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+  tasks: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>',
+  plan: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  simasia: '<path d="M18 4H6l6 8-6 8h12"/>',
+  money: '<path d="M4 7h16v10H4z"/><circle cx="12" cy="12" r="2.5"/><path d="M7 7v10M17 7v10"/>',
+  career: '<path d="M3 9l9-5 9 5-9 5z"/><path d="M7 11v5c3 2 7 2 10 0v-5"/>',
+  mind: '<path d="M12 5a4 4 0 0 0-8 1 4 4 0 0 0 1 7 4 4 0 0 0 7 4zM12 5a4 4 0 0 1 8 1 4 4 0 0 1-1 7 4 4 0 0 1-7 4z"/>',
+  create: '<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>',
+  goals: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  board: '<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="6" width="8" height="8" rx="1"/><rect x="6" y="13" width="8" height="8" rx="1"/>',
+  think: '<path d="M4 5h16v11H9l-5 4z"/>',
+  inbox: '<path d="M4 13l3-8h10l3 8v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>',
+  more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>'
+};
+const VIEWS_META = [
+  ["focus", "Focus", "Now"], ["overview", "Overview", "Now"],
+  ["tasks", "Tasks", "Plan"], ["plan", "Calendar", "Plan"], ["inbox", "Capture inbox", "Plan"],
+  ["simasia", "SimasiaAI", "Work"], ["career", "Career & PhD", "Work"],
+  ["money", "Money", "Life"], ["goals", "Goals & habits", "Life"], ["mind", "Mind", "Life"], ["create", "Create", "Life"],
+  ["board", "Whiteboard", "Think"], ["think", "Think with Claude", "Think"], ["settings", "Settings", "Think"]
+];
+const viewTitle = (v) => (VIEWS_META.find((x) => x[0] === v) || [, "PraxisAI"])[1];
+
+function areaChip(a) { return `<span class="chip area" style="${ac(a)}"><span class="areadot"></span>${esc(AREAS[a] || a)}</span>`; }
+function dueChip(d, label) {
+  if (!d) return "";
+  const n = daysUntil(d), cls = n < 0 ? "late" : n <= 2 ? "soon" : "";
+  return `<span class="chip ${cls}">${label ? esc(label) + " " : ""}${esc(relDay(d))}</span>`;
+}
+const labelOf = (opts, v) => { const o = (opts || []).find((x) => x[0] === v); return o ? o[1] : v || ""; };
+function tick(id, on, label) {
+  return `<button class="tick" data-act="toggleDone" data-id="${id}" aria-pressed="${!!on}" aria-label="${on ? "Mark not done" : "Mark done"}: ${esc(label)}">${ICON.check}</button>`;
+}
+function itemRow(it, opts) {
+  opts = opts || {};
+  const done = it.type === "task" ? it.status === "done" : false;
+  const metaBits = [];
+  if (opts.area !== false) metaBits.push(areaChip(areaOf(it)));
+  if (it.type !== "task") metaBits.push(`<span class="chip">${esc(TYPES[it.type].label)}</span>`);
+  const d = dateOf(it); if (d) metaBits.push(dueChip(d));
+  if (it.type === "task" && it.status === "doing") metaBits.push('<span class="chip brand">Doing</span>');
+  if (it.type === "task" && it.status === "waiting") metaBits.push('<span class="chip">Waiting</span>');
+  if (it.type === "task" && it.prio === "1") metaBits.push('<span class="chip late">High</span>');
+  if (it.est) metaBits.push(`<span class="chip">${esc(it.est)} min</span>`);
+  if (opts.extra) metaBits.push(opts.extra);
+  const sub = opts.sub !== undefined ? opts.sub : (it.step ? "Next: " + it.step : "");
+  const left = it.type === "task" ? tick(it.id, done, it.title) : `<span class="areadot" style="${ac(areaOf(it))};margin-top:7px"></span>`;
+  return `<div class="it ${done ? "done" : ""}" style="${ac(areaOf(it))}">${left}
+    <div style="min-width:0"><button class="t" data-act="open" data-id="${it.id}">${esc(it.title || "Untitled")}</button>
+    ${sub ? `<div class="s">${esc(sub)}</div>` : ""}<div class="m">${metaBits.join("")}</div></div>
+    <div class="row">${opts.right || ""}</div></div>`;
+}
+function emptyState(title, body, action) {
+  return `<div class="empty"><b>${esc(title)}</b><span>${body}</span>${action || ""}</div>`;
+}
+function quickAdd(type, extra, ph) {
+  extra = extra || {};
+  const data = Object.entries(extra).map(([k, v]) => `data-x-${k}="${esc(v)}"`).join(" ");
+  return `<form class="addrow" data-form="quick" data-type="${type}" ${data}>
+    <input class="input" id="qa-${type}-${extra.area || extra.stage || extra.status || ""}-${String(ph || "").replace(/[^A-Za-z]/g, "").slice(0, 12)}" name="title" placeholder="${esc(ph || "Add " + TYPES[type].label.toLowerCase() + "…")}" autocomplete="off" aria-label="${esc(ph || "New " + TYPES[type].label)}">
+    ${type === "task" || type === "opp" || type === "event" || type === "meeting" ? `<input class="input" type="date" name="date" aria-label="Date">` : ""}
+    <button class="btn" type="submit">Add</button></form>`;
+}
+function bar(pct, cls) { return `<div class="bar ${cls || ""}" role="progressbar" aria-valuenow="${Math.round(pct)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.max(0, Math.min(100, pct))}%"></i></div>`; }
+function aiBtn(act, label, extra) { return CAP.sample ? `<button class="btn ghost sm ai" data-act="${act}" ${extra || ""}>${esc(label)}</button>` : ""; }
+let toastT = null;
+function toast(t) { const el = $("#toast"); if (!el) return; el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (el.hidden = true), 2600); }
+
+// ================= UI state =================
+const VIEW_IDS = VIEWS_META.map((v) => v[0]);
+const UI = {
+  view: "focus", tabs: { tasks: "board", simasia: "pipeline", mind: "books", create: "writing" },
+  area: "all", editId: null, confirmDel: false, sheet: null, calm: lsGet("praxis-calm") === "1", weekOff: 0, moneyMonth: null,
+  board: null, thread: null, ai: {}, inbox: { state: "idle", threads: [], err: "", at: 0 }, sort: null, q: "", writer: null, showMore: false, showDone: false, compose: {}
+};
+{ const h = location.hash.slice(1); if (VIEW_IDS.includes(h)) UI.view = h; else { const v = lsGet("praxis-view"); if (VIEW_IDS.includes(v)) UI.view = v; } }
+
+function tabs(key, list) {
+  return `<div class="tabs" role="tablist">${list.map(([k, l, n]) => `<button role="tab" aria-selected="${UI.tabs[key] === k}" data-act="tab" data-key="${key}" data-val="${k}">${esc(l)}${n ? ` <span class="muted">${n}</span>` : ""}</button>`).join("")}</div>`;
+}
+function head(title, sub, right) {
+  return `<div class="pagehead"><div><h1>${esc(title)}</h1>${sub ? `<p class="sub">${sub}</p>` : ""}</div>${right ? `<div class="row">${right}</div>` : ""}</div>`;
+}
+function aiBox(key) {
+  const a = UI.ai[key];
+  if (!a) return "";
+  if (a.loading && !a.text) return `<div class="ai-out muted" aria-live="polite">Thinking…</div>`;
+  if (a.err) return `<div class="banner warn">${esc(a.err)}</div>`;
+  return a.text ? `<div class="ai-out" aria-live="polite">${esc(a.text)}</div>` : "";
+}
+async function askClaude(key, prompt, opts) {
+  if (!CAP.sample) return;
+  UI.ai[key] = { loading: true, text: "" }; renderAll();
+  try {
+    const r = await CAP.sample(prompt, Object.assign({ onText: ({ text }) => { UI.ai[key] = { loading: true, text }; const el = $(`[data-ai="${key}"]`); if (el) el.innerHTML = aiBox(key); } }, opts || {}));
+    UI.ai[key] = { text: r.text + (r.truncated ? "\n\n(Cut short. Ask for less at a time.)" : "") };
+  } catch (e) { UI.ai[key] = e.code === "cancelled" ? null : { err: sampleErr(e), text: e.text || "" }; }
+  renderAll();
+}
+
+// ================= FOCUS =================
+function greet() { const h = new Date().getHours(); return h < 5 ? "Still up, Dimitris" : h < 12 ? "Good morning, Dimitris" : h < 18 ? "Good afternoon, Dimitris" : "Good evening, Dimitris"; }
+function viewFocus() {
+  const r = routineNow();
+  const f = focusItem();
+  const tt = todayTasks().filter((t) => !f || t.id !== f.id);
+  const shown = UI.showMore ? tt : tt.slice(0, 3);
+  const doneToday = all("task").filter((t) => t.status === "done" && t.doneAt && ymd(new Date(t.doneAt)) === today());
+  const fd = focusDays()[today()] || { min: 0, n: 0 };
+  const habits = all("habit");
+  const T = timerState();
+  const rhythm = r ? `<div class="banner hide-calm"><span class="dot ok"></span><span><b>Rhythm:</b> ${r.cur ? `${esc(r.cur.t)} until ${r.cur.e === "24:00" ? "00:00" : r.cur.e}` : "Rest time"}${r.next ? ` · next ${r.next.s} ${esc(r.next.t)}` : ""}</span><a class="btn quiet sm" href="https://dimitrispapad.github.io/daily-rhythm/" target="_blank" rel="noopener">Open Rhythm ↗</a></div>` : "";
+
+  let one;
+  if (f) {
+    const steps = Array.isArray(f.steps) ? f.steps : [];
+    const nextStep = steps.find((s) => !s.d);
+    one = `<div class="onething">
+      <div class="row between"><span class="eyebrow">Your one thing</span><div class="chips">${areaChip(areaOf(f))}${dueChip(f.due)}</div></div>
+      <button class="ttl" style="border:0;background:none;padding:0;text-align:left" data-act="open" data-id="${f.id}">${esc(f.title || "Untitled")}</button>
+      <div class="step"><div style="flex:1;min-width:0"><b>Next tiny step</b>
+        ${nextStep ? `<label class="row" style="gap:8px;margin-top:4px"><input type="checkbox" class="cbx" data-act="stepDone" data-id="${f.id}" data-i="${steps.indexOf(nextStep)}"><span>${esc(nextStep.t)}</span></label>`
+          : `<input class="input" style="margin-top:6px" id="step-${f.id}" data-field="step" data-id="${f.id}" value="${esc(f.step || "")}" placeholder="What's the first 2-minute action?">`}</div></div>
+      <div class="timer">${ringHTML(T, f.id)}
+        <div class="stack" style="flex:1;min-width:180px">${timerButtons(T, f.id)}
+          <div class="row">${aiBtn("breakdown", "Break it into small steps", `data-id="${f.id}"`)}<button class="btn quiet sm" data-act="switchFocus">Switch task</button></div>
+        </div></div>
+      <div data-ai="bd-${f.id}">${aiBox("bd-" + f.id)}</div>
+      <form class="addrow" data-form="park"><input class="input" id="park" name="t" placeholder="Distracted? Park the thought here and keep going" autocomplete="off" aria-label="Park a thought"><button class="btn ghost" type="submit">Park</button></form>
+    </div>`;
+  } else {
+    one = `<div class="onething"><span class="eyebrow">Your one thing</span>
+      <div class="ttl">Choose one thing.</div>
+      <p class="muted">Pick a task from today's list, or add the one thing that would make today count.</p>
+      ${quickAdd("task", { today: "1" }, "The one thing for today…")}</div>`;
+  }
+  const list = `<div class="card hide-calm"><div class="card-h"><h3>Today</h3><span class="note">${tt.length ? plural(tt.length, "more task") : "Nothing else today"}</span></div>
+    <div class="list">${shown.map((t) => itemRow(t, { right: `<button class="btn quiet sm" data-act="focusOn" data-id="${t.id}">Focus</button>` })).join("") || '<p class="note">Your list is clear. Protect the one thing.</p>'}</div>
+    ${tt.length > 3 ? `<button class="btn quiet sm" data-act="toggleMore">${UI.showMore ? "Show only 3" : `+${tt.length - 3} more (hidden to protect your focus)`}</button>` : ""}
+    ${quickAdd("task", { today: "1" }, "Add to today…")}</div>`;
+
+  const gym = r && P ? P.days[r.k].blocks.find((b) => b.tag === "gym") : null;
+  const meals = r && P ? P.meals[r.k] : null;
+  const body = `<div class="card"><div class="card-h"><h3>Body today</h3><span class="chip area" style="${ac("body")}">${esc(r ? r.day.name : "")}</span></div>
+    ${gym ? `<div><b>${esc(gym.s)} ${esc(gym.t)}</b><p class="note">${esc(gym.d)}</p></div>` : '<p class="note">No gym today. Walk outside.</p>'}
+    ${meals ? `<div class="stack small"><div><span class="eyebrow">Breakfast</span> ${esc(meals.b)}</div><div><span class="eyebrow">Lunch</span> ${esc(meals.l)}</div><div><span class="eyebrow">Dinner</span> ${esc(meals.d)}</div></div>` : ""}</div>`;
+  const hab = `<div class="card"><div class="card-h"><h3>Habits</h3><a class="btn quiet sm" href="#goals">Edit</a></div>
+    ${habits.length ? habits.map((h) => { const on = !!(h.log || {})[today()]; return `<div class="habit"><button class="tick" data-act="habit" data-id="${h.id}" data-d="${today()}" aria-pressed="${on}" aria-label="${esc(h.title)} today">${ICON.check}</button><div style="min-width:0"><b>${esc(h.title)}</b>${h.cue ? `<div class="note">${esc(h.cue)}</div>` : ""}</div><span class="chip" style="margin-left:auto">${streak(h)} day streak</span></div>`; }).join("") : emptyState("No habits yet", "Add one tiny habit in Goals & habits.", '<a class="btn ghost sm" href="#goals">Add a habit</a>')}</div>`;
+  const wins = `<div class="card"><div class="card-h"><h3>Wins today</h3><span class="num" style="font-size:26px">${doneToday.length}</span></div>
+    <p class="note">${fd.min ? `${fd.min} focused minutes in ${plural(fd.n, "session")}.` : "Start one focus session. 25 minutes is enough."}</p>
+    <div class="list small">${doneToday.slice(0, 5).map((t) => `<div class="row" style="padding:3px 0"><span class="chip good">✓</span><span>${esc(t.title)}</span></div>`).join("")}</div></div>`;
+  return `<div class="page ${UI.calm ? "calm" : ""}">
+    ${head(UI.calm ? "One thing." : greet(), UI.calm ? "Everything else is hidden. Breathe out, then do the next tiny step." : `${fmtDay(today())}${r ? " · " + esc(r.day.theme) : ""}`, `<button class="btn ghost" data-act="calm" aria-pressed="${UI.calm}">${UI.calm ? "Show everything" : "I'm overwhelmed"}</button>`)}
+    ${rhythm}
+    <div class="focus-hero">${one}${list}</div>
+    <div class="grid g3 hide-calm">${body}${hab}${wins}</div>
+  </div>`;
+}
+function streak(h) { let n = 0; let d = today(); const log = h.log || {}; if (!log[d]) d = addDays(d, -1); while (log[d]) { n++; d = addDays(d, -1); } return n; }
+
+// ---------- focus timer (per device) ----------
+const TKEY = "praxis-timer";
+function timerState() { try { return JSON.parse(lsGet(TKEY) || "null"); } catch (_) { return null; } }
+function setTimer(t) { lsSet(TKEY, t ? JSON.stringify(t) : null); }
+const focusLen = () => num(meta("settings").focusLen) || 25;
+const breakLen = () => num(meta("settings").breakLen) || 5;
+function timeLeft(T) { if (!T) return 0; return T.pausedLeft != null ? T.pausedLeft : Math.max(0, T.end - Date.now()); }
+function ringHTML(T, id) {
+  const active = T && (T.id === id || T.phase === "break");
+  const total = active ? T.len * 60000 : focusLen() * 60000;
+  const left = active ? timeLeft(T) : total;
+  const pct = 1 - left / total, C = 2 * Math.PI * 52;
+  const mm = Math.floor(left / 60000), ss = Math.floor((left % 60000) / 1000);
+  const label = !active ? "ready" : T.phase === "break" ? "break" : T.pausedLeft != null ? "paused" : "focus";
+  return `<div class="ring" id="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="9"/>
+    <circle id="ring-arc" cx="60" cy="60" r="52" fill="none" stroke="${T && T.phase === "break" ? "var(--good)" : "var(--now)"}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - pct)).toFixed(1)}"/></svg>
+    <div class="rt"><div><b id="ring-time">${pad(mm)}:${pad(ss)}</b><span id="ring-label">${label}</span></div></div></div>`;
+}
+function timerButtons(T, id) {
+  const active = T && T.id === id && T.phase === "focus";
+  if (T && T.phase === "break") return `<div class="row"><button class="btn ghost" data-act="timerStop">End break</button></div><p class="note">Stand up, drink water, look far away.</p>`;
+  if (!active) return `<div class="row"><button class="btn big" data-act="timerStart" data-id="${id}">Start ${focusLen()} min focus</button><button class="btn ghost" data-act="complete" data-id="${id}">Done ✓</button></div>`;
+  return `<div class="row">${T.pausedLeft != null ? `<button class="btn" data-act="timerResume">Resume</button>` : `<button class="btn ghost" data-act="timerPause">Pause</button>`}<button class="btn quiet" data-act="timerStop">Stop</button><button class="btn ghost" data-act="complete" data-id="${id}">Done ✓</button></div>`;
+}
+let audioCtx = null;
+function chime() { try { if (!audioCtx) return; const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.frequency.value = 660; o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(0.0001, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.05); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2); o.start(); o.stop(audioCtx.currentTime + 1.3); } catch (_) {} }
+let wakeLock = null;
+function tickTimer() {
+  const T = timerState(); if (!T) return;
+  const left = timeLeft(T);
+  const el = $("#ring-time");
+  if (el) {
+    const total = T.len * 60000, C = 2 * Math.PI * 52;
+    el.textContent = `${pad(Math.floor(left / 60000))}:${pad(Math.floor((left % 60000) / 1000))}`;
+    const arc = $("#ring-arc"); if (arc) arc.setAttribute("stroke-dashoffset", (C * (left / total)).toFixed(1));
+  }
+  document.title = T.pausedLeft == null ? `${pad(Math.floor(left / 60000))}:${pad(Math.floor((left % 60000) / 1000))} · PraxisAI` : "PraxisAI";
+  if (left <= 0 && T.pausedLeft == null) {
+    if (T.phase === "focus") {
+      logFocus(T.len);
+      chime();
+      setTimer({ phase: "break", id: T.id, len: breakLen(), end: Date.now() + breakLen() * 60000, pausedLeft: null });
+      toast(`${T.len} minutes done. Take a ${breakLen()}-minute break.`);
+    } else { setTimer(null); chime(); toast("Break over. Next tiny step?"); document.title = "PraxisAI"; releaseWake(); }
+    renderAll();
+  }
+}
+function logFocus(min) {
+  const days = Object.assign({}, focusDays()); const d = today();
+  const cur = days[d] || { min: 0, n: 0 }; days[d] = { min: cur.min + min, n: cur.n + 1 };
+  const cutoff = addDays(d, -120); for (const k of Object.keys(days)) if (k < cutoff) delete days[k];
+  setMeta("focusLog", { days });
+}
+async function requestWake() { try { wakeLock = await navigator.wakeLock.request("screen"); } catch (_) { wakeLock = null; } }
+function releaseWake() { try { wakeLock && wakeLock.release(); } catch (_) {} wakeLock = null; }
+
+// ================= OVERVIEW =================
+function viewOverview() {
+  const items = [...S.items.values()];
+  const t = today(), wkEnd = addDays(t, 7);
+  const open = all("task").filter((x) => x.status !== "done");
+  const overdue = deadlines(0).filter(({ d }) => d < t).length;
+  const week = deadlines(7).filter(({ d }) => d >= t && d <= wkEnd).length;
+  const fdays = focusDays(); let wkMin = 0; for (let i = 0; i < 7; i++) wkMin += (fdays[addDays(t, -i)] || {}).min || 0;
+  const leads = items.filter((i) => i.type === "lead" && isOpen(i)).length;
+  const m = moneySnapshot();
+  const kpis = [
+    [todayTasks().length, "Tasks for today", false], [overdue, "Overdue", overdue > 0], [week, "Due in 7 days", false], [`${(wkMin / 60).toFixed(1)} h`, "Focused this week", false],
+    [leads, "Open leads", false], [eur(m.unpaid), "Unpaid invoices", m.overdue > 0], [eur(m.net), "Net this month", m.net < 0], [m.runway == null ? "—" : m.runway.toFixed(1) + " mo", "Savings runway", m.runway != null && m.runway < 3]
+  ].map(([v, l, a]) => `<div class="card kpi ${a ? "alert" : ""}"><span class="v">${esc(v)}</span><span class="l">${esc(l)}</span></div>`).join("");
+  const dls = deadlines(30);
+  const dlHtml = dls.length ? dls.slice(0, 12).map(({ it, d }) => `<div class="dl" style="${ac(areaOf(it))}"><span class="d ${d < t ? "late" : ""}">${d === t ? "Today" : fmtShort(d)}</span><button class="t ev" data-act="open" data-id="${it.id}">${esc(it.title || "Untitled")} <span class="muted">· ${esc(TYPES[it.type].label)}</span></button>${dueChip(d)}</div>`).join("") : emptyState("No deadlines in the next 30 days", "Dated tasks, meetings, invoices and applications appear here.");
+  const areaCards = Object.keys(AREAS).map((a) => {
+    const mine = all().filter((x) => areaOf(x) === a && isOpen(x) && ["task", "lead", "invoice", "meeting", "opp", "project", "goal", "event"].includes(x.type));
+    const top = mine.sort(byUrgency).slice(0, 3);
+    return `<div class="card" style="${ac(a)};border-top:3px solid var(--ac)"><div class="card-h"><h3>${esc(AREAS[a])}</h3><span class="chip">${mine.length} open</span></div>
+      <div class="list small">${top.map((x) => `<div class="row" style="padding:3px 0;flex-wrap:nowrap"><span class="areadot"></span><button class="t" style="border:0;background:none;padding:0;text-align:left;font-weight:500;overflow-wrap:anywhere" data-act="open" data-id="${x.id}">${esc(x.title || "Untitled")}</button>${dateOf(x) ? dueChip(dateOf(x)) : ""}</div>`).join("") || '<span class="note">Nothing open.</span>'}</div></div>`;
+  }).join("");
+  return `<div class="page">${head("Overview", "Everything in one view. Pick one thing, then go back to Focus.")}
+    <div class="grid g4">${kpis}</div>
+    <div class="grid g2"><div class="card"><div class="card-h"><h3>Deadlines, next 30 days</h3><a class="btn quiet sm" href="#plan">Calendar</a></div><div>${dlHtml}</div></div>
+      <div class="card"><div class="card-h"><h3>Focus, last 14 days</h3><span class="note">minutes per day</span></div>${focusChart()}<div class="card-h"><h3>Money, last 6 months</h3><a class="btn quiet sm" href="#money">Money</a></div>${moneyChart(6)}</div></div>
+    <div class="grid g3">${areaCards}</div></div>`;
+}
+function focusChart() {
+  const t = today(), days = [], fd = focusDays();
+  for (let i = 13; i >= 0; i--) { const d = addDays(t, -i); days.push({ d, v: (fd[d] || {}).min || 0 }); }
+  const max = Math.max(60, ...days.map((x) => x.v)), W = 420, H = 120, pb = 18, bw = (W - 30) / 14;
+  const yTop = Math.ceil(max / 30) * 30;
+  const bars = days.map((x, i) => { const h = (x.v / yTop) * (H - pb - 8); const isT = x.d === t; return `<rect x="${30 + i * bw + 3}" y="${H - pb - h}" width="${bw - 6}" height="${Math.max(h, x.v ? 2 : 0)}" rx="3" fill="${isT ? "var(--now)" : "var(--brand)"}" opacity="${isT ? 1 : 0.75}"><title>${fmtShort(x.d)}: ${x.v} min</title></rect>${i % 2 === 1 ? `<text x="${30 + i * bw + bw / 2}" y="${H - 4}" text-anchor="middle">${parseYmd(x.d).getDate()}</text>` : ""}`; }).join("");
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Focus minutes per day, last 14 days"><g class="grid"><line x1="30" x2="${W}" y1="${H - pb}" y2="${H - pb}"/><line x1="30" x2="${W}" y1="${(H - pb) / 2 + 4}" y2="${(H - pb) / 2 + 4}" stroke-dasharray="3 3"/></g><text x="0" y="12">${yTop}</text><text x="0" y="${(H - pb) / 2 + 8}">${yTop / 2}</text>${bars}</svg>`;
+}
+function moneyChart(n) {
+  const ms = monthsBack(n).map((k) => { const s = moneySnapshot(k); return { k, inc: s.inc, exp: s.exp }; });
+  const max = Math.max(100, ...ms.map((x) => Math.max(x.inc, x.exp)));
+  const step = niceStep(max), top = Math.ceil(max / step) * step;
+  const W = 420, H = 150, pb = 18, pl = 44, gw = (W - pl) / n;
+  const y = (v) => H - pb - (v / top) * (H - pb - 10);
+  const grid = [0, top / 2, top].map((v) => `<line x1="${pl}" x2="${W}" y1="${y(v)}" y2="${y(v)}" ${v ? 'stroke-dasharray="3 3"' : ""}/>`).join("");
+  const labels = [0, top / 2, top].map((v) => `<text x="${pl - 6}" y="${y(v) + 4}" text-anchor="end">${v >= 1000 ? (v / 1000).toFixed(v % 1000 ? 1 : 0) + "k" : v}</text>`).join("");
+  const bars = ms.map((x, i) => { const bx = pl + i * gw + gw * 0.15, bw = gw * 0.33;
+    return `<rect x="${bx}" y="${y(x.inc)}" width="${bw}" height="${H - pb - y(x.inc)}" rx="2" fill="var(--good)"><title>${monthName(x.k)} income ${eur(x.inc)}</title></rect><rect x="${bx + bw + 2}" y="${y(x.exp)}" width="${bw}" height="${H - pb - y(x.exp)}" rx="2" fill="var(--now)" opacity=".8"><title>${monthName(x.k)} spent ${eur(x.exp)}</title></rect><text x="${pl + i * gw + gw / 2}" y="${H - 4}" text-anchor="middle">${monthName(x.k)}</text>`; }).join("");
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Income and spending per month"><g class="grid">${grid}</g>${labels}${bars}</svg><div class="legend"><span><i style="background:var(--good)"></i>Income</span><span><i style="background:var(--now)"></i>Spent</span></div>`;
+}
+function niceStep(max) { const raw = max / 2, p = Math.pow(10, Math.floor(Math.log10(raw))); const f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; }
+
+// ================= TASKS =================
+function areaPills() {
+  return `<div class="chips">${[["all", "All"], ...Object.entries(AREAS)].map(([k, l]) => `<button class="pill" data-act="area" data-val="${k}" aria-pressed="${UI.area === k}">${esc(l)}</button>`).join("")}</div>`;
+}
+function viewTasks() {
+  const list = all("task").filter((t) => UI.area === "all" || areaOf(t) === UI.area);
+  const extra = UI.area === "all" ? {} : { area: UI.area };
+  let body;
+  if (UI.tabs.tasks === "board") {
+    body = `<div class="board">${TASK_STATUS.map(([k, l]) => {
+      let col = list.filter((t) => (t.status || "next") === k).sort(byUrgency);
+      if (k === "done") col = col.sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0)).slice(0, 12);
+      return `<div class="col" data-drop="${k}"><div class="col-h"><span>${esc(l)}</span><span>${list.filter((t) => (t.status || "next") === k).length}</span></div>
+        ${col.map((t) => `<div class="kc" draggable="true" data-drag="${t.id}" style="${ac(areaOf(t))}"><button class="t" data-act="open" data-id="${t.id}">${esc(t.title || "Untitled")}</button>
+          <div class="chips">${dueChip(t.due)}${t.prio === "1" ? '<span class="chip late">High</span>' : ""}${t.est ? `<span class="chip">${esc(t.est)} min</span>` : ""}</div>
+          <div class="row">${k !== "done" ? `<button class="btn quiet sm" data-act="advance" data-id="${t.id}">${k === "doing" ? "Done ✓" : k === "inbox" ? "→ Next" : "→ Doing"}</button>` : ""}<button class="btn quiet sm" data-act="focusOn" data-id="${t.id}">Focus</button></div></div>`).join("")}
+        ${k === "inbox" || k === "next" ? quickAdd("task", Object.assign({ status: k }, extra), "Add…") : ""}</div>`;
+    }).join("")}</div><p class="note">Drag cards between columns on a computer, or use the buttons on a phone.</p>`;
+  } else {
+    const groups = Object.keys(AREAS).filter((a) => UI.area === "all" || a === UI.area).map((a) => {
+      const its = list.filter((t) => areaOf(t) === a && t.status !== "done").sort(byUrgency);
+      if (!its.length) return "";
+      return `<div class="card"><div class="card-h"><h3>${areaChip(a)}</h3><span class="note">${its.length}</span></div><div class="list">${its.map((t) => itemRow(t, { area: false, right: `<button class="btn quiet sm" data-act="focusOn" data-id="${t.id}">Focus</button>` })).join("")}</div></div>`;
+    }).join("");
+    const done = list.filter((t) => t.status === "done").sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0));
+    body = `${quickAdd("task", extra)}${groups || emptyState("No open tasks", "Add one above, or empty your head in the Capture inbox.")}
+      ${done.length ? `<button class="btn quiet sm" data-act="toggleDoneList">${UI.showDone ? "Hide" : "Show"} ${done.length} done</button>${UI.showDone ? `<div class="card"><div class="list">${done.slice(0, 40).map((t) => itemRow(t)).join("")}</div></div>` : ""}` : ""}`;
+  }
+  return `<div class="page">${head("Tasks", "Move one card at a time. If a task feels heavy, open it and write the next tiny step.")}
+    <div class="row between">${tabs("tasks", [["board", "Board"], ["list", "By area"]])}</div>${areaPills()}${body}</div>`;
+}
+
+// ================= SIMASIAAI =================
+function viewSimasia() {
+  const t = UI.tabs.simasia;
+  const leads = all("lead"), inv = all("invoice"), mtg = all("meeting"), off = all("offering");
+  const openLeads = leads.filter(isOpen);
+  let body = "";
+  if (t === "pipeline") {
+    const due = openLeads.filter((l) => l.stage === "todo" || (l.followUp && l.followUp <= today())).sort((a, b) => (a.followUp || "0") < (b.followUp || "0") ? -1 : 1).slice(0, 3);
+    const counts = LEAD_STAGES.map(([k, l]) => `<div class="kpi"><span class="v">${leads.filter((x) => x.stage === k).length}</span><span class="l">${esc(l)}</span></div>`).join("");
+    body = `<div class="card"><div class="card-h"><h3>Today's 3</h3><span class="note">Only three. Cold emails get easier in small batches.</span></div>
+      <div class="list">${due.map((l) => itemRow(l, { area: false, sub: [l.contact, l.email].filter(Boolean).join(" · "), extra: `<span class="chip brand">${esc(labelOf(LEAD_STAGES, l.stage))}</span>`, right: `<button class="btn sm" data-act="open" data-id="${l.id}">${l.stage === "todo" ? "Write email" : "Follow up"}</button>` })).join("") || '<p class="note">No one to contact today. Add a lead below or enjoy the quiet.</p>'}</div></div>
+      <div class="card"><div class="grid g4" style="grid-template-columns:repeat(auto-fit,minmax(90px,1fr))">${counts}</div></div>
+      ${quickAdd("lead", {}, "New lead: organisation name…")}
+      <div class="card"><div class="list">${openLeads.sort((a, b) => LEAD_STAGES.findIndex((s) => s[0] === a.stage) - LEAD_STAGES.findIndex((s) => s[0] === b.stage)).map((l) => itemRow(l, { area: false, sub: [l.contact, l.email].filter(Boolean).join(" · "), extra: `<span class="chip brand">${esc(labelOf(LEAD_STAGES, l.stage))}</span>` })).join("") || emptyState("No leads yet", "Add the organisations you want to reach: patient associations, disability groups, clinics.")}</div></div>
+      ${leads.length - openLeads.length ? `<p class="note">${leads.filter((l) => l.stage === "won").length} won · ${leads.filter((l) => l.stage === "lost").length} lost</p>` : ""}`;
+  } else if (t === "inbox") body = gmailPanel();
+  else if (t === "invoices") {
+    const m = moneySnapshot();
+    const paidMonth = inv.filter((i) => i.status === "paid" && monthKey(i.paidOn || "") === monthKey(today())).reduce((s, i) => s + num(i.amount), 0);
+    body = `<div class="grid g3"><div class="card kpi"><span class="v">${eur(m.unpaid)}</span><span class="l">Waiting to be paid</span></div><div class="card kpi ${m.overdue ? "alert" : ""}"><span class="v">${eur(m.overdue)}</span><span class="l">Overdue</span></div><div class="card kpi"><span class="v">${eur(paidMonth)}</span><span class="l">Paid this month</span></div></div>
+      ${quickAdd("invoice", {}, "New invoice: client name…")}
+      <div class="card"><div class="list">${inv.sort((a, b) => (a.status === "paid") - (b.status === "paid") || ((a.due || "9") < (b.due || "9") ? -1 : 1)).map((i) => {
+        const late = i.status === "sent" && i.due && i.due < today();
+        return itemRow(i, { area: false, sub: [i.number && "No. " + i.number, i.issued && "issued " + fmtShort(i.issued)].filter(Boolean).join(" · "), extra: `<span class="chip ${i.status === "paid" ? "good" : late ? "late" : "brand"}">${late ? "Overdue" : esc(labelOf(INV_STATUS, i.status))}</span><span class="chip">${eur(num(i.amount), 1)}</span>`,
+          right: i.status === "draft" ? `<button class="btn ghost sm" data-act="invSent" data-id="${i.id}">Mark sent</button>` : i.status === "sent" ? `<button class="btn sm" data-act="invPaid" data-id="${i.id}">Mark paid</button>` : "" });
+      }).join("") || emptyState("No invoices yet", "Add one when you bill a client. Marking it paid adds the income to Money.")}</div></div>`;
+  } else if (t === "meetings") {
+    const up = mtg.filter((x) => !x.date || x.date >= today()).sort((a, b) => ((a.date || "9") + (a.time || "")) < ((b.date || "9") + (b.time || "")) ? -1 : 1);
+    const past = mtg.filter((x) => x.date && x.date < today()).sort((a, b) => (a.date < b.date ? 1 : -1));
+    body = `${quickAdd("meeting", {}, "New meeting: with whom / about what…")}
+      <div class="card"><div class="card-h"><h3>Coming up</h3></div><div class="list">${up.map((x) => itemRow(x, { sub: [x.time, x.with].filter(Boolean).join(" · "), extra: x.goal ? '<span class="chip good">Prepared</span>' : '<span class="chip soon">Needs prep</span>' })).join("") || '<p class="note">No meetings coming up.</p>'}</div></div>
+      ${past.length ? `<div class="card"><div class="card-h"><h3>Past</h3></div><div class="list">${past.slice(0, 10).map((x) => itemRow(x, { sub: x.notes ? "Notes saved" : "Add what happened" })).join("")}</div></div>` : ""}`;
+  } else {
+    body = `${quickAdd("offering", {}, "New offering idea…")}<div class="card"><div class="list">${off.map((o) => itemRow(o, { area: false, sub: [labelOf(TYPES.offering.fields[0].o, o.product), o.who, o.price].filter(Boolean).join(" · "), extra: `<span class="chip brand">${esc(labelOf(OFFER_STATUS, o.status))}</span>` })).join("") || emptyState("No offering ideas yet", "Capture service and pricing ideas for fλow, DialogosAI, PraxisAI and MetronAI here.")}</div></div>`;
+  }
+  return `<div class="page">${head("SimasiaAI", "Leads, inbox, invoices, meetings and offerings. 09:30–18:00 is SimasiaAI time.")}
+    ${tabs("simasia", [["pipeline", "Leads & cold emails", openLeads.length || ""], ["inbox", "Gmail"], ["invoices", "Invoices", inv.filter((i) => i.status !== "paid").length || ""], ["meetings", "Meetings"], ["offerings", "Offerings"]])}${body}</div>`;
+}
+function gmailPanel() {
+  const I = UI.inbox, q = meta("settings").gmailQuery || "in:inbox newer_than:7d -category:promotions -category:social";
+  if (!CAP.mcp) return `<div class="banner warn">Gmail works when PraxisAI is open on claude.ai with your Gmail connector.</div>`;
+  const rows = I.threads.map((th) => {
+    const m = (th.messages || [])[0] || {};
+    const from = ((m.addressDisplayNames || [])[0] || {}).displayName || m.sender || "";
+    return `<div class="it"><span class="areadot" style="${ac("simasia")};margin-top:7px"></span><div style="min-width:0"><b>${esc(decode(m.subject) || "(no subject)")}</b>
+      <div class="s">${esc(from)} · ${m.date ? esc(new Date(m.date).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })) : ""}</div>
+      <div class="s">${esc(decode(m.snippet))}</div></div>
+      <div class="stack"><button class="btn sm" data-act="mailTask" data-tid="${esc(th.id)}">Make task</button>${th.viewUrl ? `<a class="btn quiet sm" href="${esc(th.viewUrl)}" target="_blank" rel="noopener">Open ↗</a>` : ""}</div></div>`;
+  }).join("");
+  return `<form class="addrow" data-form="gmailq"><input class="input" id="gmailq" name="q" value="${esc(q)}" aria-label="Gmail search"><button class="btn" type="submit">${I.state === "ok" ? "Refresh" : "Load inbox"}</button></form>
+    ${I.state === "loading" ? '<p class="note">Loading your inbox…</p>' : ""}
+    ${I.state === "error" ? `<div class="banner bad">${esc(I.err)}</div>` : ""}
+    ${I.state === "ok" ? `<div class="card"><div class="card-h"><h3>${plural(I.threads.length, "thread")}</h3><span class="note">Loaded ${new Date(I.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}</span></div><div class="list">${rows || '<p class="note">Nothing matches. Inbox zero!</p>'}</div></div>` : ""}
+    ${I.state === "idle" ? emptyState("Your SimasiaAI inbox", "Load it to turn emails into tasks. Drafts you write in Leads are saved to Gmail, never sent automatically.") : ""}`;
+}
+async function loadInbox(manual) {
+  const q = meta("settings").gmailQuery || "in:inbox newer_than:7d -category:promotions -category:social";
+  UI.inbox = Object.assign({}, UI.inbox, { state: "loading" }); if (manual) renderAll();
+  try {
+    const p = await gmail("search_threads", { query: q, pageSize: 20, view: "THREAD_VIEW_SUMMARY" });
+    UI.inbox = { state: "ok", threads: (p && p.threads) || [], err: "", at: Date.now() };
+  } catch (e) { UI.inbox = { state: "error", threads: UI.inbox.threads, err: gmailErr(e), at: UI.inbox.at }; }
+  renderAll();
+}
+
+// ================= CALENDAR =================
+function viewPlan() {
+  const ws = addDays(weekStart(today()), UI.weekOff * 7);
+  const t = today();
+  const days = [...Array(7)].map((_, i) => addDays(ws, i));
+  const byDay = {}; for (const [id, it] of S.items) { const d = dateOf(it) || (["meeting", "event"].includes(it.type) ? it.date : null); if (d && d >= ws && d <= days[6]) (byDay[d] = byDay[d] || []).push(Object.assign({ id }, it)); }
+  const cells = days.map((d) => {
+    const k = KEYS[parseYmd(d).getDay()];
+    const pd = P ? P.days[k] : null;
+    const gym = pd && pd.blocks.find((b) => b.tag === "gym");
+    const mastery = pd && pd.blocks.find((b) => b.tag === "mastery" || b.tag === "friends" || b.tag === "write");
+    const rt = pd ? [gym && `${gym.s} ${gym.t.replace("Gym: ", "Gym · ")}`, pd.blocks.some((b) => b.cat === "work") && "09:30–18:00 SimasiaAI", mastery && `${mastery.s} ${mastery.t}`].filter(Boolean) : [];
+    const evs = (byDay[d] || []).sort((a, b) => ((a.time || "") < (b.time || "") ? -1 : 1));
+    return `<div class="day ${d === t ? "today" : ""}"><h4><span>${fmtDay(d)}</span>${d === t ? '<span class="chip late">Today</span>' : ""}</h4>
+      <div class="rt">${rt.map(esc).join("<br>")}</div>
+      ${evs.map((e) => `<button class="ev" style="${ac(areaOf(e))}" data-act="open" data-id="${e.id}">${e.time ? esc(e.time) + " " : ""}${esc(e.title || "Untitled")} <span class="muted">· ${esc(TYPES[e.type].label)}</span></button>`).join("")}</div>`;
+  }).join("");
+  return `<div class="page">${head("Calendar", "Your routine from Rhythm plus every date in PraxisAI. Your iPhone calendar stays in Rhythm.", `<a class="btn ghost" href="https://dimitrispapad.github.io/daily-rhythm/" target="_blank" rel="noopener">Rhythm + iPhone calendar ↗</a>`)}
+    <div class="row between"><div class="row"><button class="btn ghost sm" data-act="week" data-d="-1" aria-label="Previous week">←</button><button class="btn ghost sm" data-act="week" data-d="0">This week</button><button class="btn ghost sm" data-act="week" data-d="1" aria-label="Next week">→</button></div><b>${fmtShort(ws)} – ${fmtShort(days[6])}</b></div>
+    <div class="week">${cells}</div>
+    <div class="card"><h3>Add an event</h3>${quickAdd("event", {}, "Event: conference, talk, dinner…")}</div></div>`;
+}
+
+// ================= MONEY =================
+function viewMoney() {
+  const mk = UI.moneyMonth || monthKey(today());
+  const m = moneySnapshot(mk), s = meta("settings").money || {};
+  const runPct = m.runway == null ? 0 : (m.runway / m.goalMonths) * 100;
+  const txns = all("txn").filter((x) => monthKey(x.date || "") === mk).sort((a, b) => (a.date < b.date ? 1 : -1));
+  const cats = {}; for (const x of txns) if (x.kind !== "income") cats[x.cat || "Other"] = (cats[x.cat || "Other"] || 0) + num(x.amount);
+  const catRows = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+  const catMax = Math.max(1, ...catRows.map((c) => c[1]));
+  const months = monthsBack(12).reverse();
+  return `<div class="page">${head("Money", "Money calms down when it's visible. Log it, see it, decide.", aiBtn("moneyAsk", "Ask Claude about my month"))}
+    <div class="card"><div class="card-h"><h3>Your numbers</h3><span class="note">Change them any time</span></div>
+      <div class="fgrid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+        <label class="f">Monthly floor (must cover) €<input class="input" type="number" inputmode="decimal" id="m-floor" data-money="floor" value="${esc(s.floor || "")}" placeholder="e.g. 1200"></label>
+        <label class="f">Freedom target / month €<input class="input" type="number" inputmode="decimal" id="m-target" data-money="target" value="${esc(s.target || 3000)}"></label>
+        <label class="f">Savings now €<input class="input" type="number" inputmode="decimal" id="m-savings" data-money="savings" value="${esc(s.savings || "")}" placeholder="0"></label>
+        <label class="f">Safety goal (months)<input class="input" type="number" id="m-goal" data-money="goalMonths" value="${esc(s.goalMonths || 6)}"></label>
+      </div></div>
+    <div class="grid g4">
+      <div class="card kpi"><span class="v">${eur(m.inc)}</span><span class="l">Income · ${monthName(mk)}</span>${bar((m.inc / (m.target || 1)) * 100, "good")}<span class="l">${Math.round((m.inc / (m.target || 1)) * 100)}% of your ${eur(m.target)} freedom target</span></div>
+      <div class="card kpi"><span class="v">${eur(m.exp)}</span><span class="l">Spent · ${monthName(mk)}</span>${m.floor ? bar((m.exp / m.floor) * 100, m.exp > m.floor ? "now" : "") + `<span class="l">${m.exp > m.floor ? "Above" : "Within"} your ${eur(m.floor)} floor</span>` : '<span class="l">Set a floor to compare</span>'}</div>
+      <div class="card kpi ${m.net < 0 ? "alert" : ""}"><span class="v">${eur(m.net)}</span><span class="l">Net this month</span></div>
+      <div class="card kpi ${m.runway != null && m.runway < 3 ? "alert" : ""}"><span class="v">${m.runway == null ? "—" : m.runway.toFixed(1) + " months"}</span><span class="l">Runway (savings ÷ floor)</span>${bar(runPct, runPct >= 100 ? "good" : "")}<span class="l">Goal: ${m.goalMonths} months · ${eur(m.floor * m.goalMonths)}</span></div>
+    </div>
+    <div data-ai="moneyAsk">${aiBox("moneyAsk")}</div>
+    <div class="grid g2"><div class="card"><div class="card-h"><h3>Last 6 months</h3></div>${moneyChart(6)}</div>
+      <div class="card"><div class="card-h"><h3>Where it went · ${monthName(mk)}</h3></div>${catRows.length ? catRows.map(([c, v]) => `<div class="hbar"><span>${esc(c)}</span>${bar((v / catMax) * 100, "now")}<b>${eur(v)}</b></div>`).join("") : '<p class="note">No spending logged this month.</p>'}
+        ${m.unpaid ? `<p class="note">Expected: ${eur(m.unpaid)} in unpaid invoices${m.overdue ? `, ${eur(m.overdue)} overdue` : ""}. <a href="#simasia" data-act="tab" data-key="simasia" data-val="invoices">See invoices</a></p>` : ""}</div></div>
+    <div class="card"><div class="card-h"><h3>Log money</h3><select class="input" style="max-width:160px" data-act="moneyMonth" aria-label="Month">${months.map((k) => `<option value="${k}" ${k === mk ? "selected" : ""}>${parseYmd(k + "-01").toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</option>`).join("")}</select></div>
+      <form class="addrow" data-form="txn">
+        <select class="input" name="kind" aria-label="Type"><option value="expense">Spent</option><option value="income">Earned</option></select>
+        <input class="input" name="title" placeholder="What for" required aria-label="Description">
+        <input class="input" name="amount" type="number" inputmode="decimal" step="0.01" min="0" placeholder="€" required aria-label="Amount" style="flex:0 1 110px">
+        <select class="input" name="cat" aria-label="Category">${TXN_CATS.map((c) => `<option ${c === "Other" ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>
+        <input class="input" name="date" type="date" value="${today()}" aria-label="Date"><button class="btn" type="submit">Log</button></form>
+      <div class="list">${txns.map((x) => `<div class="it"><span class="areadot" style="${ac("money")};margin-top:7px"></span><div style="min-width:0"><button class="t" data-act="open" data-id="${x.id}">${esc(x.title || "Untitled")}</button><div class="m"><span class="chip">${esc(x.cat || "Other")}</span><span class="chip">${fmtShort(x.date)}</span></div></div><b style="color:${x.kind === "income" ? "var(--good)" : "var(--ink)"}">${x.kind === "income" ? "+" : "−"}${eur(num(x.amount), 1)}</b></div>`).join("") || emptyState("Nothing logged for this month", "Log every euro in and out. Ten seconds each, and the anxiety gets smaller.")}</div></div>
+    <p class="note">PraxisAI shows your numbers; it isn't financial advice.</p></div>`;
+}
+
+// ================= CAREER & PHD =================
+function viewCareer() {
+  const opps = all("opp"), open = opps.filter(isOpen).sort((a, b) => (a.deadline || "9999") < (b.deadline || "9999") ? -1 : 1);
+  const closed = opps.filter((o) => !isOpen(o));
+  const paths = all("path");
+  const dec = P ? P.goals.decision : { date: "2027-08-31", t: "Track A or Track B", d: "" };
+  const decLeft = daysUntil(dec.date);
+  const rows = open.map((o) => itemRow(o, { area: false, sub: [labelOf(OPP_KIND, o.kind), o.org, o.next && "Next: " + o.next].filter(Boolean).join(" · "), extra: `<span class="chip brand">${esc(labelOf(OPP_STATUS, o.status))}</span>${o.fit ? `<span class="chip">fit ${esc(o.fit)}/5</span>` : ""}`, right: o.link ? `<a class="btn quiet sm" href="${esc(o.link)}" target="_blank" rel="noopener">Link ↗</a>` : "" })).join("");
+  return `<div class="page">${head("Career & PhD", "Every opportunity with its deadline. Apply to few, on purpose.", aiBtn("careerAsk", "Ask Claude: what should I do next?"))}
+    <div class="grid g2"><div class="card" style="${ac("career")};border-top:3px solid var(--ac)"><span class="eyebrow">The decision</span><div class="kpi"><span class="v">${decLeft} days</span><span class="l">${esc(dec.t)} · ${fmtDay(dec.date)}</span></div><p class="note">${esc(dec.d)}</p></div>
+      <div class="card"><span class="eyebrow">This month</span>${open.filter((o) => o.deadline && daysUntil(o.deadline) <= 31).slice(0, 4).map((o) => `<div class="dl"><span class="d ${daysUntil(o.deadline) < 0 ? "late" : ""}">${fmtShort(o.deadline)}</span><button class="t ev" style="${ac("career")}" data-act="open" data-id="${o.id}">${esc(o.title)}</button>${dueChip(o.deadline)}</div>`).join("") || '<p class="note">No deadlines in the next 31 days.</p>'}</div></div>
+    <div data-ai="careerAsk">${aiBox("careerAsk")}</div>
+    ${quickAdd("opp", {}, "New opportunity: programme, job, call…")}
+    <div class="card"><div class="card-h"><h3>Open opportunities</h3><span class="note">${open.length}</span></div><div class="list">${rows || emptyState("No opportunities yet", "Add PhDs, jobs and calls with their deadlines.")}</div></div>
+    <div class="card"><div class="card-h"><h3>Career paths I'm testing</h3></div><div class="list">${paths.map((p) => itemRow(p, { area: false, sub: p.next ? "Next test: " + p.next : "" })).join("") || '<p class="note">Write down each path and the smallest test that would teach you something.</p>'}</div>${quickAdd("path", {}, "A path, e.g. behavioural strategist…")}</div>
+    ${closed.length ? `<details class="card"><summary><b>Closed (${closed.length})</b></summary><div class="list">${closed.map((o) => itemRow(o, { area: false, extra: `<span class="chip">${esc(labelOf(OPP_STATUS, o.status))}</span>` })).join("")}</div></details>` : ""}</div>`;
+}
+
+// ================= MIND =================
+function viewMind() {
+  const t = UI.tabs.mind;
+  let body = "";
+  if (t === "books") {
+    const books = all("book");
+    const card = (b) => { const pct = b.pages ? (num(b.page) / num(b.pages)) * 100 : 0; const n = all("booknote").filter((x) => x.book === b.id).length;
+      return `<div class="card" style="${ac("mind")}"><div class="card-h"><button class="t" style="border:0;background:none;padding:0;text-align:left;font-weight:650;font-size:16px" data-act="open" data-id="${b.id}">${esc(b.title)}</button>${b.rating ? `<span class="chip">${"★".repeat(num(b.rating))}</span>` : ""}</div><span class="note">${esc(b.author || "")}</span>
+        ${b.status === "reading" ? `${bar(pct)}<span class="note">${b.page ? `Page ${esc(b.page)}${b.pages ? " of " + esc(b.pages) : ""}` : "Not started"}</span>` : ""}<span class="note">${plural(n, "note")}</span></div>`; };
+    const grp = (st, l) => { const g = books.filter((b) => b.status === st); return g.length ? `<h2>${l}</h2><div class="grid g3">${g.map(card).join("")}</div>` : ""; };
+    body = `${quickAdd("book", {}, "Add a book…")}${grp("reading", "Reading now")}${grp("toread", "To read")}${grp("done", "Finished")}${books.length ? "" : emptyState("No books yet", "Add what you're reading. Open a book to keep notes in your own words.")}`;
+  } else if (t === "therapy") {
+    const th = all("therapy").sort((a, b) => ((a.date || "") < (b.date || "") ? 1 : -1));
+    body = `<div class="banner"><span>Private: only you can open PraxisAI, and nothing here is shared.</span></div>${quickAdd("therapy", { date: today() }, "Today's main lesson…")}
+      <div class="card"><div class="list">${th.map((x) => itemRow(x, { area: false, sub: x.practice ? "Practise: " + x.practice : "", extra: x.date ? `<span class="chip">${fmtShort(x.date)}</span>` : "" })).join("") || emptyState("No sessions yet", "After each session, write the one lesson and what you'll practise this week.")}</div></div>`;
+  } else if (t === "lessons") {
+    const ls = all("lesson").sort((a, b) => (b.created || 0) - (a.created || 0));
+    body = `${quickAdd("lesson", { date: today() }, "A lesson I learned…")}<div class="card"><div class="list">${ls.map((x) => itemRow(x, { area: false, sub: [x.source, x.notes].filter(Boolean).join(" · ") })).join("") || emptyState("No lessons yet", "Courses, conversations, mistakes. One line each.")}</div></div>`;
+  } else {
+    const ns = all("note").sort((a, b) => (b.updated || 0) - (a.updated || 0));
+    body = `${quickAdd("note", {}, "New note title…")}<div class="card"><div class="list">${ns.map((x) => itemRow(x, { sub: (x.notes || "").slice(0, 140) })).join("") || emptyState("No notes yet", "Anything worth keeping.")}</div></div>`;
+  }
+  return `<div class="page">${head("Mind", "Books, therapy lessons, learning and notes.")}${tabs("mind", [["books", "Books"], ["therapy", "Therapy"], ["lessons", "Lessons"], ["notes", "Notes"]])}${body}</div>`;
+}
+
+// ================= CREATE =================
+function viewCreate() {
+  const t = UI.tabs.create;
+  let body = "";
+  if (t === "writing") {
+    const ws = all("writing").sort((a, b) => (b.updated || 0) - (a.updated || 0));
+    body = `<div class="row"><button class="btn" data-act="newWriting" data-kind="poem">New poem</button><button class="btn ghost" data-act="newWriting" data-kind="prose">New prose</button><button class="btn ghost" data-act="newWriting" data-kind="essay">New post</button><button class="btn quiet" data-act="prompt">Give me a prompt</button></div>
+      ${UI.prompt ? `<div class="ai-out">${esc(UI.prompt)}</div>` : ""}
+      <div class="card"><div class="list">${ws.map((w) => `<div class="it"><span class="areadot" style="${ac("create")};margin-top:7px"></span><div style="min-width:0"><button class="t" data-act="write" data-id="${w.id}">${esc(w.title || "Untitled")}</button><div class="s">${esc((w.body || "").split("\n").filter(Boolean)[0] || "Empty page")}</div><div class="m"><span class="chip">${esc(labelOf(WRITE_KIND, w.kind))}</span><span class="chip">${esc(labelOf(WRITE_STATUS, w.status))}</span><span class="chip">${words(w.body)} words</span></div></div><button class="btn quiet sm" data-act="open" data-id="${w.id}">Details</button></div>`).join("") || emptyState("The playground is empty", "Start a poem. Nobody reads it unless you say so.")}</div></div>`;
+  } else if (t === "projects") {
+    const ps = all("project");
+    body = `${quickAdd("project", {}, "A new project idea…")}<div class="board" style="grid-template-columns:repeat(5,minmax(200px,1fr))">${PROJ_STAGE.map(([k, l]) => `<div class="col"><div class="col-h"><span>${esc(l)}</span><span>${ps.filter((p) => p.stage === k).length}</span></div>${ps.filter((p) => p.stage === k).map((p) => `<div class="kc" style="${ac(areaOf(p))};cursor:default"><button class="t" data-act="open" data-id="${p.id}">${esc(p.title)}</button>${p.next ? `<span class="note">Next: ${esc(p.next)}</span>` : ""}</div>`).join("")}</div>`).join("")}</div>
+      <p class="note">An active project needs a next step. Park the rest: parking is a decision, not a failure.</p>`;
+  } else {
+    const hs = all("hobby");
+    body = `${quickAdd("hobby", {}, "A hobby…")}<div class="card"><div class="list">${hs.map((h) => itemRow(h, { area: false, sub: h.lastDone ? `Last time: ${relDay(h.lastDone)}` : "Not logged yet", right: `<button class="btn ghost sm" data-act="hobbyToday" data-id="${h.id}">Did it today</button>` })).join("") || emptyState("No hobbies listed", "Writing, theatre, the sea… list what feeds you.")}</div></div>`;
+  }
+  return `<div class="page">${head("Create", "Writing, projects and hobbies. Play counts.")}${tabs("create", [["writing", "Writing playground"], ["projects", "New projects"], ["hobbies", "Hobbies"]])}${body}</div>`;
+}
+
+// ================= GOALS & HABITS =================
+function viewGoals() {
+  const goals = all("goal"), habits = all("habit");
+  const days = [...Array(7)].map((_, i) => addDays(today(), i - 6));
+  const G = P ? P.goals : null;
+  return `<div class="page">${head("Goals & habits", "Big direction, small daily votes.")}
+    ${G ? `<div class="card" style="${ac("career")};border-top:3px solid var(--ac)"><span class="eyebrow">Life question</span><p style="font-family:var(--display);font-size:20px;line-height:1.35">${esc(G.lifeQuestion)}</p>
+      <div class="grid g3">${G.stages.map((s, i) => `<div class="stack"><b>${esc(s.name)}${i === 0 ? ' <span class="chip late">You are here</span>' : ""}</b><span class="note">${esc(s.when)} · age ${esc(s.age)}</span><span class="small">${esc(s.moves)}</span><span class="note">Gate: ${esc(s.gate)}</span></div>`).join("")}</div></div>` : ""}
+    <div class="card"><div class="card-h"><h3>Goals</h3></div>
+      <div class="list">${goals.map((g) => { const pct = num(g.target) ? (num(g.current) / num(g.target)) * 100 : 0; return `<div class="it" style="${ac(areaOf(g))}"><span class="areadot" style="margin-top:7px"></span><div style="min-width:0"><button class="t" data-act="open" data-id="${g.id}">${esc(g.title)}</button><div class="m">${areaChip(areaOf(g))}${g.deadline ? dueChip(g.deadline, "by") : ""}</div><div style="margin-top:6px">${bar(pct, pct >= 100 ? "good" : "")}</div></div>
+        <div class="row"><button class="btn ghost sm" data-act="goalStep" data-id="${g.id}" data-d="-1" aria-label="Decrease">−</button><b>${esc(g.current || 0)} / ${esc(g.target || 0)}</b><button class="btn ghost sm" data-act="goalStep" data-id="${g.id}" data-d="1" aria-label="Increase">+</button></div></div>`; }).join("") || '<p class="note">No goals yet.</p>'}</div>${quickAdd("goal", {}, "A goal with a number, e.g. Send 10 applications…")}</div>
+    <div class="card"><div class="card-h"><h3>Habits · last 7 days</h3><span class="note">Tap a day to tick it</span></div>
+      <div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;min-width:520px"><thead><tr><th style="text-align:left;padding:6px"></th>${days.map((d) => `<th class="small muted" style="padding:6px;font-weight:600">${parseYmd(d).toLocaleDateString("en-GB", { weekday: "short" })}<br>${parseYmd(d).getDate()}</th>`).join("")}<th class="small muted">Streak</th></tr></thead>
+      <tbody>${habits.map((h) => `<tr><td style="padding:6px"><button class="t" style="border:0;background:none;padding:0;font-weight:600;text-align:left" data-act="open" data-id="${h.id}">${esc(h.title)}</button>${h.cue ? `<div class="note">${esc(h.cue)}</div>` : ""}</td>${days.map((d) => `<td style="text-align:center;padding:4px"><button class="tick" style="margin:auto" data-act="habit" data-id="${h.id}" data-d="${d}" aria-pressed="${!!(h.log || {})[d]}" aria-label="${esc(h.title)} on ${fmtShort(d)}">${ICON.check}</button></td>`).join("")}<td style="text-align:center"><b>${streak(h)}</b></td></tr>`).join("")}</tbody></table></div>
+      ${habits.length ? "" : '<p class="note">Atomic Habits: make it obvious, attractive, easy, satisfying. Start with something that takes two minutes.</p>'}
+      ${quickAdd("habit", {}, "A tiny habit, e.g. Read 2 pages…")}</div></div>`;
+}
+
+// ================= WHITEBOARD =================
+const STICKY = ["#FFE58F", "#BAE6FD", "#FBCFE8", "#BBF7D0", "#E9D5FF"];
+function viewBoard() {
+  const boards = [...S.boards.entries()].map(([id, b]) => Object.assign({ id }, b)).sort((a, b) => (b.updated || 0) - (a.updated || 0));
+  if (!UI.board || !S.boards.has(UI.board)) UI.board = boards[0] ? boards[0].id : null;
+  const b = UI.board ? S.boards.get(UI.board) : null;
+  const notes = b ? b.notes || [] : [];
+  return `<div class="page">${head("Whiteboard", "Throw thoughts on the wall, move them around, turn the good ones into tasks.")}
+    <div class="row">${boards.length ? `<select class="input" style="max-width:240px" data-act="pickBoard" aria-label="Board">${boards.map((x) => `<option value="${x.id}" ${x.id === UI.board ? "selected" : ""}>${esc(x.title || "Untitled board")}</option>`).join("")}</select>` : ""}
+      <button class="btn ghost" data-act="newBoard">New board</button>
+      ${b ? `<input class="input" style="max-width:240px" id="bt-${UI.board}" data-board-title="${UI.board}" value="${esc(b.title || "")}" aria-label="Board name"><span class="note">Add:</span>${STICKY.map((c) => `<button class="swatch" style="--sc:${c}" data-act="addSticky" data-c="${c}" aria-label="Add sticky note"></button>`).join("")}` : ""}</div>
+    ${b ? `<div class="wb-wrap" id="wbwrap"><div class="wb" id="wb">${notes.map((n) => `<div class="sticky" data-note="${n.id}" style="--sc:${esc(n.c)};left:${num(n.x)}px;top:${num(n.y)}px"><div class="sh" data-handle="${n.id}"><button data-act="noteTask" data-n="${n.id}" title="Make it a task" aria-label="Make it a task">✓</button><button data-act="delSticky" data-n="${n.id}" aria-label="Delete note">×</button></div><textarea data-sticky="${n.id}" id="st-${n.id}" aria-label="Sticky note">${esc(n.t || "")}</textarea></div>`).join("")}</div></div>`
+      : emptyState("No boards yet", "Create a board for a decision, a project, or a messy week.", '<button class="btn" data-act="newBoard">Create a board</button>')}</div>`;
+}
+
+// ================= THINK WITH CLAUDE =================
+const THINK_PROMPTS = [
+  ["Plan my day", "Look at my tasks and deadlines and give me a realistic plan for today: max 3 priorities, in order, with the first tiny step for each."],
+  ["I'm stuck", "I'm stuck and can't start. Ask me one question at a time to find the smallest next step."],
+  ["Help me decide", "Help me decide between options. First ask me what the options are, then help me compare them on what matters to me."],
+  ["Career next step", "Based on my goals and opportunities, what is the single most useful career action for this week, and why?"],
+  ["Weekly review", "Run a short weekly review with me: what went well, what slipped, and the 3 outcomes for next week. One question at a time."],
+  ["Write a post idea", "Give me 3 LinkedIn post ideas from my work this week, in my voice: start from a person and a need, then the technology."]
+];
+function viewThink() {
+  const threads = [...S.threads.entries()].map(([id, t]) => Object.assign({ id }, t)).sort((a, b) => (b.updated || 0) - (a.updated || 0));
+  if (UI.thread && !S.threads.has(UI.thread) && UI.thread !== "new") UI.thread = null;
+  const th = UI.thread && UI.thread !== "new" ? S.threads.get(UI.thread) : null;
+  const msgs = th ? th.msgs || [] : [];
+  const live = UI.ai.chat;
+  if (!CAP.sample) return `<div class="page">${head("Think with Claude", "A place to think out loud.")}<div class="banner warn">Claude answers here when PraxisAI is open on claude.ai. Your past conversations are still below.</div>${threads.map((t) => `<p>${esc(t.title)}</p>`).join("")}</div>`;
+  return `<div class="page">${head("Think with Claude", "A place to think out loud. Claude sees a short summary of your tasks, deadlines, goals and money, nothing else.", `<button class="btn ghost" data-act="newThread">New conversation</button>`)}
+    ${threads.length ? `<div class="chips">${threads.slice(0, 8).map((t) => `<button class="pill" data-act="pickThread" data-id="${t.id}" aria-pressed="${t.id === UI.thread}">${esc((t.title || "Conversation").slice(0, 40))}</button>`).join("")}</div>` : ""}
+    <div class="card"><div class="chat" id="chat">${msgs.map((m) => `<div class="msg ${m.role}">${esc(m.content)}</div>`).join("")}
+      ${live && live.pendingUser ? `<div class="msg user">${esc(live.pendingUser)}</div>` : ""}
+      ${live && (live.loading || live.text) ? `<div class="msg assistant" id="live">${esc(live.text || "Thinking…")}</div>` : ""}
+      ${live && live.err ? `<div class="banner warn">${esc(live.err)}</div>` : ""}
+      ${!msgs.length && !live ? `<p class="muted">Start with one of these, or write your own.</p><div class="prompts">${THINK_PROMPTS.map(([l], i) => `<button class="pill" data-act="thinkPrompt" data-i="${i}">${esc(l)}</button>`).join("")}</div>` : ""}</div>
+      <form class="addrow" data-form="chat"><textarea class="input" id="chatbox" name="m" rows="2" placeholder="Think out loud… (tap the microphone on your keyboard to dictate)" aria-label="Message to Claude"></textarea>
+        ${live && live.loading ? `<button class="btn ghost" type="button" data-act="stopChat">Stop</button>` : `<button class="btn" type="submit">Send</button>`}</form></div></div>`;
+}
+
+// ================= CAPTURE INBOX =================
+function viewInbox() {
+  const caps = all("capture").sort((a, b) => (b.created || 0) - (a.created || 0));
+  const so = UI.sort;
+  return `<div class="page">${head("Capture inbox", "Empty your head here. Sort it later, or let Claude sort it.", caps.length ? aiBtn("sortInbox", `Sort ${plural(caps.length, "thought")} with Claude`) : "")}
+    <form class="card" data-form="capture"><textarea class="input" id="dump" name="t" rows="4" placeholder="Everything on your mind, one thought per line. On iPhone, tap the keyboard's microphone to speak instead of typing." aria-label="Brain dump"></textarea>
+      <div class="row between"><span class="note">One line = one thought.</span><button class="btn" type="submit">Save to inbox</button></div></form>
+    ${so && so.loading ? '<div class="ai-out muted">Claude is sorting your thoughts…</div>' : ""}
+    ${so && so.err ? `<div class="banner warn">${esc(so.err)}</div>` : ""}
+    ${so && so.items ? `<div class="card"><div class="card-h"><h3>Claude's suggestion</h3><span class="note">Untick anything you don't want</span></div>
+      <div class="list">${so.items.map((s, i) => `<label class="it" style="cursor:pointer"><input type="checkbox" class="cbx" data-sorti="${i}" ${s.keep !== false ? "checked" : ""}><div style="min-width:0"><b>${esc(s.title)}</b><div class="m"><span class="chip">${esc((TYPES[s.type] || TYPES.task).label)}</span>${areaChip(AREAS[s.area] ? s.area : "life")}${s.due ? dueChip(s.due) : ""}</div></div><span></span></label>`).join("")}</div>
+      <div class="row"><button class="btn" data-act="applySort">Create selected</button><button class="btn quiet" data-act="cancelSort">Cancel</button></div></div>` : ""}
+    <div class="card"><div class="card-h"><h3>Unsorted</h3><span class="note">${caps.length}</span></div><div class="list">${caps.map((c) => `<div class="it"><span class="areadot" style="${ac("life")};margin-top:7px"></span><div style="min-width:0"><div style="overflow-wrap:anywhere">${esc(c.title)}</div><div class="m"><span class="chip">${new Date(c.created || Date.now()).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span></div></div>
+      <div class="row"><select class="input" style="width:auto;padding:5px 8px;font-size:13px" data-act="convert" data-id="${c.id}" aria-label="Turn into"><option value="">Turn into…</option><option value="task">Task</option><option value="note">Note</option><option value="project">Project idea</option><option value="lead">Lead</option><option value="event">Event</option><option value="writing">Writing</option><option value="lesson">Lesson</option></select><button class="btn quiet sm" data-act="delCapture" data-id="${c.id}" aria-label="Delete">×</button></div></div>`).join("") || emptyState("Inbox zero", "Your head is clear. Use the red + button any time a thought arrives.")}</div></div></div>`;
+}
+
+// ================= SETTINGS =================
+function viewSettings() {
+  const s = meta("settings");
+  const counts = {}; for (const it of S.items.values()) counts[it.type] = (counts[it.type] || 0) + 1;
+  const sync = S.mode === "cloud" ? (S.err ? `<span class="dot bad"></span>Sync stopped (${esc(S.err)}). Reload the page.` : S.cached ? '<span class="dot warn"></span>Connecting…' : '<span class="dot ok"></span>Synced with claude.ai on all your devices')
+    : '<span class="dot warn"></span>Saved on this device only (open PraxisAI on claude.ai to sync)';
+  return `<div class="page">${head("Settings", "How PraxisAI works for you.")}
+    <div class="card"><h3>Sync</h3><p>${sync}</p><p class="note">${S.items.size} items · ${S.boards.size} boards · ${S.threads.size} conversations</p></div>
+    <div class="card"><h3>About me (what Claude knows)</h3><textarea class="input" id="s-about" data-setting="aboutMe" rows="6" placeholder="Who you are, what you're working towards, how you like answers. Claude reads this before every answer in PraxisAI.">${esc(s.aboutMe || "")}</textarea><p class="note">Private to you. Claude also sees a short summary of your open tasks, deadlines, goals and this month's money.</p></div>
+    <div class="card"><h3>Focus timer</h3><div class="fgrid"><label class="f">Focus minutes<input class="input" type="number" id="s-focus" data-setting="focusLen" value="${esc(s.focusLen || 25)}"></label><label class="f">Break minutes<input class="input" type="number" id="s-break" data-setting="breakLen" value="${esc(s.breakLen || 5)}"></label></div></div>
+    <div class="card"><h3>Gmail</h3><label class="f">Inbox search used in SimasiaAI → Gmail<input class="input" id="s-gq" data-setting="gmailQuery" value="${esc(s.gmailQuery || "in:inbox newer_than:7d -category:promotions -category:social")}"></label><p class="note">PraxisAI only reads threads and saves drafts. It never sends email.</p></div>
+    <div class="card"><h3>Backup</h3><p class="note">Download everything as one file. Keep it somewhere safe once a month.</p><div class="row">${CAP.downloads ? '<button class="btn ghost" data-act="backup">Download backup</button>' : '<span class="note">Backup download works on claude.ai.</span>'}<label class="btn ghost" for="restore">Restore from file</label><input type="file" id="restore" accept="application/json,.json" hidden></div></div>
+    <div class="card"><h3>What's inside</h3><p class="note">${Object.entries(counts).map(([k, v]) => `${v} ${TYPES[k] ? TYPES[k].label.toLowerCase() : k}`).join(" · ") || "Nothing yet"}</p></div></div>`;
+}
+const VIEWS = { focus: viewFocus, overview: viewOverview, tasks: viewTasks, simasia: viewSimasia, plan: viewPlan, money: viewMoney, career: viewCareer, mind: viewMind, create: viewCreate, goals: viewGoals, board: viewBoard, think: viewThink, inbox: viewInbox, settings: viewSettings };
+
+// ================= drawer (edit any item) =================
+function fieldHTML(id, it, f) {
+  const v = it[f.k] != null ? it[f.k] : (DEFAULTS[it.type] || {})[f.k], fid = `f-${f.k}`;
+  const wide = f.o && f.o.wide || f.t === "textarea" || f.t === "checklist" ? "wide" : "";
+  let ctl;
+  switch (f.t) {
+    case "area": ctl = `<select class="input" id="${fid}" data-field="${f.k}" data-id="${id}">${Object.entries(AREAS).map(([k, l]) => `<option value="${k}" ${areaOf(it) === k ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`; break;
+    case "select": ctl = `<select class="input" id="${fid}" data-field="${f.k}" data-id="${id}">${v == null && !f.o.some((o) => o[0] === "") ? '<option value="" selected>—</option>' : ""}${f.o.map(([k, l]) => `<option value="${esc(k)}" ${String(v == null ? "" : v) === String(k) ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`; break;
+    case "book": ctl = `<select class="input" id="${fid}" data-field="book" data-id="${id}"><option value="">—</option>${all("book").map((b) => `<option value="${b.id}" ${v === b.id ? "selected" : ""}>${esc(b.title)}</option>`).join("")}</select>`; break;
+    case "textarea": ctl = `<textarea class="input" id="${fid}" data-field="${f.k}" data-id="${id}" rows="${(f.o && f.o.rows) || 3}">${esc(v || "")}</textarea>`; break;
+    case "check": return `<label class="row ${wide}" style="gap:8px;font-weight:600"><input type="checkbox" class="cbx" id="${fid}" data-field="${f.k}" data-id="${id}" ${v ? "checked" : ""}>${esc(f.l)}</label>`;
+    case "checklist": {
+      const steps = Array.isArray(v) ? v : [];
+      ctl = `<div class="checklist">${steps.map((s, i) => `<div class="ci ${s.d ? "d" : ""}"><input type="checkbox" class="cbx" data-act="stepDone" data-id="${id}" data-i="${i}" ${s.d ? "checked" : ""} aria-label="Step done"><input type="text" id="step-${i}" data-step="${i}" data-id="${id}" value="${esc(s.t)}" aria-label="Step"><button class="btn quiet sm" data-act="delStep" data-id="${id}" data-i="${i}" aria-label="Remove step">×</button></div>`).join("")}
+        <form class="addrow" data-form="step" data-id="${id}"><input class="input" id="newstep" name="t" placeholder="Add a step" autocomplete="off" aria-label="New step"><button class="btn ghost sm" type="submit">Add</button></form>
+        <div class="row">${aiBtn("breakdown", "Break it down with Claude", `data-id="${id}"`)}</div><div data-ai="bd-${id}">${aiBox("bd-" + id)}</div></div>`;
+      break;
+    }
+    default: {
+      const type = { date: "date", time: "time", number: "number", email: "email", url: "url" }[f.t] || "text";
+      ctl = `<input class="input" type="${type}" ${type === "number" ? 'inputmode="decimal" step="any"' : ""} id="${fid}" data-field="${f.k}" data-id="${id}" value="${esc(v == null ? "" : v)}" ${f.o && f.o.ph ? `placeholder="${esc(f.o.ph)}"` : ""}>`;
+    }
+  }
+  return `<label class="f ${wide}">${esc(f.l)}${ctl}</label>`;
+}
+function composer(id, it) {
+  const c = UI.compose[id] || {};
+  const isInv = it.type === "invoice";
+  const purposes = isInv ? [["reminder", "Payment reminder"], ["send", "Send the invoice"]] : [["first", "First email"], ["follow", "Follow-up"], ["meeting", "Ask for a meeting"], ["thanks", "Thank-you after a meeting"]];
+  return `<div class="card flat" style="background:var(--sunk);border:0"><div class="card-h"><h3>Email ${esc(it.email ? "to " + it.email : "")}</h3></div>
+    ${CAP.sample ? `<div class="row"><select class="input" style="width:auto" id="c-purpose" data-compose="purpose" data-id="${id}" aria-label="Email purpose">${purposes.map(([k, l]) => `<option value="${k}" ${c.purpose === k ? "selected" : ""}>${esc(l)}</option>`).join("")}</select><button class="btn ghost sm ai" data-act="draftEmail" data-id="${id}" ${c.loading ? "disabled" : ""}>${c.loading ? "Writing…" : "Draft with Claude"}</button></div>` : ""}
+    <label class="f">Subject<input class="input" id="c-subj" data-compose="subject" data-id="${id}" value="${esc(c.subject || "")}"></label>
+    <label class="f">Message<textarea class="input" id="c-body" data-compose="body" data-id="${id}" rows="9">${esc(c.body || "")}</textarea></label>
+    ${c.err ? `<div class="banner bad">${esc(c.err)}</div>` : ""}
+    ${c.saved ? `<div class="banner"><span class="dot ok"></span>Saved as a draft in Gmail. Review it there, then press Send.${c.url ? ` <a href="${esc(c.url)}" target="_blank" rel="noopener">Open draft ↗</a>` : ""}</div>` : ""}
+    <div class="row">${CAP.mcp ? `<button class="btn" data-act="gmailDraft" data-id="${id}" ${c.sending ? "disabled" : ""}>${c.sending ? "Saving…" : "Save as Gmail draft"}</button>` : '<span class="note">Gmail drafts work on claude.ai.</span>'}
+      ${!isInv ? `<button class="btn ghost" data-act="markEmailed" data-id="${id}">I sent it · follow up in 5 days</button>` : ""}</div></div>`;
+}
+function renderDrawer() {
+  const host = $("#drawer-host");
+  const id = UI.editId, it = id && item(id);
+  if (!it) { host.innerHTML = ""; UI.editId = null; return; }
+  const def = TYPES[it.type] || TYPES.task;
+  const title = def.titleArea
+    ? `<textarea class="input" id="f-title" data-field="title" data-id="${id}" rows="3" placeholder="${esc(def.titleLabel || "Title")}" aria-label="${esc(def.titleLabel || "Title")}">${esc(it.title || "")}</textarea>`
+    : `<input class="titlefield" id="f-title" data-field="title" data-id="${id}" value="${esc(it.title || "")}" placeholder="${esc(def.titleLabel || "Title")}" aria-label="${esc(def.titleLabel || "Title")}">`;
+  let extra = "";
+  if (it.type === "task") extra = `<div class="row"><button class="btn" data-act="focusOn" data-id="${id}">Focus on this now</button>${it.status !== "done" ? `<button class="btn ghost" data-act="complete" data-id="${id}">Done ✓</button>` : ""}</div>`;
+  if (it.type === "lead") extra = composer(id, it);
+  if (it.type === "invoice") extra = `${it.status !== "paid" ? `<div class="row"><button class="btn" data-act="invPaid" data-id="${id}">Mark paid (adds income to Money)</button>${it.status === "draft" ? `<button class="btn ghost" data-act="invSent" data-id="${id}">Mark sent</button>` : ""}</div>` : '<div class="banner"><span class="dot ok"></span>Paid. The income is in Money.</div>'}${composer(id, it)}`;
+  if (it.type === "meeting") extra = `<div class="row">${aiBtn("mtgPrep", "Prepare with Claude", `data-id="${id}"`)}</div><div data-ai="mtg-${id}">${aiBox("mtg-" + id)}</div>`;
+  if (it.type === "writing") extra = `<button class="btn" data-act="write" data-id="${id}">Open in writing mode</button>`;
+  if (it.type === "book") {
+    const notes = all("booknote").filter((n) => n.book === id).sort((a, b) => num(a.page) - num(b.page));
+    extra = `<div class="card flat" style="background:var(--sunk);border:0"><h3>Notes from this book</h3>
+      <div class="list">${notes.map((n) => `<div class="it"><span class="areadot" style="${ac("mind")};margin-top:7px"></span><div style="min-width:0"><button class="t" data-act="open" data-id="${n.id}">${esc(n.title)}</button>${n.notes ? `<div class="s">${esc(n.notes)}</div>` : ""}</div>${n.page ? `<span class="chip">p. ${esc(n.page)}</span>` : "<span></span>"}</div>`).join("") || '<p class="note">No notes yet.</p>'}</div>
+      <form class="stack" data-form="booknote" data-id="${id}"><textarea class="input" name="t" id="bn-t" rows="2" placeholder="A quote or an insight, in your own words" aria-label="New note"></textarea><div class="addrow"><input class="input" name="p" type="number" placeholder="Page" aria-label="Page" style="flex:0 1 100px"><button class="btn ghost" type="submit">Add note</button></div></form></div>`;
+  }
+  if (it.type === "capture") extra = `<p class="note">Turn it into something from the Capture inbox.</p>`;
+  host.innerHTML = `<div class="scrim" data-act="closeDrawer"></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-label="${esc(def.label)}">
+      <div class="drawer-h"><span class="chip area" style="${ac(areaOf(it))}"><span class="areadot"></span>${esc(def.label)}</span><span class="grow"></span><button class="btn quiet" data-act="closeDrawer" aria-label="Close">Close</button></div>
+      <div class="drawer-b">${title}${extra}<div class="fgrid">${def.fields.map((f) => fieldHTML(id, it, f)).join("")}</div>
+        ${UI.confirmDel ? `<div class="confirm">Delete this ${esc(def.label.toLowerCase())} for good?<button class="btn danger sm" data-act="delYes" data-id="${id}">Delete</button><button class="btn quiet sm" data-act="delNo">Keep it</button></div>` : `<div class="row between"><span class="note">Added ${it.created ? new Date(it.created).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : ""}</span><button class="btn danger sm" data-act="del">Delete</button></div>`}
+      </div></aside>`;
+}
+
+// ================= writer overlay =================
+const WRITING_PROMPTS = ["Γράψε για ένα αντικείμενο στο δωμάτιο σαν να ήταν ο τελευταίος σου φίλος.", "Write the conversation you didn't have this week.", "Ένα ποίημα που ξεκινά με «Σήμερα δεν…».", "Describe Athens at 07:00 using only sounds.", "Write a letter to yourself at 38, in public life.", "Ένα ποίημα για τη μητέρα σου που δεν θα της δείξεις.", "What does a patient hear when a doctor says 'it's fine'?", "Write ten lines, each beginning with 'I measure…' (Protagoras).", "Το espresso του πουλιού, δέκα χρόνια μετά.", "Write about the moment before you speak on a stage."];
+function renderWriter() {
+  const host = $("#writer-host");
+  const w = UI.writer && item(UI.writer);
+  if (!w) { host.innerHTML = ""; UI.writer = null; return; }
+  host.innerHTML = `<div class="writer" role="dialog" aria-label="Writing mode"><div class="wh"><input class="wt" id="w-title" data-field="title" data-id="${UI.writer}" value="${esc(w.title || "")}" placeholder="Title" aria-label="Title">
+    <span class="note" id="wc">${words(w.body)} words</span><button class="btn ghost sm" data-act="closeWriter">Done</button></div>
+    <textarea id="w-body" data-field="body" data-id="${UI.writer}" placeholder="Start anywhere. Saved as you type." aria-label="Text">${esc(w.body || "")}</textarea></div>`;
+}
+
+// ================= sheets: quick capture, more, switch, search =================
+function searchResults(q) {
+  q = q.trim().toLowerCase(); if (q.length < 2) return "";
+  const hits = all().filter((x) => [x.title, x.notes, x.body, x.org, x.contact, x.author].some((s) => s && String(s).toLowerCase().includes(q))).slice(0, 12);
+  return hits.length ? hits.map((x) => `<button data-act="openSearch" data-id="${x.id}"><b>${esc(x.title || "Untitled")}</b><span class="note">${esc(TYPES[x.type].label)} · ${esc(AREAS[areaOf(x)])}</span></button>`).join("") : '<p class="note" style="padding:8px">Nothing found.</p>';
+}
+function renderSheet() {
+  const host = $("#sheet-host");
+  const s = UI.sheet;
+  if (!s) { host.innerHTML = ""; return; }
+  let inner = "";
+  if (s === "capture") inner = `<form class="stack" data-form="fab"><div class="row between"><h2>Catch it before it's gone</h2><button type="button" class="btn quiet" data-act="closeSheet">Close</button></div>
+      <textarea class="input" id="fabtext" name="t" rows="4" placeholder="Type, or tap the keyboard's microphone and speak" aria-label="Thought"></textarea>
+      <div class="row"><button class="btn" type="submit" value="inbox">Save to inbox</button><button class="btn ghost" type="submit" value="task">Make it a task for today</button></div></form>`;
+  if (s === "more") inner = `<div class="row between"><h2>Everything</h2><button class="btn quiet" data-act="closeSheet">Close</button></div><div class="grid g2">${VIEWS_META.map(([k, l]) => `<a class="btn ghost" style="justify-content:flex-start" href="#${k}">${NAV_ICON(ICONS[k])} ${esc(l)}</a>`).join("")}</div>`;
+  if (s === "switch") { const opts = [...todayTasks(), ...all("task").filter((t) => t.status === "next" && !todayTasks().some((x) => x.id === t.id)).sort(byUrgency)].slice(0, 12);
+    inner = `<div class="row between"><h2>What's the one thing?</h2><button class="btn quiet" data-act="closeSheet">Close</button></div><div class="list">${opts.map((t) => itemRow(t, { right: `<button class="btn sm" data-act="focusOn" data-id="${t.id}">Choose</button>` })).join("") || '<p class="note">No open tasks. Add one first.</p>'}</div>`; }
+  if (s === "search") inner = `<div class="row between"><h2>Find</h2><button class="btn quiet" data-act="closeSheet">Close</button></div><div class="search">${ICON.search}<input id="q2" class="input" style="padding-left:32px" placeholder="Search everything" value="${esc(UI.q)}" aria-label="Search everything" autocomplete="off"></div><div id="results2" class="list">${searchResults(UI.q)}</div>`;
+  host.innerHTML = `<div class="scrim" data-act="closeSheet"></div><div class="sheet" role="dialog" aria-modal="true">${inner}</div>`;
+}
+
+// ================= shell =================
+function renderRail() {
+  const capN = all("capture").length;
+  const leadN = all("lead").filter((l) => isOpen(l) && (l.stage === "todo" || (l.followUp && l.followUp <= today()))).length;
+  const badges = { inbox: capN, simasia: leadN };
+  let html = "", grp = "";
+  for (const [k, l, g] of VIEWS_META) {
+    if (g !== grp) { html += `<div class="grp">${esc(g)}</div>`; grp = g; }
+    html += `<a href="#${k}" ${UI.view === k ? 'aria-current="page"' : ""}>${NAV_ICON(ICONS[k])}<span>${esc(l)}</span>${badges[k] ? `<span class="badge">${badges[k]}</span>` : ""}</a>`;
+  }
+  $("#nav").innerHTML = html;
+  $("#syncline").innerHTML = S.mode === "cloud" ? (S.err ? '<span class="dot bad"></span>Sync stopped' : S.cached ? '<span class="dot warn"></span>Connecting…' : '<span class="dot ok"></span>Synced on all devices') : S.mode === "local" ? '<span class="dot warn"></span>This device only' : '<span class="dot"></span>Loading…';
+  $("#topname").textContent = viewTitle(UI.view);
+  $("#tabbar").innerHTML = [["focus", "Focus"], ["overview", "Overview"], ["tasks", "Tasks"], ["simasia", "SimasiaAI"]].map(([k, l]) => `<a href="#${k}" ${UI.view === k ? 'aria-current="page"' : ""}>${NAV_ICON(ICONS[k])}<span>${l}</span></a>`).join("") + `<button data-act="sheet" data-s="more" aria-label="More">${NAV_ICON(ICONS.more)}<span>More</span></button>`;
+}
+function renderMain() {
+  const main = $("#main");
+  if (S.mode === "loading" || (S.mode === "cloud" && !S.loaded)) { main.innerHTML = `<div class="page"><h1>PraxisAI</h1><p class="muted">Opening your space…</p></div>`; return; }
+  let pre = "";
+  if (!CAP.owner) pre += `<div class="banner warn">This is Dimitris's private PraxisAI. Its contents are visible only to him.</div>`;
+  if (S.mode === "local") pre += `<div class="banner warn"><span class="dot warn"></span>You're outside claude.ai, so changes are saved in this browser only.</div>`;
+  if (S.err) pre += `<div class="banner bad">Sync stopped. Reload the page to reconnect; your recent changes stay on screen until then.</div>`;
+  main.innerHTML = (pre ? `<div class="page" style="margin-bottom:12px">${pre}</div>` : "") + (VIEWS[UI.view] || viewFocus)();
+}
+let renderQueued = false, deferred = false;
+function isEditing() { const a = document.activeElement; return !!(a && a.matches && a.matches("textarea, input:not([type]), input[type=text], input[type=number], input[type=email], input[type=url], input[type=search]") && a.closest("#main, #drawer-host, #writer-host, #sheet-host")); }
+function scheduleRender() { if (renderQueued) return; renderQueued = true; requestAnimationFrame(() => { renderQueued = false; if (isEditing() || dragging) { deferred = true; return; } renderAll(); }); }
+function renderAll() {
+  const a = document.activeElement, fid = a && a.id;
+  let ss = null, se = null; try { ss = a.selectionStart; se = a.selectionEnd; } catch (_) {}
+  const wb = $("#wbwrap"), wbs = wb ? [wb.scrollLeft, wb.scrollTop] : null;
+  const dsc = $(".drawer-b") ? $(".drawer-b").scrollTop : 0;
+  const keep = {};
+  $$("#main input[id], #main textarea[id], #sheet-host input[id], #sheet-host textarea[id], #drawer-host input[id], #drawer-host textarea[id]").forEach((el) => {
+    const d = el.dataset; if (d.field || d.money || d.setting || d.compose || d.sticky || d.step !== undefined || d.boardTitle || el.type === "checkbox" || el.type === "file") return;
+    if (el.value) keep[el.id] = el.value;
+  });
+  renderRail(); renderMain(); renderDrawer(); renderSheet(); renderWriter();
+  for (const [k, v] of Object.entries(keep)) { const el = document.getElementById(k); if (el && !el.value) el.value = v; }
+  if (fid) { const el = document.getElementById(fid); if (el && el !== document.activeElement) { try { el.focus({ preventScroll: true }); if (ss != null && el.setSelectionRange) el.setSelectionRange(ss, se); } catch (_) {} } }
+  if (wbs && $("#wbwrap")) { $("#wbwrap").scrollLeft = wbs[0]; $("#wbwrap").scrollTop = wbs[1]; }
+  if ($(".drawer-b")) $(".drawer-b").scrollTop = dsc;
+  if (UI.view === "think") { const c = $("#chat"); if (c) c.lastElementChild && c.lastElementChild.scrollIntoView({ block: "nearest" }); }
+  deferred = false;
+}
+document.addEventListener("focusout", () => setTimeout(() => { if (deferred && !isEditing() && !dragging) renderAll(); }, 0));
+
+// ================= actions =================
+function go(view) { if (location.hash !== "#" + view) location.hash = view; else { UI.view = view; renderAll(); } }
+function markDone(id, on) {
+  const it = item(id); if (!it) return;
+  it.status = on ? "done" : (it.status === "done" ? "next" : it.status); it.doneAt = on ? Date.now() : null; it.today = on ? it.today : it.today;
+  upsert("items", id, it);
+  if (on && meta("focus").current === id) setMeta("focus", { current: null });
+  const T = timerState(); if (on && T && T.id === id && T.phase === "focus") { const done = Math.round((T.len * 60000 - timeLeft(T)) / 60000); if (done > 0) logFocus(done); setTimer(null); releaseWake(); document.title = "PraxisAI"; }
+}
+const ACT = {
+  open: (d) => { UI.editId = d.id; UI.confirmDel = false; },
+  openSearch: (d) => { UI.sheet = null; const it = item(d.id); if (it && it.type === "writing") UI.writer = d.id; else UI.editId = d.id; UI.confirmDel = false; },
+  closeDrawer: () => { UI.editId = null; UI.confirmDel = false; },
+  del: () => { UI.confirmDel = true; },
+  delNo: () => { UI.confirmDel = false; },
+  delYes: (d) => { const it = item(d.id); del("items", d.id); UI.editId = null; UI.confirmDel = false; if (it && it.type === "book") for (const n of all("booknote")) if (n.book === d.id) del("items", n.id); toast("Deleted"); },
+  toggleDone: (d) => { const it = item(d.id); if (!it) return; const on = it.status !== "done"; markDone(d.id, on); if (on) toast(winLine()); },
+  complete: (d) => { markDone(d.id, true); UI.editId = null; toast(winLine()); },
+  focusOn: (d) => { setMeta("focus", { current: d.id }); const it = item(d.id); if (it && it.status !== "doing" && it.type === "task") { it.status = "doing"; upsert("items", d.id, it); } UI.sheet = null; UI.editId = null; go("focus"); },
+  switchFocus: () => { UI.sheet = "switch"; },
+  stepDone: (d) => { const it = item(d.id); if (!it || !Array.isArray(it.steps)) return; const s = it.steps[+d.i]; if (s) { s.d = !s.d; upsert("items", d.id, it); if (s.d) toast("Step done. Next one."); } },
+  delStep: (d) => { const it = item(d.id); if (!it || !Array.isArray(it.steps)) return; it.steps.splice(+d.i, 1); upsert("items", d.id, it); },
+  breakdown: (d) => breakdown(d.id),
+  timerStart: (d) => {
+    try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {}
+    setTimer({ phase: "focus", id: d.id, len: focusLen(), end: Date.now() + focusLen() * 60000, pausedLeft: null });
+    setMeta("focus", { current: d.id });
+    const it = item(d.id); if (it && it.type === "task" && it.status !== "doing") { it.status = "doing"; upsert("items", d.id, it); }
+    requestWake();
+  },
+  timerPause: () => { const T = timerState(); if (T) { T.pausedLeft = timeLeft(T); setTimer(T); document.title = "PraxisAI"; } },
+  timerResume: () => { const T = timerState(); if (T && T.pausedLeft != null) { T.end = Date.now() + T.pausedLeft; T.pausedLeft = null; setTimer(T); } },
+  timerStop: () => { const T = timerState(); if (T && T.phase === "focus") { const done = Math.round((T.len * 60000 - timeLeft(T)) / 60000); if (done >= 5) logFocus(done); } setTimer(null); releaseWake(); document.title = "PraxisAI"; },
+  calm: () => { UI.calm = !UI.calm; lsSet("praxis-calm", UI.calm ? "1" : "0"); },
+  toggleMore: () => { UI.showMore = !UI.showMore; },
+  toggleDoneList: () => { UI.showDone = !UI.showDone; },
+  tab: (d) => { UI.tabs[d.key] = d.val; },
+  area: (d) => { UI.area = d.val; },
+  advance: (d) => { const it = item(d.id); if (!it) return; const order = ["inbox", "next", "doing", "done"]; const i = order.indexOf(it.status || "next"); const nx = order[Math.min(order.length - 1, (i < 0 ? 1 : i + 1))]; if (nx === "done") { markDone(d.id, true); toast(winLine()); } else { it.status = nx; upsert("items", d.id, it); } },
+  invSent: (d) => { const it = item(d.id); if (!it) return; it.status = "sent"; it.issued = it.issued || today(); it.due = it.due || addDays(today(), 30); upsert("items", d.id, it); toast("Marked sent. Due " + fmtShort(it.due) + "."); },
+  invPaid: (d) => invoicePaid(d.id),
+  mailTask: (d) => { const th = UI.inbox.threads.find((t) => t.id === d.tid); if (!th) return; const m = (th.messages || [])[0] || {}; const from = ((m.addressDisplayNames || [])[0] || {}).displayName || m.sender || "";
+    createItem("task", { title: "Reply: " + decode(m.subject || "email"), area: "simasia", status: "next", notes: `From ${from}\n${decode(m.snippet || "")}`, link: th.viewUrl || "" }); toast("Task added to SimasiaAI"); },
+  week: (d) => { UI.weekOff = +d.d === 0 ? 0 : UI.weekOff + (+d.d); },
+  moneyAsk: () => moneyAsk(),
+  careerAsk: () => careerAsk(),
+  newWriting: (d) => { const id = createItem("writing", { kind: d.kind, title: "" }); UI.writer = id; },
+  write: (d) => { UI.writer = d.id; UI.editId = null; },
+  closeWriter: () => { UI.writer = null; },
+  prompt: () => { UI.prompt = WRITING_PROMPTS[Math.floor(Math.random() * WRITING_PROMPTS.length)]; },
+  hobbyToday: (d) => { setField(d.id, "lastDone", today()); toast("Logged. Good for you."); },
+  goalStep: (d) => { const it = item(d.id); if (!it) return; it.current = Math.max(0, num(it.current) + (+d.d)); upsert("items", d.id, it); if (num(it.current) >= num(it.target) && +d.d > 0) toast("Goal reached: " + it.title); },
+  habit: (d) => { const it = item(d.id); if (!it) return; it.log = Object.assign({}, it.log); if (it.log[d.d]) delete it.log[d.d]; else it.log[d.d] = true; const cutoff = addDays(today(), -120); for (const k of Object.keys(it.log)) if (k < cutoff) delete it.log[k]; upsert("items", d.id, it); },
+  newBoard: () => { const id = uid(); upsert("boards", id, { title: "New board", notes: [], created: Date.now() }); UI.board = id; },
+  addSticky: (d) => { const b = S.boards.get(UI.board); if (!b) return; const w = $("#wbwrap"); const x = w ? w.scrollLeft + 30 + Math.random() * Math.max(40, w.clientWidth - 260) : 40, y = w ? w.scrollTop + 30 + Math.random() * Math.max(40, w.clientHeight - 180) : 40; b.notes = (b.notes || []).concat([{ id: uid(), x: Math.round(x), y: Math.round(y), c: d.c, t: "" }]); upsert("boards", UI.board, b); },
+  delSticky: (d) => { const b = S.boards.get(UI.board); if (!b) return; b.notes = (b.notes || []).filter((n) => n.id !== d.n); upsert("boards", UI.board, b); },
+  noteTask: (d) => { const b = S.boards.get(UI.board); const n = b && (b.notes || []).find((x) => x.id === d.n); if (!n || !n.t.trim()) { toast("Write something on the note first"); return; } createItem("task", { title: n.t.trim().split("\n")[0].slice(0, 140), notes: n.t, status: "inbox" }); toast("Added to Tasks (Inbox)"); },
+  newThread: () => { UI.thread = "new"; UI.ai.chat = null; },
+  pickThread: (d) => { UI.thread = d.id; UI.ai.chat = null; },
+  thinkPrompt: (d) => { sendChat(THINK_PROMPTS[+d.i][1]); },
+  stopChat: () => { if (UI.chatCtl) UI.chatCtl.abort(); },
+  sortInbox: () => sortInbox(),
+  applySort: () => applySort(),
+  cancelSort: () => { UI.sort = null; },
+  delCapture: (d) => { del("items", d.id); },
+  backup: () => backup(),
+  draftEmail: (d) => draftEmail(d.id),
+  gmailDraft: (d) => gmailDraft(d.id),
+  markEmailed: (d) => { const it = item(d.id); if (!it) return; it.stage = it.stage === "todo" ? "emailed" : "followup"; it.followUp = addDays(today(), 5); it.lastEmailed = today(); upsert("items", d.id, it); toast("Follow-up set for " + fmtShort(it.followUp)); },
+  mtgPrep: (d) => mtgPrep(d.id),
+  sheet: (d) => { UI.sheet = d.s; },
+  closeSheet: () => { UI.sheet = null; },
+  fab: () => { UI.sheet = "capture"; },
+  restoreYes: () => restoreApply(),
+  restoreNo: () => { UI.restore = null; }
+};
+const WINS = ["Done. That's a win.", "Nice. One less thing in your head.", "Done ✓ Take a breath.", "Finished. Momentum is yours.", "Ticked. Small wins add up."];
+const winLine = () => WINS[Math.floor(Math.random() * WINS.length)];
+
+function invoicePaid(id) {
+  const it = item(id); if (!it) return;
+  it.status = "paid"; it.paidOn = today(); upsert("items", id, it);
+  const exists = all("txn").some((t) => t.invoice === id);
+  if (!exists && num(it.amount) > 0) createItem("txn", { title: `Invoice ${it.number ? it.number + " · " : ""}${it.title || "client"}`, kind: "income", amount: num(it.amount), date: today(), cat: "SimasiaAI", invoice: id });
+  toast(`Paid: ${eur(num(it.amount), 1)} added to Money`);
+}
+
+// ================= Claude actions =================
+async function breakdown(id) {
+  const it = item(id); if (!it || !CAP.sample) return;
+  const key = "bd-" + id; UI.ai[key] = { loading: true }; renderAll();
+  try {
+    const arr = await CAP.sample.json(`Break this task into 3 to 6 tiny, concrete steps for someone who finds starting hard. The first step must take under 5 minutes. Each step is at most 12 words and starts with a verb. Write the steps in the same language as the task. Reply with only a JSON array of strings, like ["Open the proposal file", "Write the first sentence"].\n\nTask: ${it.title}\n${it.notes ? "Notes: " + String(it.notes).slice(0, 1200) : ""}`, { modelTier: "quick" });
+    const steps = (Array.isArray(arr) ? arr : []).map((s) => String(s).trim()).filter(Boolean).slice(0, 8).map((t) => ({ t, d: false }));
+    if (!steps.length) throw { code: "invalid_json" };
+    const cur = item(id); if (!cur) return;
+    cur.steps = (Array.isArray(cur.steps) ? cur.steps : []).concat(steps); upsert("items", id, cur);
+    UI.ai[key] = null; toast(`Added ${steps.length} small steps`);
+  } catch (e) { UI.ai[key] = e && e.code === "cancelled" ? null : { err: sampleErr(e) }; }
+  renderAll();
+}
+async function draftEmail(id) {
+  const it = item(id); if (!it || !CAP.sample) return;
+  const c = UI.compose[id] = Object.assign({ purpose: it.type === "invoice" ? "reminder" : (it.stage === "todo" ? "first" : "follow") }, UI.compose[id] || {}, { loading: true, err: "", saved: false });
+  renderAll();
+  const lang = it.lang === "en" ? "English" : "Greek";
+  const what = {
+    first: "a short first email introducing SimasiaAI and asking for a 20-minute call",
+    follow: "a short, friendly follow-up to my earlier email, adding one useful thought and a simple question",
+    meeting: "a short email asking for a meeting, with two concrete time options next week",
+    thanks: "a short thank-you after our meeting, summarising what we agreed and the next step",
+    reminder: "a polite payment reminder for this invoice, warm but clear",
+    send: "a short email sending this invoice (attached separately)"
+  }[c.purpose] || "a short email";
+  const facts = it.type === "invoice"
+    ? `Client: ${it.title}\nInvoice number: ${it.number || "—"}\nAmount: ${eur(num(it.amount), 1)}\nIssued: ${it.issued || "—"}\nDue: ${it.due || "—"}`
+    : `Organisation: ${it.title}\nContact person: ${it.contact || "unknown"}\nWhat they need / notes: ${String(it.notes || "").slice(0, 1500) || "—"}\nCurrent stage: ${labelOf(LEAD_STAGES, it.stage)}`;
+  try {
+    const r = await CAP.sample.json(`You write emails for Dimitris Papadakis, co-founder of SimasiaAI, an Athens AI company that builds verifiable, hallucination-free AI assistants for patient associations, disability organisations, NGOs and clinics (live examples: Myrto AI for cancer patients with KAPA3, SKP-i for people with multiple sclerosis, BPAN Heroes, Perfectaki Able). His voice: warm, clear, human, a little playful, never hype. Start from the person and their need, then the technology. No buzzwords.
+Write ${what}, in ${lang}${lang === "Greek" ? " (polite plural, natural modern Greek)" : ""}. Under 150 words. Plain text, no markdown, no signature block (Gmail adds it); end with his first name.
+${facts}
+Reply with only JSON: {"subject": "...", "body": "..."}`, { cache: false });
+    UI.compose[id] = Object.assign({}, UI.compose[id], { subject: String((r && r.subject) || ""), body: String((r && r.body) || ""), loading: false });
+  } catch (e) { UI.compose[id] = Object.assign({}, UI.compose[id], { loading: false, err: e && e.code === "cancelled" ? "" : sampleErr(e) }); }
+  renderAll();
+}
+async function gmailDraft(id) {
+  const it = item(id); const c = UI.compose[id] || {};
+  if (!it) return;
+  const to = String(it.email || "").trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) { UI.compose[id] = Object.assign({}, c, { err: "Add a valid email address in the fields below first." }); renderAll(); return; }
+  if (!String(c.body || "").trim()) { UI.compose[id] = Object.assign({}, c, { err: "Write the message (or draft it with Claude) first." }); renderAll(); return; }
+  UI.compose[id] = Object.assign({}, c, { sending: true, err: "" }); renderAll();
+  try {
+    const p = await gmail("create_draft", { to: [to], subject: c.subject || "", body: c.body, includeSignature: true });
+    UI.compose[id] = Object.assign({}, UI.compose[id], { sending: false, saved: true, url: (p && p.viewUrl) || "" });
+    it.lastDraft = today(); upsert("items", id, it);
+  } catch (e) { UI.compose[id] = Object.assign({}, UI.compose[id], { sending: false, err: gmailErr(e) + (e && ["server_unavailable", "upstream_error"].includes(e.code) ? " Check Gmail drafts before trying again, it may have been saved." : "") }); }
+  renderAll();
+}
+async function mtgPrep(id) {
+  const it = item(id); if (!it || !CAP.sample) return;
+  const key = "mtg-" + id; UI.ai[key] = { loading: true, text: "" }; renderAll();
+  try {
+    const r = await CAP.sample(`Help me prepare a meeting. Keep it short and scannable, plain text with simple dashes, no markdown headings.
+Give: 1) one opening sentence I can say, 2) a 3-point agenda, 3) five sharp questions to ask, 4) what to bring or send before, 5) the one outcome to aim for.
+Meeting: ${it.title}
+Date/time: ${it.date || "?"} ${it.time || ""}
+With: ${it.with || "?"}
+My goal: ${it.goal || "?"}
+Notes so far: ${String(it.prep || it.notes || "").slice(0, 1500)}
+Context: ${lifeContext().slice(0, 1800)}`, { cache: false, onText: ({ text }) => { const el = $(`[data-ai="${key}"]`); if (el) el.innerHTML = `<div class="ai-out">${esc(text)}</div>`; } });
+    const cur = item(id); if (cur) { cur.prep = (cur.prep ? cur.prep + "\n\n" : "") + r.text; upsert("items", id, cur); }
+    UI.ai[key] = null; toast("Prep added to the meeting");
+  } catch (e) { UI.ai[key] = e && e.code === "cancelled" ? null : { err: sampleErr(e) }; }
+  renderAll();
+}
+function moneyAsk() {
+  const ms = monthsBack(6).map((k) => { const s = moneySnapshot(k); return `${k}: income ${s.inc.toFixed(0)}, spent ${s.exp.toFixed(0)}`; }).join("\n");
+  const mk = UI.moneyMonth || monthKey(today());
+  const cats = {}; for (const x of all("txn")) if (monthKey(x.date || "") === mk && x.kind !== "income") cats[x.cat || "Other"] = (cats[x.cat || "Other"] || 0) + num(x.amount);
+  const m = moneySnapshot(mk);
+  askClaude("moneyAsk", `Look at my money and talk to me like a calm, practical friend (not a financial adviser; say so in one short line at the end). Be brief, calm and concrete.
+${meta("settings").aboutMe || ""}
+Give: what's happening in 2 sentences, the one risk to watch, and one action for this week. Euros.
+Monthly floor (must cover): ${m.floor || "not set"}. Freedom target: ${m.target}/month. Savings: ${m.savings || "not set"}. Safety goal: ${m.goalMonths} months.
+Last 6 months:\n${ms}
+Spending by category in ${mk}: ${Object.entries(cats).map(([c, v]) => c + " " + v.toFixed(0)).join(", ") || "none"}
+Unpaid invoices: ${m.unpaid.toFixed(0)} (overdue ${m.overdue.toFixed(0)}).`, { cache: false });
+}
+function careerAsk() {
+  const opps = all("opp").filter(isOpen).sort((a, b) => (a.deadline || "9") < (b.deadline || "9") ? -1 : 1).slice(0, 15).map((o) => `- ${o.title} (${labelOf(OPP_KIND, o.kind)}, ${o.org || ""}) deadline ${o.deadline || "none"}, status ${labelOf(OPP_STATUS, o.status)}, fit ${o.fit || "?"}${o.next ? ", next: " + o.next : ""}`).join("\n");
+  const paths = all("path").map((p) => `- ${p.title}: ${p.why || ""}`).join("\n");
+  askClaude("careerAsk", `${lifeContext()}
+My open opportunities:\n${opps || "- none"}
+Career paths I'm testing:\n${paths || "- none"}
+Question: what is the ONE most useful career action for me this week, and why? Then name up to two things I should drop or postpone. Be decisive and short. Plain text, no markdown headings.`, { cache: false });
+}
+async function sortInbox() {
+  const caps = all("capture").sort((a, b) => (a.created || 0) - (b.created || 0)).slice(0, 40);
+  if (!caps.length || !CAP.sample) return;
+  UI.sort = { loading: true }; renderAll();
+  try {
+    const arr = await CAP.sample.json(`Sort my captured thoughts into PraxisAI items. Today is ${today()}.
+Types: task (something to do), note (to remember), project (bigger idea), lead (an organisation SimasiaAI could contact), event (something on a date), writing (a poem or text idea), lesson (something I learned), txn (money spent or earned; put the amount in "amount").
+Areas: simasia (SimasiaAI work), career (career & PhD), money, mind (books, therapy, learning), create (writing, projects, hobbies), body (gym, food, health), life (friends, family, home, admin).
+Rules: one item per thought unless a thought clearly holds two; short clear titles in the thought's own language; "due" only when a date is stated or obvious (YYYY-MM-DD), else null.
+Reply with only a JSON array of objects: {"i": index of the thought, "type": ..., "area": ..., "title": ..., "due": "YYYY-MM-DD" or null, "amount": number or null}.
+Thoughts:
+${caps.map((c, i) => `${i}. ${String(c.title).slice(0, 400)}`).join("\n")}`, { modelTier: "quick", cache: false });
+    const ok = ["task", "note", "project", "lead", "event", "writing", "lesson", "txn"];
+    const items = (Array.isArray(arr) ? arr : []).filter((x) => x && x.title && caps[+x.i]).map((x) => ({ i: +x.i, cid: caps[+x.i].id, type: ok.includes(x.type) ? x.type : "task", area: AREAS[x.area] ? x.area : "life", title: String(x.title).slice(0, 200), due: /^\d{4}-\d{2}-\d{2}$/.test(x.due || "") ? x.due : null, amount: num(x.amount) || null, keep: true }));
+    if (!items.length) throw { code: "invalid_json" };
+    UI.sort = { items };
+  } catch (e) { UI.sort = e && e.code === "cancelled" ? null : { err: sampleErr(e) }; }
+  renderAll();
+}
+function applySort() {
+  const so = UI.sort; if (!so || !so.items) return;
+  const used = new Set(); let n = 0;
+  for (const s of so.items) {
+    if (s.keep === false) continue;
+    const f = { title: s.title, area: s.area };
+    if (s.type === "task") { f.status = "next"; if (s.due) f.due = s.due; }
+    if (s.type === "event" && s.due) f.date = s.due;
+    if (s.type === "txn") { f.amount = s.amount || 0; f.date = s.due || today(); f.kind = "expense"; f.area = "money"; }
+    if (s.type === "lead") f.area = "simasia";
+    createItem(s.type, f); used.add(s.cid); n++;
+  }
+  for (const cid of used) del("items", cid);
+  UI.sort = null; toast(`Created ${plural(n, "item")}`);
+}
+async function sendChat(text) {
+  text = String(text || "").trim(); if (!text || !CAP.sample) return;
+  let tid = UI.thread && UI.thread !== "new" && S.threads.has(UI.thread) ? UI.thread : null;
+  if (!tid) { tid = uid(); upsert("threads", tid, { title: text.slice(0, 60), msgs: [], created: Date.now() }); UI.thread = tid; }
+  const th = S.threads.get(tid);
+  th.msgs = (th.msgs || []).concat([{ role: "user", content: text, at: Date.now() }]).slice(-60);
+  upsert("threads", tid, th);
+  const RULES = `You are my thinking partner inside PraxisAI, my personal operations app. Be warm, direct and brief: one idea at a time, short paragraphs, concrete next steps, and ask at most one question back. Answer in the language I write in (Greek or English). Plain text; simple dashes for lists.\n\n${lifeContext()}`;
+  const turns = th.msgs.slice(-20).map((m) => ({ role: m.role, content: m.content }));
+  const ctl = UI.chatCtl = new AbortController();
+  UI.ai.chat = { loading: true, text: "" }; renderAll();
+  try {
+    const r = await CAP.sample([{ role: "user", content: RULES }].concat(turns), { cache: false, signal: ctl.signal, onText: ({ text: t }) => { UI.ai.chat = { loading: true, text: t }; const el = $("#live"); if (el) { el.textContent = t; el.scrollIntoView({ block: "nearest" }); } } });
+    const cur = S.threads.get(tid); if (cur) { cur.msgs = (cur.msgs || []).concat([{ role: "assistant", content: r.text, at: Date.now() }]).slice(-60); upsert("threads", tid, cur); }
+    UI.ai.chat = null;
+  } catch (e) {
+    const partial = e && e.text;
+    if (partial) { const cur = S.threads.get(tid); if (cur) { cur.msgs = cur.msgs.concat([{ role: "assistant", content: partial + " …", at: Date.now() }]); upsert("threads", tid, cur); } }
+    UI.ai.chat = e && e.code === "cancelled" ? null : { err: sampleErr(e) };
+  }
+  renderAll();
+}
+async function backup() {
+  const o = { app: "praxisai", saved: new Date().toISOString() }; for (const c of COLS) o[c] = Object.fromEntries(S[c]);
+  try { await CAP.downloads.save({ filename: `praxisai-backup-${today()}.json`, data: JSON.stringify(o, null, 1) }); }
+  catch (e) { if (e && e.code !== "cancelled" && e.code !== "declined") toast("The download didn't start. Try again."); }
+}
+function restoreApply() {
+  const o = UI.restore; if (!o) return;
+  let n = 0;
+  for (const c of COLS) for (const [id, v] of Object.entries(o[c] || {})) { if (v && typeof v === "object") { upsert(c, id, clone(v)); n++; } }
+  UI.restore = null; toast(`Restored ${plural(n, "record")}`);
+}
+
+// ================= events =================
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-act]");
+  if (!el || el.tagName === "SELECT" || (el.tagName === "INPUT" && el.type !== "checkbox")) return;
+  const fn = ACT[el.dataset.act]; if (!fn) return;
+  if (el.tagName !== "A") e.preventDefault();
+  const r = fn(el.dataset, el);
+  if (!(r && r.then)) renderAll();
+});
+window.addEventListener("hashchange", () => {
+  const h = location.hash.slice(1); if (!VIEW_IDS.includes(h)) return;
+  UI.view = h; lsSet("praxis-view", h); UI.sheet = null; UI.editId = null; UI.showMore = false;
+  renderAll(); window.scrollTo(0, 0);
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (UI.writer) UI.writer = null; else if (UI.editId) UI.editId = null; else if (UI.sheet) UI.sheet = null; else return;
+  renderAll();
+});
+document.addEventListener("input", (e) => {
+  const t = e.target, d = t.dataset;
+  if (d.field && d.id && t.type !== "checkbox" && t.tagName !== "SELECT") {
+    const isText = ["TEXTAREA"].includes(t.tagName) || ["text", "number", "email", "url", ""].includes(t.type);
+    if (isText) { setField(d.id, d.field, t.type === "number" ? t.value : t.value, true); if (t.id === "w-body") { const wc = $("#wc"); if (wc) wc.textContent = words(t.value) + " words"; } }
+    return;
+  }
+  if (d.step !== undefined && d.id) { const it = item(d.id); if (it && it.steps && it.steps[+d.step]) { it.steps[+d.step].t = t.value; upsert("items", d.id, it, true); } return; }
+  if (d.money) { const s = meta("settings"); setMeta("settings", { money: Object.assign({}, s.money, { [d.money]: t.value }) }, true); return; }
+  if (d.setting) { setMeta("settings", { [d.setting]: t.value }, true); return; }
+  if (d.sticky) { const b = S.boards.get(UI.board); const n = b && (b.notes || []).find((x) => x.id === d.sticky); if (n) { n.t = t.value; upsert("boards", UI.board, b, true); } return; }
+  if (d.boardTitle) { const b = S.boards.get(d.boardTitle); if (b) { b.title = t.value; upsert("boards", d.boardTitle, b, true); } return; }
+  if (d.compose && d.id && t.tagName !== "SELECT") { UI.compose[d.id] = Object.assign({}, UI.compose[d.id], { [d.compose]: t.value, saved: false }); return; }
+  if (t.id === "q" || t.id === "q2") { UI.q = t.value; const box = t.id === "q" ? $("#results") : $("#results2"); if (box) { const h = searchResults(UI.q); box.innerHTML = h; if (t.id === "q") box.hidden = !h; } }
+});
+document.addEventListener("change", async (e) => {
+  const t = e.target, d = t.dataset;
+  if (d.field && d.id && (t.tagName === "SELECT" || t.type === "checkbox" || t.type === "date" || t.type === "time")) {
+    const it = item(d.id); if (!it) return;
+    const v = t.type === "checkbox" ? t.checked : t.value;
+    if (d.field === "status" && it.type === "task") { markDone(d.id, v === "done"); if (v !== "done") setField(d.id, "status", v); }
+    else setField(d.id, d.field, v);
+    renderAll(); return;
+  }
+  if (d.act === "convert" && t.value) {
+    const c = item(d.id); if (!c) return;
+    const f = { title: c.title.split("\n")[0].slice(0, 160), notes: c.title.includes("\n") ? c.title : "" };
+    const nid = createItem(t.value, f); del("items", d.id); UI.editId = nid; toast("Turned into " + TYPES[t.value].label.toLowerCase()); renderAll(); return;
+  }
+  if (d.act === "moneyMonth") { UI.moneyMonth = t.value; renderAll(); return; }
+  if (d.act === "pickBoard") { UI.board = t.value; renderAll(); return; }
+  if (d.sorti !== undefined && UI.sort && UI.sort.items) { UI.sort.items[+d.sorti].keep = t.checked; return; }
+  if (d.compose === "purpose") { UI.compose[d.id] = Object.assign({}, UI.compose[d.id], { purpose: t.value }); return; }
+  if (t.id === "restore" && t.files && t.files[0]) {
+    try { const o = JSON.parse(await t.files[0].text()); if (!o || !o.items) throw 0; UI.restore = o; } catch (_) { toast("That file isn't a PraxisAI backup"); }
+    t.value = ""; renderAll();
+  }
+});
+document.addEventListener("submit", async (e) => {
+  const f = e.target, d = f.dataset; e.preventDefault();
+  const val = (n) => (f.elements[n] ? String(f.elements[n].value || "").trim() : "");
+  switch (d.form) {
+    case "quick": {
+      const title = val("title"); if (!title) return;
+      const type = d.type, x = {};
+      for (const [k, v] of Object.entries(d)) if (k.startsWith("x") && k.length > 1) { const key = k[1].toLowerCase() + k.slice(2); x[key] = v; }
+      const fields = { title };
+      if (x.area) fields.area = x.area; if (x.status) fields.status = x.status; if (x.stage) fields.stage = x.stage; if (x.date) fields.date = x.date;
+      if (x.today) fields.today = true;
+      const dt = val("date");
+      if (dt) { if (type === "task") fields.due = dt; else if (type === "opp" || type === "goal") fields.deadline = dt; else fields.date = dt; }
+      const id = createItem(type, fields);
+      if (["lead", "invoice", "meeting", "book", "goal", "habit", "opp"].includes(type)) UI.editId = id;
+      if (type === "task" && x.today && !meta("focus").current) setMeta("focus", { current: id });
+      break;
+    }
+    case "park": { const t = val("t"); if (!t) return; createItem("capture", { title: t }); toast("Parked in your inbox. Back to the one thing."); break; }
+    case "capture": { const lines = val("t").split("\n").map((s) => s.trim()).filter(Boolean); lines.forEach((l) => createItem("capture", { title: l })); if (lines.length) toast(`Saved ${plural(lines.length, "thought")}`); break; }
+    case "fab": {
+      const t = val("t"); if (!t) return; const how = e.submitter && e.submitter.value;
+      if (how === "task") { createItem("task", { title: t, today: true, status: "next" }); toast("Added to today"); } else { createItem("capture", { title: t }); toast("Saved to your inbox"); }
+      UI.sheet = null; break;
+    }
+    case "txn": {
+      const amount = num(val("amount")), title = val("title"); if (!title || !amount) return;
+      createItem("txn", { title, amount, kind: val("kind") || "expense", cat: val("cat") || "Other", date: val("date") || today() });
+      toast(`${val("kind") === "income" ? "Income" : "Expense"} logged`); break;
+    }
+    case "gmailq": { const q = val("q"); if (q) setMeta("settings", { gmailQuery: q }); renderAll(); loadInbox(true); return; }
+    case "chat": { const t = val("m"); if (!t) return; f.reset(); const box = $("#chatbox"); if (box) box.value = ""; sendChat(t); return; }
+    case "step": { const t = val("t"); const it = item(d.id); if (!t || !it) return; it.steps = (Array.isArray(it.steps) ? it.steps : []).concat([{ t, d: false }]); upsert("items", d.id, it); break; }
+    case "booknote": { const t = val("t"); if (!t) return; createItem("booknote", { title: t, book: d.id, page: val("p") }); toast("Note saved"); break; }
+  }
+  f.reset();
+  renderAll();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && e.target.id === "chatbox") { e.preventDefault(); e.target.form.requestSubmit(); } });
+
+// drag cards between task columns (desktop)
+let dragId = null;
+document.addEventListener("dragstart", (e) => { const c = e.target.closest && e.target.closest("[data-drag]"); if (!c) return; dragId = c.dataset.drag; c.classList.add("dragging"); try { e.dataTransfer.setData("text/plain", dragId); e.dataTransfer.effectAllowed = "move"; } catch (_) {} });
+document.addEventListener("dragend", () => { dragId = null; $$(".col.drop").forEach((c) => c.classList.remove("drop")); $$(".dragging").forEach((c) => c.classList.remove("dragging")); });
+document.addEventListener("dragover", (e) => { const col = e.target.closest && e.target.closest("[data-drop]"); if (!col || !dragId) return; e.preventDefault(); $$(".col.drop").forEach((c) => c !== col && c.classList.remove("drop")); col.classList.add("drop"); });
+document.addEventListener("drop", (e) => {
+  const col = e.target.closest && e.target.closest("[data-drop]"); if (!col || !dragId) return; e.preventDefault();
+  const st = col.dataset.drop, id = dragId; dragId = null;
+  if (st === "done") { markDone(id, true); toast(winLine()); } else { const it = item(id); if (it) { if (it.status === "done") it.doneAt = null; it.status = st; upsert("items", id, it); } }
+  renderAll();
+});
+
+// whiteboard: drag sticky notes by their handle
+let dragging = null;
+document.addEventListener("pointerdown", (e) => {
+  const h = e.target.closest && e.target.closest("[data-handle]"); if (!h || e.target.closest("button")) return;
+  const el = h.parentElement; const id = h.dataset.handle;
+  dragging = { id, el, sx: e.clientX, sy: e.clientY, x: parseFloat(el.style.left) || 0, y: parseFloat(el.style.top) || 0 };
+  el.classList.add("dragging"); try { h.setPointerCapture(e.pointerId); } catch (_) {} e.preventDefault();
+});
+document.addEventListener("pointermove", (e) => {
+  if (!dragging) return;
+  const nx = Math.max(0, Math.min(2200, dragging.x + e.clientX - dragging.sx)), ny = Math.max(0, Math.min(1480, dragging.y + e.clientY - dragging.sy));
+  dragging.el.style.left = nx + "px"; dragging.el.style.top = ny + "px"; dragging.nx = nx; dragging.ny = ny;
+});
+document.addEventListener("pointerup", () => {
+  if (!dragging) return;
+  const g = dragging; dragging = null; g.el.classList.remove("dragging");
+  if (g.nx == null) return;
+  const b = S.boards.get(UI.board); const n = b && (b.notes || []).find((x) => x.id === g.id);
+  if (n) { n.x = Math.round(g.nx); n.y = Math.round(g.ny); upsert("boards", UI.board, b); }
+  if (deferred) renderAll();
+});
+
+// restore confirmation shown on the Settings page
+const _viewSettings = VIEWS.settings;
+VIEWS.settings = () => {
+  const r = UI.restore;
+  const n = r ? COLS.reduce((s, c) => s + Object.keys(r[c] || {}).length, 0) : 0;
+  return (r ? `<div class="page" style="margin-bottom:12px"><div class="confirm">Restore ${plural(n, "record")} from the backup? Records with the same id are replaced; nothing else is deleted.<button class="btn sm" data-act="restoreYes">Restore</button><button class="btn quiet sm" data-act="restoreNo">Cancel</button></div></div>` : "") + _viewSettings();
+};
+
+// search box in the rail
+document.addEventListener("focusin", (e) => { if (e.target.id === "q") { const box = $("#results"); const h = searchResults(UI.q); box.innerHTML = h; box.hidden = !h; } });
+document.addEventListener("click", (e) => { if (!e.target.closest(".search")) { const box = $("#results"); if (box) box.hidden = true; } }, true);
+
+// ================= boot =================
+renderAll();
+initStore();
+initCaps();
+setInterval(tickTimer, 1000);
+setInterval(() => { if (UI.view === "focus" && !isEditing() && !dragging && !UI.editId && !UI.sheet) renderAll(); }, 60000);
+
+})();
+</script>

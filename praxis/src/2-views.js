@@ -75,7 +75,18 @@ function viewFocus() {
   const meals = r && P ? P.meals[r.k] : null;
   const body = `<div class="card"><div class="card-h"><h3>Body today</h3><span class="chip area" style="${ac("body")}">${esc(r ? r.day.name : "")}</span></div>
     ${gym ? `<div><b>${esc(gym.s)} ${esc(gym.t)}</b><p class="note">${esc(gym.d)}</p></div>` : '<p class="note">No gym today. Walk outside.</p>'}
-    ${meals ? `<div class="stack small"><div><span class="eyebrow">Breakfast</span> ${esc(meals.b)}</div><div><span class="eyebrow">Lunch</span> ${esc(meals.l)}</div><div><span class="eyebrow">Dinner</span> ${esc(meals.d)}</div></div>` : ""}</div>`;
+    ${foodToday()}</div>`;
+  function foodToday() {
+    const nt = typeof nutTotals === "function" ? nutTotals(today()) : null;
+    if (nt) {
+      const nx = nt.nextIdx >= 0 ? nt.day.meals[nt.nextIdx] : null;
+      return `<div class="stack small"><span class="chip area" style="${ac("body")};align-self:flex-start">${esc(nt.day.en)}</span>
+        ${nx ? `<div><span class="eyebrow">Next · ${esc(nx.slot)}${nx.cue ? " · " + esc(nx.cue) : ""}</span><div>${esc((nx.items && nx.items.length ? nx.items : nx.options || []).join(" · "))}</div></div>` : '<div class="note">Every meal of the plan is done today.</div>'}
+        <div>${bar((nt.eaten / pMin()) * 100, nt.eaten >= pMin() ? "good" : "")}<span class="note">Protein ${nt.eaten} of ${pMin()}–${pMax()} g · Water ${nt.st.water}/${glasses()}</span></div>
+        <a class="btn ghost sm" style="align-self:flex-start" href="#food">Open nutrition</a></div>`;
+    }
+    return meals ? `<div class="stack small"><div><span class="eyebrow">Breakfast</span> ${esc(meals.b)}</div><div><span class="eyebrow">Lunch</span> ${esc(meals.l)}</div><div><span class="eyebrow">Dinner</span> ${esc(meals.d)}</div></div>` : "";
+  }
   const hab = `<div class="card"><div class="card-h"><h3>Habits</h3><a class="btn quiet sm" href="#goals">Edit</a></div>
     ${habits.length ? habits.map((h) => { const on = !!(h.log || {})[today()]; return `<div class="habit"><button class="tick" data-act="habit" data-id="${h.id}" data-d="${today()}" aria-pressed="${on}" aria-label="${esc(h.title)} today">${ICON.check}</button><div style="min-width:0"><b>${esc(h.title)}</b>${h.cue ? `<div class="note">${esc(h.cue)}</div>` : ""}</div><span class="chip" style="margin-left:auto">${streak(h)} day streak</span></div>`; }).join("") : emptyState("No habits yet", "Add one tiny habit in Goals & habits.", '<a class="btn ghost sm" href="#goals">Add a habit</a>')}</div>`;
   const wins = `<div class="card"><div class="card-h"><h3>Wins today</h3><span class="num" style="font-size:26px">${doneToday.length}</span></div>

@@ -14,6 +14,7 @@ My personal operations app, built for a brain that gets distracted easily. It ru
 | **SimasiaAI** | Leads and cold emails ("Today's 3"), Gmail inbox to tasks, invoices (paid adds income to Money), meeting prep, offering ideas. Claude drafts emails; they're saved as Gmail drafts, never sent. |
 | **Career & PhD** | Opportunities with deadlines and status, career paths, the Track A/B decision countdown. |
 | **Money** | Floor, freedom target, savings runway, income vs spending, categories, Claude's monthly read. |
+| **Nutrition** | My dietitian's plan: today's day type and meals with protein, a water tracker, the week, food swaps, supplements, a shopping list, weigh-ins and the next visit. The plan itself lives in the private store, not in this code. |
 | **Goals & habits** | Life question and stages, number goals, habit streaks. |
 | **Mind** | Books with notes, therapy lessons, lessons, notes. |
 | **Create** | Distraction-free writing mode, projects, hobbies. |
@@ -22,7 +23,7 @@ My personal operations app, built for a brain that gets distracted easily. It ru
 
 ## How it's built
 
-- One HTML page, no framework. `build.py` joins `src/shell.html`, `src/styles.css`, `../plan.js` (the Rhythm routine) and `src/1-core.js`, `src/2-views.js`, `src/3-app.js` into `index.html`.
+- One HTML page, no framework. `build.py` joins `src/shell.html`, `src/styles.css`, `../plan.js` (the Rhythm routine) and `src/1-core.js`, `src/2-views.js`, `src/2b-food.js`, `src/3-app.js`, `src/4-food.js` into `index.html`.
 - On claude.ai it uses the artifact runtime: `db` (private synced store, readable only by the owner), `sample` (Claude), `mcp` (Gmail: `search_threads`, `create_draft`), `downloads` (backup), `user`.
 - Outside claude.ai it still works, saving to the browser only.
 - My profile for Claude ("About me") is stored in the app's private settings, not in this code.

@@ -15,7 +15,9 @@ const glasses = () => num(NUT().waterGlasses) || 8;
 const pMin = () => num(NUT().proteinMin) || 144, pMax = () => num(NUT().proteinMax) || 160;
 const r5 = (n) => Math.round(num(n) / 5) * 5;
 const g0 = (n) => Math.round(num(n));
-function nutDay(date) { const n = NUT(); return n.days ? n.days[dayKeyOf(date)] || null : null; }
+// A day normally follows the weekday's plan; "plan" on the day's record overrides it (e.g. the rest day moved).
+const planKeyOf = (date) => { const o = S.nutri.get(date); return (o && o.plan) || dayKeyOf(date); };
+function nutDay(date) { const n = NUT(); return n.days ? n.days[planKeyOf(date)] || null : null; }
 function planEntry(m, i, at) { return { id: "plan-" + i, slot: i, name: m.slot, kcal: num(m.kcal), p: num(m.p), c: num(m.c), f: num(m.f), src: "plan", at: at || "" }; }
 function nutState(date) {
   const doc = S.nutri.get(date), legacy = (NLOG().days || {})[date] || {};
@@ -23,7 +25,7 @@ function nutState(date) {
   const log = Array.isArray(src.log) ? src.log.map((e) => Object.assign({}, e)) : [];
   if (!doc && Array.isArray(legacy.ate)) { const day = nutDay(date); for (const i of legacy.ate) { const m = day && day.meals[i]; if (m && !log.some((e) => e.src === "plan" && e.slot === i)) log.push(planEntry(m, i)); } }
   log.sort((a, b) => ((a.at || "99") < (b.at || "99") ? -1 : (a.at || "99") > (b.at || "99") ? 1 : 0));
-  return { water: num(src.water), log };
+  return { water: num(src.water), log, plan: (doc && doc.plan) || "" };
 }
 function nutTotals(date) {
   const day = nutDay(date); if (!day && !S.nutri.get(date)) return null;
@@ -115,6 +117,7 @@ function mealRow(m, i, date, interactive) {
 function planHTML(date, interactive) {
   const t = nutTotals(date); if (!t || !t.meals.length) return "";
   return `<div class="card"><div class="card-h"><h3>${esc(dname())}'s plan · ${esc(DAY_NAME[dayKeyOf(date)])}</h3><span class="chip area" style="${ac("body")}">${esc(t.day.gr || "")}</span></div>
+    <label class="row small" style="gap:8px">Day type <select class="input" id="daytype-${date}" style="max-width:240px" aria-label="Day type">${DAY_ORDER.filter((k) => NUT().days[k]).map((k) => `<option value="${k}" ${k === planKeyOf(date) ? "selected" : ""}>${esc(NUT().days[k].en)} (${DAY_NAME[k]})</option>`).join("")}</select></label>
     ${t.day.hint ? `<p class="note">${esc(t.day.hint)}</p>` : ""}
     <div class="list">${t.meals.map((m, i) => mealRow(m, i, date, interactive)).join("")}</div>
     <p class="note">Tick a meal when you ate it as planned. Ate something different? Tap "Ate something else" and write it in the diary.</p></div>`;

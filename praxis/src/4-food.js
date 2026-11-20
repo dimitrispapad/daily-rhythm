@@ -1,5 +1,5 @@
 // ================= NUTRITION actions =================
-function saveNutDay(date, st) { upsert("nutri", date, { water: st.water, log: st.log.map((e) => Object.assign({}, e)) }); }
+function saveNutDay(date, st) { const b = { water: st.water, log: st.log.map((e) => Object.assign({}, e)) }; if (st.plan) b.plan = st.plan; upsert("nutri", date, b); }
 function diaryStateFor(date) { return (UI.diary[date] = UI.diary[date] || {}); }
 async function estimateFood(date, text) {
   const D = diaryStateFor(date);
@@ -61,6 +61,7 @@ document.addEventListener("change", (e) => {
     upsert("meta", "nutritionLog", log); renderAll(); return;
   }
   if (t.id && t.id.startsWith("diary-slot-")) diaryStateFor(t.id.slice(11)).slot = +t.value;
+  if (t.id && t.id.startsWith("daytype-")) { const date = t.id.slice(8), st = nutState(date); st.plan = t.value === dayKeyOf(date) ? "" : t.value; if (!st.plan && !S.nutri.get(date)) return renderAll(); saveNutDay(date, st); if (!st.plan) { const b = Object.assign({}, S.nutri.get(date)); delete b.plan; upsert("nutri", date, b); } renderAll(); }
 });
 document.addEventListener("input", (e) => {
   const t = e.target, ds = t.dataset || {};

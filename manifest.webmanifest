@@ -1,0 +1,15 @@
+{
+  "name": "Dimitris Daily Rhythm",
+  "short_name": "Rhythm",
+  "description": "My hour-by-hour week: food, gym, work, stop, friends, writing and goals.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F6FA",
+  "theme_color": "#2337C6",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

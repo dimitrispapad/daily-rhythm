@@ -36,8 +36,12 @@ extra_css = """
 .sa-box{display:flex;flex-direction:column;gap:12px;width:min(340px,100%);text-align:center;align-items:stretch}
 .sa-box svg{align-self:center}.sa-box h1{margin:0}.sa-box p{margin:0;color:var(--muted)}
 body{margin:0}[hidden]{display:none!important}
+#sa-update{position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:150;background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;box-shadow:0 6px 24px rgba(0,0,0,.25)}
 """
 body = shell.replace("/*CSS*/", css + extra_css).replace("<script>\n/*PLAN*/", "<script>\n" + (src / "standalone.js").read_text() + "\n</script>\n<script>\n/*PLAN*/").replace("/*PLAN*/", plan).replace("/*APP*/", sa)
+import datetime
+BUILD = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M")
+body = body.replace("/*BUILD*/", BUILD)
 assert "window.__standalone" in body
 title_end = body.index("</style>") + len("</style>")
 head, rest = body[:title_end], body[title_end:]
@@ -66,6 +70,7 @@ doc = f"""<!doctype html>
 dest = root / "app"
 (dest / "icons").mkdir(parents=True, exist_ok=True)
 (dest / "index.html").write_text(doc)
+(dest / "version.json").write_text('{"build": "%s"}' % BUILD)
 for f in ["sw.js", "manifest.webmanifest"]:
     shutil.copy(src / f, dest / f)
 for f in (src / "icons").glob("*.png"):

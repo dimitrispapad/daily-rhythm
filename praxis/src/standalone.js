@@ -15,6 +15,24 @@
   const GOOGLE = "https://generativelanguage.googleapis.com/v1beta/models/";
   const MODELS = ["gemini-flash-latest", "gemini-3.6-flash", "gemini-2.5-flash"];
 
+  const BUILD = "/*BUILD*/";
+  // ---------- updates: always run the newest version ----------
+  async function applyUpdate() {
+    try { if (window.caches) for (const k of await caches.keys()) await caches.delete(k); } catch (_) {}
+    try { await fetch(location.href.split("#")[0], { cache: "reload" }); } catch (_) {}
+    location.reload();
+  }
+  async function checkUpdate(manual) {
+    try {
+      const j = await (await fetch(new URL("version.json", document.baseURI).href + "?t=" + Date.now(), { cache: "no-store" })).json();
+      if (j && j.build && j.build !== BUILD) {
+        if (manual) return applyUpdate();
+        if (!document.getElementById("sa-update")) { const el = document.createElement("div"); el.id = "sa-update"; el.innerHTML = '<span>A new version of the app is ready.</span><button class="btn sm" data-sa="update">Update now</button>'; document.body.appendChild(el); }
+      } else if (manual) { const b = document.querySelector('[data-sa="check"]'); if (b) b.textContent = "You have the newest version"; }
+    } catch (_) { if (manual) { const b = document.querySelector('[data-sa="check"]'); if (b) b.textContent = "No connection. Try again."; } }
+  }
+  setTimeout(checkUpdate, 1500);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkUpdate(); });
   const st = { server: null, pass: ls.get("praxis-pass") || "", cloud: false, online: false, lastSync: 0 };
   const ownKey = () => ls.get("praxis-gemini-key") || "";
   const head = () => ({ "content-type": "application/json", "x-praxis-key": st.pass });
@@ -188,7 +206,7 @@
         : `<p>${ownKey() ? '<span class="dot ok"></span>Gemini is on, using the key saved on this device.' : '<span class="dot warn"></span>Gemini is off. Paste a Gemini API key to turn on calorie estimates and the other AI buttons.'}</p>
           <div class="addrow"><input class="input" type="password" id="sa-key" placeholder="${ownKey() ? "Replace the saved key" : "Gemini API key"}" autocomplete="off" aria-label="Gemini API key"><button class="btn ghost" data-sa="savekey">Save key</button>${ownKey() ? '<button class="btn quiet" data-sa="delkey">Remove</button>' : ""}</div>
           <p class="note">Get a key at aistudio.google.com/apikey. It stays on this device and is sent only to Google.</p>`;
-      return `<div class="card"><h3>This app</h3><p>${sync}</p>${st.cloud ? '<div class="row"><button class="btn ghost sm" data-sa="syncnow">Sync now</button><button class="btn quiet sm" data-sa="signout">Lock this device</button></div>' : ""}</div>
+      return `<div class="card"><h3>This app</h3><p>${sync}</p><p class="note">Version ${BUILD}</p><div class="row"><button class="btn ghost sm" data-sa="check">Check for a new version</button></div>${st.cloud ? '<div class="row"><button class="btn ghost sm" data-sa="syncnow">Sync now</button><button class="btn quiet sm" data-sa="signout">Lock this device</button></div>' : ""}</div>
         <div class="card"><h3>Gemini</h3>${ai}</div>`;
     }
   };
@@ -197,6 +215,8 @@
     e.preventDefault();
     const a = b.dataset.sa;
     if (a === "savekey") { const v = (document.getElementById("sa-key").value || "").trim(); if (v.length < 20) { document.getElementById("sa-key").focus(); return; } ls.set("praxis-gemini-key", v); location.reload(); }
+    if (a === "update") return applyUpdate();
+    if (a === "check") { b.textContent = "Checking…"; return checkUpdate(true); }
     if (a === "delkey") { ls.del("praxis-gemini-key"); location.reload(); }
     if (a === "syncnow") { b.textContent = "Syncing…"; await push(); await pull(); location.hash = "#settings"; window.dispatchEvent(new Event("hashchange")); }
     if (a === "signout") {

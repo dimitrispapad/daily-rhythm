@@ -82,7 +82,7 @@ function viewFocus() {
       const nx = nt.nextIdx >= 0 ? nt.day.meals[nt.nextIdx] : null;
       return `<div class="stack small"><span class="chip area" style="${ac("body")};align-self:flex-start">${esc(nt.day.en)}</span>
         ${nx ? `<div><span class="eyebrow">Next · ${esc(nx.slot)}${nx.cue ? " · " + esc(nx.cue) : ""}</span><div>${esc((nx.items && nx.items.length ? nx.items : nx.options || []).join(" · "))}</div></div>` : '<div class="note">Every meal of the plan is done today.</div>'}
-        <div>${bar((nt.eaten / pMin()) * 100, nt.eaten >= pMin() ? "good" : "")}<span class="note">Protein ${nt.eaten} of ${pMin()}–${pMax()} g · Water ${nt.st.water}/${glasses()}</span></div>
+        <div>${bar((nt.eaten / pMin()) * 100, nt.eaten >= pMin() ? "good" : "")}<span class="note">${r5(nt.kcal)} of ${kcalTarget()} kcal · Protein ${g0(nt.eaten)} of ${pMin()}–${pMax()} g · Water ${nt.st.water}/${glasses()}</span></div>
         <a class="btn ghost sm" style="align-self:flex-start" href="#food">Open nutrition</a></div>`;
     }
     return meals ? `<div class="stack small"><div><span class="eyebrow">Breakfast</span> ${esc(meals.b)}</div><div><span class="eyebrow">Lunch</span> ${esc(meals.l)}</div><div><span class="eyebrow">Dinner</span> ${esc(meals.d)}</div></div>` : "";

@@ -106,8 +106,8 @@ function dateOf(it) {
 const areaOf = (it) => it.area || (TYPES[it.type] || {}).area || "life";
 
 // ================= store: claude.ai sync, with on-device fallback =================
-const S = { items: new Map(), boards: new Map(), threads: new Map(), meta: new Map(), mode: "loading", loaded: false, cached: true, err: null };
-const COLS = ["items", "boards", "threads", "meta"];
+const S = { items: new Map(), boards: new Map(), threads: new Map(), meta: new Map(), nutri: new Map(), mode: "loading", loaded: false, cached: true, err: null };
+const COLS = ["items", "boards", "threads", "meta", "nutri"];
 const LOCAL = "praxis-local-v1";
 let DB = null;
 const dirty = new Set(), inflight = new Set(), again = new Set(), timers = new Map();

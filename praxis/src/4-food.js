@@ -27,7 +27,9 @@ function addEntry(date, entry) {
 }
 function setGym(date, val) { const g = Object.assign({}, GLOG()), days = Object.assign({}, g.days || {}); if (val) days[date] = val; else delete days[date]; g.days = days; upsert("meta", "gymLog", g); }
 Object.assign(ACT, {
-  gymDay: (d) => { UI.gymDay = d.d; },
+  gymDay: (d) => { UI.gymDay = d.d; UI.gymP = null; },
+  gymP: (d) => { UI.gymP = +d.i; },
+  gymEx: (d) => { const cur = Object.assign({ type: "Weights" }, gymDays()[d.d] || {}), done = cur.done || []; cur.done = done.includes(d.k) ? done.filter((x) => x !== d.k) : done.concat([d.k]); cur.pday = +d.p; setGym(d.d, cur); },
   gymDel: (d) => { setGym(d.d, null); toast("Removed"); },
   sections: () => { lsSet("praxis-all", FOCUSED ? "1" : "0"); location.hash = ""; location.reload(); },
   nutMeal: (d) => {
@@ -64,6 +66,12 @@ document.addEventListener("change", (e) => {
     if (t.checked) log.shop[ds.shop] = true; else delete log.shop[ds.shop];
     upsert("meta", "nutritionLog", log); renderAll(); return;
   }
+  if (ds.kg !== undefined) { // kilos for one exercise: saved on the day and remembered for next time
+    const g = Object.assign({}, GLOG()), days = Object.assign({}, g.days || {}), cur = Object.assign({ type: "Weights" }, days[ds.d] || {}), v = t.value === "" ? null : Math.min(500, Math.max(0, num(t.value)));
+    cur.kg = Object.assign({}, cur.kg || {}); g.last = Object.assign({}, g.last || {});
+    if (v == null) delete cur.kg[ds.kg]; else { cur.kg[ds.kg] = v; g.last[ds.kg] = v; }
+    cur.pday = +ds.p; days[ds.d] = cur; g.days = days; upsert("meta", "gymLog", g); return;
+  }
   if (t.id && t.id.startsWith("diary-slot-")) diaryStateFor(t.id.slice(11)).slot = +t.value;
   if (t.id && t.id.startsWith("daytype-")) { const date = t.id.slice(8), st = nutState(date); st.plan = t.value === dayKeyOf(date) ? "" : t.value; if (!st.plan && !S.nutri.get(date)) return renderAll(); saveNutDay(date, st); if (!st.plan) { const b = Object.assign({}, S.nutri.get(date)); delete b.plan; upsert("nutri", date, b); } renderAll(); }
 });
@@ -94,7 +102,7 @@ document.addEventListener("submit", (e) => {
   if (f.dataset.form === "gym") {
     e.preventDefault(); e.stopImmediatePropagation();
     const mins = Math.min(600, Math.max(0, num(f.elements.mins.value)));
-    setGym(f.dataset.d, { type: f.elements.type.value, mins, effort: num(f.elements.effort.value), note: String(f.elements.note.value || "").trim().slice(0, 600) });
+    setGym(f.dataset.d, Object.assign({}, gymDays()[f.dataset.d] || {}, { type: f.elements.type.value, mins, effort: num(f.elements.effort.value), note: String(f.elements.note.value || "").trim().slice(0, 600) }));
     toast("Session logged"); renderAll(); return;
   }
   if (f.dataset.form !== "weight") return;

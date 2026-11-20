@@ -76,3 +76,13 @@ for f in ["sw.js", "manifest.webmanifest"]:
 for f in (src / "icons").glob("*.png"):
     shutil.copy(f, dest / "icons" / f.name)
 print(f"praxis/app/index.html: {len(doc)//1024} KB")
+
+# Never ship a page whose scripts do not parse.
+import subprocess, tempfile, re as _re
+for name in ["index.html", "app/index.html"]:
+    for i, m in enumerate(_re.finditer(r"<script>([\s\S]*?)</script>", (root / name).read_text())):
+        with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False) as f: f.write(m.group(1))
+        try: r = subprocess.run(["node", "--check", f.name], capture_output=True, text=True)
+        except FileNotFoundError: r = None
+        if r is not None and r.returncode: raise SystemExit(f"SYNTAX ERROR in {name}, script {i}:\n{r.stderr[:600]}")
+print("scripts parse")

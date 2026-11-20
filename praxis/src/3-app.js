@@ -388,7 +388,15 @@ async function backup() {
 function restoreApply() {
   const o = UI.restore; if (!o) return;
   let n = 0;
-  for (const c of COLS) for (const [id, v] of Object.entries(o[c] || {})) { if (v && typeof v === "object") { upsert(c, id, clone(v)); n++; } }
+  for (const c of COLS) for (const [id, v] of Object.entries(o[c] || {})) {
+    if (!v || typeof v !== "object") continue;
+    if (o.merge) { // an "add to what I have" file: new diary entries are appended, other records get the new fields
+      const cur = S[c].get(id);
+      if (c === "nutri" && cur) { const log = (cur.log || []).slice(); for (const e of v.log || []) if (!log.some((x) => x.id === e.id)) log.push(e); upsert(c, id, Object.assign({}, cur, v, { log, water: cur.water || v.water || 0, feel: (cur.feel || []).concat((v.feel || []).filter((f) => !(cur.feel || []).some((x) => x.id === f.id))) })); }
+      else upsert(c, id, Object.assign({}, cur || {}, clone(v)));
+    } else upsert(c, id, clone(v));
+    n++;
+  }
   UI.restore = null; toast(`Restored ${plural(n, "record")}`);
 }
 

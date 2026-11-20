@@ -6,10 +6,10 @@ const GYM_TYPES = ["Weights", "Cardio", "Mobility / yoga", "Sport", "Other"];
 UI.gymDay = null; UI.gymP = null;
 // The trainer's programme: meta/gymPlan = { gym, coach, date, weeks, rest, days: [{ name, groups: [{ name, ex: [{ n, sets, reps }] }] }], finish: { name, ex } }
 const GPLAN = () => meta("gymPlan");
-function nextProgDay() { const P = GPLAN(), log = gymDays(); if (!P.days) return 0; const last = Object.keys(log).filter((d) => d < today() && log[d].pday != null).sort().pop(); return last ? (num(log[last].pday) + 1) % P.days.length : 0; }
+function nextProgDay(date) { const P = GPLAN(), log = gymDays(), ref = date || today(); if (!P.days) return 0; const last = Object.keys(log).filter((d) => d < ref && log[d].pday != null).sort().pop(); return last ? (num(log[last].pday) + 1) % P.days.length : 0; }
 function progHTML(sel, cur) {
   const P = GPLAN(); if (!P.days || !P.days.length) return "";
-  const pd = UI.gymP != null ? UI.gymP : cur && cur.pday != null ? num(cur.pday) : nextProgDay(), day = P.days[pd] || P.days[0];
+  const pd = UI.gymP != null ? UI.gymP : cur && cur.pday != null ? num(cur.pday) : gymOf(sel) >= 0 ? gymOf(sel) : nextProgDay(sel), day = P.days[pd] || P.days[0];
   const done = (cur && cur.done) || [], kg = (cur && cur.kg) || {}, last = GLOG().last || {};
   const wk = P.date ? Math.floor(-daysUntil(P.date) / 7) + 1 : 0;
   const row = (e, key) => `<div class="exrow"><button class="tick" data-act="gymEx" data-d="${sel}" data-k="${key}" data-p="${pd}" aria-pressed="${done.includes(key)}" aria-label="${esc(e.n)}">${ICON.check}</button>
@@ -39,10 +39,13 @@ function viewGym() {
         <p class="note">${mins ? `${mins} minutes of training this week. ` : ""}Tap a day to log or change it.</p></div>
       <div class="card"><div class="card-h"><h3>${sel === t ? "Today" : fmtDay(sel)}</h3>${dayType ? `<span class="chip area" style="${ac("body")}">${esc(dayType.en)}</span>` : ""}</div>
         ${blk && !GPLAN().days ? `<p><b>Suggested:</b> ${esc(blk.t.replace("Gym: ", ""))}</p><p class="note">${esc(blk.d || "")}</p>` : ""}
-        ${cur ? `<div class="it done" style="${ac("body")}"><span class="chip good">✓</span><div style="min-width:0"><b>${esc(cur.type || "Session")}</b><div class="m">${cur.mins ? `<span class="chip">${num(cur.mins)} min</span>` : ""}${cur.effort ? `<span class="chip">Effort ${num(cur.effort)}/5</span>` : ""}</div>${cur.note ? `<div class="s">${esc(cur.note)}</div>` : ""}</div><button class="btn quiet sm" data-act="gymDel" data-d="${sel}">Remove</button></div>` : ""}
+        ${cur ? `<div class="it done" style="${ac("body")}"><span class="chip good">✓</span><div style="min-width:0"><b>${esc(cur.type || "Session")}</b><div class="m">${cur.time ? `<span class="chip">${esc(cur.time)}</span>` : ""}${cur.mins ? `<span class="chip">${num(cur.mins)} min</span>` : ""}${cur.burn ? `<span class="chip good">≈${num(cur.burn.kcal)} kcal</span>` : ""}${cur.effort ? `<span class="chip">Effort ${num(cur.effort)}/5</span>` : ""}</div>${cur.note ? `<div class="s">${esc(cur.note)}</div>` : ""}</div><button class="btn quiet sm" data-act="gymDel" data-d="${sel}">Remove</button></div>` : ""}
+        ${cur && cur.mins ? `<div class="row">${CAP.sample ? `<button class="btn ai sm" data-act="burnAI" data-d="${sel}" ${UI.burnBusy ? "disabled" : ""}>${UI.burnBusy ? "Estimating…" : "Estimate calories with AI"}</button>` : ""}<span class="note">${cur.burn ? (cur.burn.src === "ai" ? esc(cur.burn.note || "AI estimate.") : "Rough rule from type, minutes, effort and your weight.") : ""}</span></div>` : ""}
+        ${gymOf(sel) < 0 && !cur ? `<p class="note">Not a training day in your usual week. Log a session anyway if you trained.</p>` : ""}
         <form class="stack" data-form="gym" data-d="${sel}">
           <div class="fgrid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
             <label class="f">Type<select class="input" name="type" id="gym-type">${GYM_TYPES.map((x) => `<option ${cur && cur.type === x ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+            <label class="f">Start time<input class="input" name="time" id="gym-time" type="time" value="${cur ? esc(cur.time || "") : ""}"></label>
             <label class="f">Minutes<input class="input" name="mins" id="gym-mins" type="number" inputmode="numeric" min="0" max="600" value="${cur ? esc(cur.mins || "") : ""}" placeholder="60"></label>
             <label class="f">Effort (1–5)<select class="input" name="effort" id="gym-effort">${["", 1, 2, 3, 4, 5].map((x) => `<option value="${x}" ${cur && String(cur.effort || "") === String(x) ? "selected" : ""}>${x || "—"}</option>`).join("")}</select></label>
           </div>

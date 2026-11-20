@@ -325,3 +325,8 @@ body.focused .fab,body.focused .search,body.focused .topbar [data-s="search"]{di
 .exgroup{display:flex;flex-direction:column;gap:2px;margin-top:6px}
 .exrow{display:grid;grid-template-columns:auto minmax(0,1fr) 76px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
 .exrow .kg{padding:8px;text-align:center}
+
+.feelrow{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:center}
+.scale5{display:flex;gap:6px}
+.scale5 button{flex:1;min-height:38px;border:1.5px solid var(--line);background:none;border-radius:10px;font-weight:700;color:var(--muted)}
+.scale5 button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}

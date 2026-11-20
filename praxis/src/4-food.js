@@ -1,5 +1,19 @@
 // ================= NUTRITION actions =================
-function saveNutDay(date, st) { const b = { water: st.water, log: st.log.map((e) => Object.assign({}, e)) }; if (st.plan) b.plan = st.plan; upsert("nutri", date, b); }
+function saveNutDay(date, st) { const b = { water: st.water, log: st.log.map((e) => Object.assign({}, e)) }; if (st.plan) b.plan = st.plan; if (st.gym != null) b.gym = st.gym; if (st.feel && st.feel.length) b.feel = st.feel; upsert("nutri", date, b); }
+// Calories burned in a session. A rough rule first (MET × kg × hours); the AI button refines it.
+function burnFormula(g) { const ws = NLOG().weights || [], kg = ws.length ? num(ws[ws.length - 1].kg) : 80, base = { Weights: 4.5, Cardio: 7.5, "Mobility / yoga": 2.8, Sport: 7 }[g.type] || 4.5, met = base * (0.75 + 0.1 * (num(g.effort) || 3)); return Math.round((met * kg * num(g.mins)) / 60 / 5) * 5; }
+async function burnAI(date) {
+  const g = Object.assign({}, gymDays()[date]), P = meta("gymPlan"), ws = NLOG().weights || [], kg = ws.length ? ws[ws.length - 1].kg : null;
+  const ex = P.days && g.pday != null && P.days[g.pday] ? P.days[g.pday].groups.flatMap((gr, gi) => gr.ex.map((e, i) => ((g.done || []).includes(`d${g.pday}-${gi}-${i}`) ? `${e.n} ${e.sets}x${e.reps}${g.kg && g.kg[`d${g.pday}-${gi}-${i}`] != null ? " @ " + g.kg[`d${g.pday}-${gi}-${i}`] + " kg" : ""}` : "")).filter(Boolean)) : [];
+  UI.burnBusy = true; renderAll();
+  try {
+    const r = await CAP.sample.json(`Estimate the active calories burned in this workout (not including resting metabolism). Be realistic: resistance training burns less than people think. Reply with only JSON: {"kcal": number, "note": "one short sentence in Greek on what the estimate is based on"}.
+Body weight: ${kg ? kg + " kg" : "unknown, assume 80 kg"}. Type: ${g.type}. Duration: ${num(g.mins)} minutes. Effort: ${num(g.effort) || "?"}/5 (rest between sets about 60 seconds). ${ex.length ? "Exercises done: " + ex.join("; ") + "." : ""} ${g.note ? "Notes: " + g.note : ""}`, { cache: false });
+    const k = Math.round(num(r && r.kcal) / 5) * 5; if (!(k > 0 && k < 3000)) throw { code: "invalid_json" };
+    g.burn = { kcal: k, src: "ai", note: r.note ? String(r.note).slice(0, 200) : "" }; setGym(date, g); toast(`≈${k} kcal`);
+  } catch (e) { toast(sampleErr(e)); }
+  UI.burnBusy = false; renderAll();
+}
 function diaryStateFor(date) { return (UI.diary[date] = UI.diary[date] || {}); }
 async function estimateFood(date, text) {
   const D = diaryStateFor(date);
@@ -28,6 +42,13 @@ function addEntry(date, entry) {
 function setGym(date, val) { const g = Object.assign({}, GLOG()), days = Object.assign({}, g.days || {}); if (val) days[date] = val; else delete days[date]; g.days = days; upsert("meta", "gymLog", g); }
 Object.assign(ACT, {
   gymDay: (d) => { UI.gymDay = d.d; UI.gymP = null; },
+  dayKind: (d) => { const st = nutState(d.d); st.plan = d.val; saveNutDay(d.d, st); },
+  dayGym: (d) => { const st = nutState(d.d); st.gym = +d.val; saveNutDay(d.d, st); },
+  feelSet: (d) => { UI.feel = Object.assign({}, UI.feel, { [d.k]: (UI.feel || {})[d.k] === +d.val ? 0 : +d.val, note: (document.getElementById("feel-note") || {}).value || (UI.feel || {}).note || "" }); },
+  feelSave: (d) => { const F = Object.assign({}, UI.feel, { note: ((document.getElementById("feel-note") || {}).value || "").trim().slice(0, 500) }); if (!FEEL.some(([k]) => F[k]) && !F.note) { toast("Pick at least one number or write a line"); return; } const st = nutState(d.d); st.feel.push(Object.assign({ id: uid(), at: nowHM() }, F)); saveNutDay(d.d, st); UI.feel = {}; toast("Saved"); },
+  feelDel: (d) => { const st = nutState(d.d); st.feel = st.feel.filter((f) => f.id !== d.id); const b = { water: st.water, log: st.log }; if (st.plan) b.plan = st.plan; if (st.gym != null) b.gym = st.gym; b.feel = st.feel; upsert("nutri", d.d, b); },
+  quickAdd: (d) => { const x = favourites()[+d.i]; if (!x) return; const D = diaryStateFor(d.d), e = Object.assign({}, x.e, { id: uid(), at: d.d === today() ? nowHM() : "", slot: D.slot != null ? +D.slot : -1, src: "log" }); addEntry(d.d, e); },
+  burnAI: (d) => { burnAI(d.d); },
   gymP: (d) => { UI.gymP = +d.i; },
   gymEx: (d) => { const cur = Object.assign({ type: "Weights" }, gymDays()[d.d] || {}), done = cur.done || []; cur.done = done.includes(d.k) ? done.filter((x) => x !== d.k) : done.concat([d.k]); cur.pday = +d.p; setGym(d.d, cur); },
   gymDel: (d) => { setGym(d.d, null); toast("Removed"); },
@@ -73,7 +94,6 @@ document.addEventListener("change", (e) => {
     cur.pday = +ds.p; days[ds.d] = cur; g.days = days; upsert("meta", "gymLog", g); return;
   }
   if (t.id && t.id.startsWith("diary-slot-")) diaryStateFor(t.id.slice(11)).slot = +t.value;
-  if (t.id && t.id.startsWith("daytype-")) { const date = t.id.slice(8), st = nutState(date); st.plan = t.value === dayKeyOf(date) ? "" : t.value; if (!st.plan && !S.nutri.get(date)) return renderAll(); saveNutDay(date, st); if (!st.plan) { const b = Object.assign({}, S.nutri.get(date)); delete b.plan; upsert("nutri", date, b); } renderAll(); }
 });
 document.addEventListener("input", (e) => {
   const t = e.target, ds = t.dataset || {};
@@ -102,7 +122,10 @@ document.addEventListener("submit", (e) => {
   if (f.dataset.form === "gym") {
     e.preventDefault(); e.stopImmediatePropagation();
     const mins = Math.min(600, Math.max(0, num(f.elements.mins.value)));
-    setGym(f.dataset.d, Object.assign({}, gymDays()[f.dataset.d] || {}, { type: f.elements.type.value, mins, effort: num(f.elements.effort.value), note: String(f.elements.note.value || "").trim().slice(0, 600) }));
+    const g = Object.assign({}, gymDays()[f.dataset.d] || {}, { type: f.elements.type.value, mins, effort: num(f.elements.effort.value), time: f.elements.time.value || "", note: String(f.elements.note.value || "").trim().slice(0, 600) });
+    if (g.pday == null && gymOf(f.dataset.d) >= 0) g.pday = gymOf(f.dataset.d);
+    if (mins && !(g.burn && g.burn.src === "ai")) g.burn = { kcal: burnFormula(g), src: "formula" };
+    setGym(f.dataset.d, g);
     toast("Session logged"); renderAll(); return;
   }
   if (f.dataset.form !== "weight") return;

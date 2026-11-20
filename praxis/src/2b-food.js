@@ -16,7 +16,11 @@ const pMin = () => num(NUT().proteinMin) || 144, pMax = () => num(NUT().proteinM
 const r5 = (n) => Math.round(num(n) / 5) * 5;
 const g0 = (n) => Math.round(num(n));
 // A day normally follows the weekday's plan; "plan" on the day's record overrides it (e.g. the rest day moved).
-const planKeyOf = (date) => { const o = S.nutri.get(date); return (o && o.plan) || dayKeyOf(date); };
+// Which plan a date follows: the choice made for that day, else my usual week (meta/nutrition.week), else the weekday itself.
+const planKeyOf = (date) => { const o = S.nutri.get(date), wk = NUT().week || {}; return (o && o.plan) || wk[dayKeyOf(date)] || dayKeyOf(date); };
+// Which programme day I train: the choice for that day, else the next in rotation on my usual training days, else none (-1).
+function gymOf(date) { const o = S.nutri.get(date), P = meta("gymPlan"); if (o && o.gym != null) return +o.gym; if (!P.days || !(P.trainDays || []).includes(dayKeyOf(date))) return -1; return typeof nextProgDay === "function" ? nextProgDay(date) : 0; }
+function burnOf(date) { const g = (meta("gymLog").days || {})[date]; return g && g.burn ? num(g.burn.kcal) : 0; }
 function nutDay(date) { const n = NUT(); return n.days ? n.days[planKeyOf(date)] || null : null; }
 function planEntry(m, i, at) { return { id: "plan-" + i, slot: i, name: m.slot, kcal: num(m.kcal), p: num(m.p), c: num(m.c), f: num(m.f), src: "plan", at: at || "" }; }
 function nutState(date) {
@@ -25,7 +29,7 @@ function nutState(date) {
   const log = Array.isArray(src.log) ? src.log.map((e) => Object.assign({}, e)) : [];
   if (!doc && Array.isArray(legacy.ate)) { const day = nutDay(date); for (const i of legacy.ate) { const m = day && day.meals[i]; if (m && !log.some((e) => e.src === "plan" && e.slot === i)) log.push(planEntry(m, i)); } }
   log.sort((a, b) => ((a.at || "99") < (b.at || "99") ? -1 : (a.at || "99") > (b.at || "99") ? 1 : 0));
-  return { water: num(src.water), log, plan: (doc && doc.plan) || "" };
+  return { water: num(src.water), log, plan: (doc && doc.plan) || "", gym: doc && doc.gym != null ? +doc.gym : null, feel: doc && Array.isArray(doc.feel) ? doc.feel.slice() : [] };
 }
 function nutTotals(date) {
   const day = nutDay(date); if (!day && !S.nutri.get(date)) return null;
@@ -57,6 +61,7 @@ function summaryHTML(date) {
       <div class="kpi"><span class="v">${g0(t.eaten)} g</span><span class="l">protein of ${pMin()}–${pMax()} g${t.eaten && judge ? ` · <span class="chip ${ps[0]}">${ps[1]}</span>` : ""}</span>${bar((t.eaten / pMin()) * 100, t.eaten >= pMin() ? "good" : "")}</div>
     </div>
     <div class="row small" style="gap:14px"><span>Carbs <b>${g0(t.carbs)} g</b></span><span>Fat <b>${g0(t.fat)} g</b></span><span>Water <b>${t.st.water}/${glasses()}</b></span></div>
+    ${burnOf(date) ? `<div class="row small" style="gap:14px"><span>Training burned <b>≈${r5(burnOf(date))} kcal</b></span><span>Net <b>${r5(t.kcal - burnOf(date))} kcal</b></span></div>` : ""}
     <p class="note">${isToday ? `Left for today: about <b>${r5(left)} kcal</b> and <b>${g0(pLeft)} g protein</b>. ` : ""}${esc(dname())}'s plan for this day is about ${r5(t.planKcal)} kcal and ${g0(t.planned)} g protein. Numbers are estimates.</p></div>`;
 }
 
@@ -90,6 +95,7 @@ function diaryHTML(date) {
         ${CAP.sample ? `<button class="btn ai" type="submit" value="ai" ${D.loading ? "disabled" : ""}>${D.loading ? "Estimating…" : "Estimate with Claude"}</button>` : ""}
         <button class="btn ghost" type="submit" value="manual">Enter numbers</button></div>
     </form>
+    ${quickHTML(date)}
     ${D.err ? `<div class="banner warn">${esc(D.err)}</div>` : ""}${review}${manual}
     <div class="list">${list || '<p class="note">Nothing logged yet. Tick a planned meal below, or write what you ate above.</p>'}</div></div>`;
 }
@@ -117,10 +123,39 @@ function mealRow(m, i, date, interactive) {
 function planHTML(date, interactive) {
   const t = nutTotals(date); if (!t || !t.meals.length) return "";
   return `<div class="card"><div class="card-h"><h3>${esc(dname())}'s plan · ${esc(DAY_NAME[dayKeyOf(date)])}</h3><span class="chip area" style="${ac("body")}">${esc(t.day.gr || "")}</span></div>
-    <label class="row small" style="gap:8px">Day type <select class="input" id="daytype-${date}" style="max-width:240px" aria-label="Day type">${DAY_ORDER.filter((k) => NUT().days[k]).map((k) => `<option value="${k}" ${k === planKeyOf(date) ? "selected" : ""}>${esc(NUT().days[k].en)} (${DAY_NAME[k]})</option>`).join("")}</select></label>
     ${t.day.hint ? `<p class="note">${esc(t.day.hint)}</p>` : ""}
     <div class="list">${t.meals.map((m, i) => mealRow(m, i, date, interactive)).join("")}</div>
     <p class="note">Tick a meal when you ate it as planned. Ate something different? Tap "Ate something else" and write it in the diary.</p></div>`;
+}
+// ---------- what kind of day is it ----------
+function dayKinds() { const seen = new Set(), out = []; for (const k of DAY_ORDER) { const d = NUT().days[k]; if (d && !seen.has(d.en)) { seen.add(d.en); out.push([k, d.en]); } } return out; }
+function daySetupHTML(date) {
+  const P = meta("gymPlan"), cur = NUT().days[planKeyOf(date)] || {}, g = gymOf(date), done = (meta("gymLog").days || {})[date];
+  return `<div class="card"><div class="card-h"><h3>${date === today() ? "Today is" : "This day was"}</h3><span class="note">${fmtDay(date)}</span></div>
+    <div class="chips">${dayKinds().map(([k, en]) => `<button class="pill" data-act="dayKind" data-d="${date}" data-val="${k}" aria-pressed="${cur.en === en}">${esc(en)}</button>`).join("")}</div>
+    ${P.days ? `<div><span class="eyebrow">Training</span><div class="chips" style="margin-top:6px"><button class="pill" data-act="dayGym" data-d="${date}" data-val="-1" aria-pressed="${g < 0}">No training</button>${P.days.map((d, i) => `<button class="pill" data-act="dayGym" data-d="${date}" data-val="${i}" aria-pressed="${g === i}">${esc(d.name)}</button>`).join("")}</div>
+      ${g >= 0 ? `<p class="note">${esc(P.days[g].groups.map((x) => x.name).join(" · "))}${done ? " · logged" : ""} · <a href="#gym">Open the session</a></p>` : ""}</div>` : ""}
+    <p class="note">It starts from your usual week. Change it any day: the meals and the gym page follow.</p></div>`;
+}
+// ---------- how I feel ----------
+const FEEL = [["mood", "Mood"], ["energy", "Energy"], ["hunger", "Hunger"], ["stress", "Stress"]];
+function feelHTML(date) {
+  const st = nutState(date), F = UI.feel || {};
+  return `<div class="card"><div class="card-h"><h3>How I feel</h3><span class="note">${st.feel.length ? plural(st.feel.length, "note") : "1 = low, 5 = high"}</span></div>
+    ${FEEL.map(([k, l]) => `<div class="feelrow"><span class="small">${l}</span><div class="scale5">${[1, 2, 3, 4, 5].map((i) => `<button data-act="feelSet" data-k="${k}" data-val="${i}" aria-pressed="${F[k] === i}" aria-label="${l} ${i}">${i}</button>`).join("")}</div></div>`).join("")}
+    <textarea class="input" id="feel-note" rows="2" placeholder="What is behind it? e.g. slept badly, stressful meeting, proud of the session" aria-label="Feelings note">${esc(F.note || "")}</textarea>
+    <div class="row"><button class="btn ghost" data-act="feelSave" data-d="${date}">Save how I feel</button></div>
+    <div class="list">${st.feel.map((f) => `<div class="it"><span class="chip">${esc(f.at || "—")}</span><div style="min-width:0"><div class="m">${FEEL.filter(([k]) => f[k]).map(([k, l]) => `<span class="chip">${l} ${f[k]}/5</span>`).join("")}</div>${f.note ? `<div class="s">${esc(f.note)}</div>` : ""}</div><button class="btn quiet sm" data-act="feelDel" data-d="${date}" data-id="${esc(f.id)}" aria-label="Remove">×</button></div>`).join("")}</div></div>`;
+}
+// ---------- what I usually eat ----------
+function favourites() {
+  const m = new Map();
+  for (const [date, doc] of S.nutri) for (const e of doc.log || []) { if (e.src === "plan" || !e.name) continue; const k = e.name.trim().toLowerCase(), x = m.get(k) || { n: 0, last: "", e }; x.n++; if (date >= x.last) { x.last = date; x.e = e; } m.set(k, x); }
+  return [...m.values()].sort((a, b) => b.n - a.n || (a.last < b.last ? 1 : -1)).slice(0, 10);
+}
+function quickHTML(date) {
+  const fav = favourites(); if (!fav.length) return "";
+  return `<div><span class="eyebrow">What I usually eat · tap to add</span><div class="chips" style="margin-top:6px">${fav.map((x, i) => `<button class="pill" data-act="quickAdd" data-d="${date}" data-i="${i}">+ ${esc(x.e.name.length > 38 ? x.e.name.slice(0, 36) + "…" : x.e.name)} <span class="muted">${r5(x.e.kcal)} kcal</span></button>`).join("")}</div></div>`;
 }
 function waterHTML(date) {
   const n = glasses(), w = nutState(date).water, litres = num(NUT().waterL) || 2.5;
@@ -163,7 +198,7 @@ function historyHTML() {
   }).join("");
   return `<div class="card"><div class="card-h"><h3>What I actually ate · last 7 days</h3><span class="note">Tap a day to see or add to it</span></div>
     <div class="tbl-scroll"><table class="foodtbl"><thead><tr><th>Day</th><th>Plan</th><th>kcal</th><th>Protein</th><th>vs targets</th></tr></thead><tbody>${rows}</tbody></table></div></div>
-    ${sel ? `${summaryHTML(sel)}${diaryHTML(sel)}${sel !== today() ? planHTML(sel, false) : ""}` : ""}`;
+    ${sel ? `${sel !== today() ? daySetupHTML(sel) : ""}${summaryHTML(sel)}${diaryHTML(sel)}${sel !== today() ? planHTML(sel, false) : ""}` : ""}`;
 }
 function viewFood() {
   const n = NUT();
@@ -172,9 +207,9 @@ function viewFood() {
   const sub = `${esc((n.dietitian || {}).name || "Dietitian")}'s plan${n.date ? " from " + fmtShort(n.date) : ""} · ${esc(n.kcal || "")} kcal · ${pMin()}–${pMax()} g protein a day`;
   let body = "";
   if (tab === "today") {
-    body = `<div class="grid food2" style="align-items:start"><div class="stack" style="gap:14px">${summaryHTML(t)}${diaryHTML(t)}${planHTML(t, true)}
+    body = `<div class="grid food2" style="align-items:start"><div class="stack" style="gap:14px">${daySetupHTML(t)}${summaryHTML(t)}${diaryHTML(t)}${planHTML(t, true)}
         ${n.crunchy ? `<details class="card"><summary><b>Craving something crunchy?</b></summary><p class="small" style="margin-top:8px">${esc(n.crunchy)}</p></details>` : ""}</div>
-      <div class="stack" style="gap:14px">${waterHTML(t)}${visitHTML()}${weightHTML()}</div></div>`;
+      <div class="stack" style="gap:14px">${feelHTML(t)}${waterHTML(t)}${visitHTML()}${weightHTML()}</div></div>`;
   } else if (tab === "week") {
     const k = UI.foodDay || tk, day = n.days[k];
     const planned = day ? day.meals.reduce((s, m) => s + num(m.p), 0) : 0, pk = day ? day.meals.reduce((s, m) => s + num(m.kcal), 0) : 0;

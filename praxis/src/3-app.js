@@ -392,7 +392,7 @@ function restoreApply() {
     if (!v || typeof v !== "object") continue;
     if (o.merge) { // an "add to what I have" file: new diary entries are appended, other records get the new fields
       const cur = S[c].get(id);
-      if (c === "nutri" && cur) { const log = (cur.log || []).slice(); for (const e of v.log || []) if (!log.some((x) => x.id === e.id)) log.push(e); upsert(c, id, Object.assign({}, cur, v, { log, water: cur.water || v.water || 0, feel: (cur.feel || []).concat((v.feel || []).filter((f) => !(cur.feel || []).some((x) => x.id === f.id))) })); }
+      if (c === "nutri" && cur) { const log = (cur.log || []).slice(); for (const e of v.log || []) { const i = log.findIndex((x) => x.id === e.id); if (i >= 0) log[i] = e; else log.push(e); } // same id = a corrected entry upsert(c, id, Object.assign({}, cur, v, { log, water: cur.water || v.water || 0, feel: (cur.feel || []).concat((v.feel || []).filter((f) => !(cur.feel || []).some((x) => x.id === f.id))) })); }
       else upsert(c, id, Object.assign({}, cur || {}, clone(v)));
     } else upsert(c, id, clone(v));
     n++;

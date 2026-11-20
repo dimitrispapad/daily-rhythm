@@ -513,6 +513,7 @@ function viewSettings() {
     : '<span class="dot warn"></span>Saved on this device only (open PraxisAI on claude.ai to sync)';
   return `<div class="page">${head("Settings", "How PraxisAI works for you.")}
     <div class="card"><h3>Sync</h3><p>${sync}</p><p class="note">${S.items.size} items · ${S.boards.size} boards · ${S.threads.size} conversations</p></div>
+    ${window.__standalone ? window.__standalone.settingsHTML() : ""}
     <div class="card"><h3>About me (what Claude knows)</h3><textarea class="input" id="s-about" data-setting="aboutMe" rows="6" placeholder="Who you are, what you're working towards, how you like answers. Claude reads this before every answer in PraxisAI.">${esc(s.aboutMe || "")}</textarea><p class="note">Private to you. Claude also sees a short summary of your open tasks, deadlines, goals and this month's money.</p></div>
     <div class="card"><h3>Focus timer</h3><div class="fgrid"><label class="f">Focus minutes<input class="input" type="number" id="s-focus" data-setting="focusLen" value="${esc(s.focusLen || 25)}"></label><label class="f">Break minutes<input class="input" type="number" id="s-break" data-setting="breakLen" value="${esc(s.breakLen || 5)}"></label></div></div>
     <div class="card"><h3>Gmail</h3><label class="f">Inbox search used in SimasiaAI → Gmail<input class="input" id="s-gq" data-setting="gmailQuery" value="${esc(s.gmailQuery || "in:inbox newer_than:7d -category:promotions -category:social")}"></label><p class="note">PraxisAI only reads threads and saves drafts. It never sends email.</p></div>

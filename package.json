@@ -1,0 +1,8 @@
+{
+  "name": "daily-rhythm",
+  "private": true,
+  "description": "Daily Rhythm and PraxisAI. The dependency below is used by the Netlify functions.",
+  "dependencies": {
+    "@netlify/blobs": "^10.7.8"
+  }
+}

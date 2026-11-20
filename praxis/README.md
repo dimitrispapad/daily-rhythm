@@ -21,6 +21,32 @@ My personal operations app, built for a brain that gets distracted easily. It ru
 | **Whiteboard** | Sticky notes to think with; any note can become a task. |
 | **Think with Claude** | A chat that knows my tasks, deadlines, goals and money. |
 
+## Two ways to run it
+
+**1. On claude.ai** (private app): storage, Claude and Gmail come from claude.ai.
+
+**2. Standalone, on my own stack** (`praxis/app/`): the same app, installable on the phone.
+
+| Part | Where it lives |
+| --- | --- |
+| Code | This GitHub repo |
+| Hosting | Netlify (serves `praxis/app`, see `netlify.toml`) |
+| My data | Netlify Blobs, one private store on my Netlify site, behind my passcode (`netlify/functions/data.mjs`). Each device keeps an offline copy and sends changes when back online. |
+| AI | Gemini, called from `netlify/functions/ai.mjs`, so the API key stays on the server |
+
+Netlify setup, once:
+1. app.netlify.com → Add new site → Import an existing project → GitHub → `daily-rhythm`. Keep the detected settings and deploy.
+2. Site configuration → Environment variables, add:
+   - `APP_PASSCODE`: a long passphrase only I know (12+ characters). It protects my data.
+   - `GEMINI_API_KEY`: from aistudio.google.com/apikey.
+   - optional `GEMINI_MODEL`: a specific model id; by default the newest Flash model is used.
+3. Deploys → Trigger deploy. Open the site, type the passcode, then Settings → Restore from file to load a backup.
+4. On the phone: open the site, Share → Add to Home Screen.
+
+Without Netlify the same app also runs at https://dimitrispapad.github.io/daily-rhythm/praxis/ : data stays on that one device and Gemini uses a key pasted in Settings.
+
+Gmail (inbox to tasks, saving drafts) only works in the claude.ai version.
+
 ## How it's built
 
 - One HTML page, no framework. `build.py` joins `src/shell.html`, `src/styles.css`, `../plan.js` (the Rhythm routine) and `src/1-core.js`, `src/2-views.js`, `src/2b-food.js`, `src/3-app.js`, `src/4-food.js` into `index.html`.
@@ -30,4 +56,4 @@ My personal operations app, built for a brain that gets distracted easily. It ru
 
 ## Change it
 
-Edit the files in `src/`, run `python3 build.py`, then ask Claude to republish PraxisAI from `praxis/index.html`.
+Edit the files in `src/`, run `python3 build.py`, then push: Netlify and GitHub Pages redeploy the standalone app. For the claude.ai version, ask Claude to republish PraxisAI from `praxis/index.html`.

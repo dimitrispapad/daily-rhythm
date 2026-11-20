@@ -1,0 +1,21 @@
+# PraxisAI as a standalone app. Netlify serves praxis/app and runs the functions in netlify/functions.
+# Set two environment variables on the site: APP_PASSCODE (your passcode) and GEMINI_API_KEY.
+[build]
+  publish = "praxis/app"
+  command = "python3 praxis/build.py || echo using the committed build"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"

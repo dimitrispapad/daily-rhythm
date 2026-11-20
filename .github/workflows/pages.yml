@@ -33,6 +33,7 @@ jobs:
         run: |
           mkdir _site
           cp -r index.html styles.css plan.js app.js sw.js manifest.webmanifest Daily-Rhythm.ics icons _site/
+          cp -r praxis/app _site/praxis
           touch _site/.nojekyll
       - name: Read the iCloud calendar
         id: cal

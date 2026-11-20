@@ -29,17 +29,19 @@ export default async (req) => {
       });
     } catch (_) { return json({ error: "upstream_error" }, 502); }
     if (r.status === 404) { last = 404; continue; }
-    if (r.status === 429) return json({ error: "rate_limited" }, 429);
+    // what Google said, without the key, so a failed setup can be diagnosed from the app
+    const why = async () => { const t = await r.text().catch(() => ""); let m = t; try { m = JSON.parse(t).error.message; } catch (_) {} return `Google ${r.status} (${model}): ${String(m).slice(0, 220)}`; };
+    if (r.status === 429) return json({ error: "rate_limited", detail: await why() }, 429);
     if (r.status === 400 || r.status === 401 || r.status === 403) {
-      const msg = await r.text().catch(() => "");
-      return json({ error: /api key|API_KEY|permission/i.test(msg) ? "no_key" : "upstream_error" }, 502);
+      const d = await why();
+      return json({ error: /api key|API_KEY|permission/i.test(d) ? "no_key" : "upstream_error", detail: d }, 502);
     }
-    if (!r.ok) return json({ error: "upstream_error" }, 502);
+    if (!r.ok) return json({ error: "upstream_error", detail: await why() }, 502);
     const data = await r.json();
     const cand = (data.candidates || [])[0];
     const out = cand && cand.content && Array.isArray(cand.content.parts) ? cand.content.parts.map((p) => p.text || "").join("") : "";
     if (!out) return json({ error: data.promptFeedback && data.promptFeedback.blockReason ? "refused" : "empty_completion" }, 502);
     return json({ text: out, model });
   }
-  return json({ error: last === 404 ? "upstream_error" : "upstream_error", detail: "no_model" }, 502);
+  return json({ error: "upstream_error", detail: "None of these models answered: " + MODELS.join(", ") + ". Set GEMINI_MODEL to a model your key can use." }, 502);
 };

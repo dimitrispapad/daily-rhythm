@@ -206,7 +206,14 @@
         : `<p>${ownKey() ? '<span class="dot ok"></span>Gemini is on, using the key saved on this device.' : '<span class="dot warn"></span>Gemini is off. Paste a Gemini API key to turn on calorie estimates and the other AI buttons.'}</p>
           <div class="addrow"><input class="input" type="password" id="sa-key" placeholder="${ownKey() ? "Replace the saved key" : "Gemini API key"}" autocomplete="off" aria-label="Gemini API key"><button class="btn ghost" data-sa="savekey">Save key</button>${ownKey() ? '<button class="btn quiet" data-sa="delkey">Remove</button>' : ""}</div>
           <p class="note">Get a key at aistudio.google.com/apikey. It stays on this device and is sent only to Google.</p>`;
-      return `<div class="card"><h3>This app</h3><p>${sync}</p><p class="note">Version ${BUILD}</p><div class="row"><button class="btn ghost sm" data-sa="check">Check for a new version</button></div>${st.cloud ? '<div class="row"><button class="btn ghost sm" data-sa="syncnow">Sync now</button><button class="btn quiet sm" data-sa="signout">Lock this device</button></div>' : ""}</div>
+      const light = (ok, text) => `<p><span class="dot ${ok ? "ok" : "warn"}"></span>${text}</p>`;
+      const setup = s ? `<div class="card"><h3>Setup check</h3>
+          ${light(s.sync, s.sync ? "Saving on your Netlify site is on (APP_PASSCODE is set)." : "Saving on Netlify is off: add APP_PASSCODE in Netlify, then redeploy. Until then data stays on this device and the server's AI key cannot be used.")}
+          ${light(s.ai, s.ai ? "A Gemini key is set on your Netlify site (GEMINI_API_KEY)." : "No Gemini key on Netlify: add GEMINI_API_KEY in Netlify, then redeploy.")}
+          ${light(st.cloud, st.cloud ? "This device is unlocked with your passcode." : "This device is not unlocked yet.")}
+          <div class="row"><button class="btn ghost sm" data-sa="testai">Test the AI now</button></div><p class="note" id="sa-test" role="status"></p>
+          <p class="note">On your phone: open this same address, type the passcode, then Share, Add to Home Screen.</p></div>` : "";
+      return `${setup}<div class="card"><h3>This app</h3><p>${sync}</p><p class="note">Version ${BUILD}</p><div class="row"><button class="btn ghost sm" data-sa="check">Check for a new version</button></div>${st.cloud ? '<div class="row"><button class="btn ghost sm" data-sa="syncnow">Sync now</button><button class="btn quiet sm" data-sa="signout">Lock this device</button></div>' : ""}</div>
         <div class="card"><h3>Gemini</h3>${ai}</div>`;
     }
   };
@@ -216,6 +223,15 @@
     const a = b.dataset.sa;
     if (a === "savekey") { const v = (document.getElementById("sa-key").value || "").trim(); if (v.length < 20) { document.getElementById("sa-key").focus(); return; } ls.set("praxis-gemini-key", v); location.reload(); }
     if (a === "update") return applyUpdate();
+    if (a === "testai") { // one real call, and say exactly what came back
+      const out = document.getElementById("sa-test"), say = (t) => { if (out) out.textContent = t; }; say("Asking the AI…");
+      try {
+        if (viaServer()) { const r = await fetch(api("ai"), { method: "POST", headers: head(), body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: 'Reply with only this JSON: {"ok": true}' }] }], json: true }) }), j = await r.json().catch(() => ({})); say(r.ok ? "It works. Model: " + (j.model || "?") + "." : "It did not work: " + (j.detail || j.error || "HTTP " + r.status)); }
+        else if (ownKey()) { await sample.json('Reply with only this JSON: {"ok": true}'); say("It works, with the key saved on this device."); }
+        else say("There is no key this device can use yet. See the lines above.");
+      } catch (e) { say("It did not work: " + ((e && e.code) || "no connection")); }
+      return;
+    }
     if (a === "check") { b.textContent = "Checking…"; return checkUpdate(true); }
     if (a === "delkey") { ls.del("praxis-gemini-key"); location.reload(); }
     if (a === "syncnow") { b.textContent = "Syncing…"; await push(); await pull(); location.hash = "#settings"; window.dispatchEvent(new Event("hashchange")); }

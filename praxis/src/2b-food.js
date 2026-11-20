@@ -51,7 +51,7 @@ function summaryHTML(date) {
   return `<div class="card" style="${ac("body")};border-top:3px solid var(--ac)">
     <div class="card-h"><h3>${isToday ? "So far today" : fmtDay(date)}</h3><span class="chip area" style="${ac("body")}">${esc(t.day.en)}</span></div>
     <div class="grid g2" style="gap:14px">
-      <div class="kpi"><span class="v">${r5(t.kcal)}</span><span class="l">of ${K.toLocaleString("en-GB")} kcal target${t.kcal && judge ? ` · <span class="chip ${ks[0]}">${ks[1]}</span>` : ""}</span>${bar((t.kcal / K) * 100, t.kcal > K * 1.1 ? "now" : t.kcal >= K * 0.85 ? "good" : "")}</div>
+      <div class="kpi"><span class="v">${r5(t.kcal)}</span><span class="l">of ${K.toLocaleString(LOC)} kcal target${t.kcal && judge ? ` · <span class="chip ${ks[0]}">${ks[1]}</span>` : ""}</span>${bar((t.kcal / K) * 100, t.kcal > K * 1.1 ? "now" : t.kcal >= K * 0.85 ? "good" : "")}</div>
       <div class="kpi"><span class="v">${g0(t.eaten)} g</span><span class="l">protein of ${pMin()}–${pMax()} g${t.eaten && judge ? ` · <span class="chip ${ps[0]}">${ps[1]}</span>` : ""}</span>${bar((t.eaten / pMin()) * 100, t.eaten >= pMin() ? "good" : "")}</div>
     </div>
     <div class="row small" style="gap:14px"><span>Carbs <b>${g0(t.carbs)} g</b></span><span>Fat <b>${g0(t.fat)} g</b></span><span>Water <b>${t.st.water}/${glasses()}</b></span></div>

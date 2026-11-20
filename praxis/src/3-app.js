@@ -118,6 +118,7 @@ function renderMain() {
   let pre = "";
   if (!CAP.owner) pre += `<div class="banner warn">This is Dimitris's private PraxisAI. Its contents are visible only to him.</div>`;
   if (S.mode === "local") pre += `<div class="banner warn"><span class="dot warn"></span>You're outside claude.ai, so changes are saved in this browser only.</div>`;
+  if (window.__standalone && !S.items.size && !meta("nutrition").days) pre += `<div class="banner"><span>Nothing here yet. Load the backup file with your plan, food diary and tasks.</span><label class="btn sm" for="restore-top">Load my backup file</label><input type="file" id="restore-top" accept="application/json,.json" hidden></div>`;
   if (S.err) pre += `<div class="banner bad">Sync stopped. Reload the page to reconnect; your recent changes stay on screen until then.</div>`;
   main.innerHTML = (pre ? `<div class="page" style="margin-bottom:12px">${pre}</div>` : "") + (VIEWS[UI.view] || viewFocus)();
 }
@@ -442,7 +443,8 @@ document.addEventListener("change", async (e) => {
   if (d.act === "pickBoard") { UI.board = t.value; renderAll(); return; }
   if (d.sorti !== undefined && UI.sort && UI.sort.items) { UI.sort.items[+d.sorti].keep = t.checked; return; }
   if (d.compose === "purpose") { UI.compose[d.id] = Object.assign({}, UI.compose[d.id], { purpose: t.value }); return; }
-  if (t.id === "restore" && t.files && t.files[0]) {
+  if ((t.id === "restore" || t.id === "restore-top") && t.files && t.files[0]) {
+    if (t.id === "restore-top") location.hash = "#settings";
     try { const o = JSON.parse(await t.files[0].text()); if (!o || !o.items) throw 0; UI.restore = o; } catch (_) { toast("That file isn't a PraxisAI backup"); }
     t.value = ""; renderAll();
   }

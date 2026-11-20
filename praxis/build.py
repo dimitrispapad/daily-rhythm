@@ -10,6 +10,10 @@ css = (src / "styles.css").read_text()
 plan = (root.parent / "plan.js").read_text()
 app = "\n".join((src / f).read_text() for f in ["1-core.js", "2-views.js", "2b-food.js", "3-app.js", "4-food.js"])
 
+import json
+i18n = (src / "i18n.js").read_text().replace("/*I18N_DICT*/{}", json.dumps(json.loads((src / "el.json").read_text()), ensure_ascii=False)).replace("/*I18N_RX*/[]", json.dumps(json.loads((src / "el-rx.json").read_text()), ensure_ascii=False))
+shell = shell.replace("<script>\n/*PLAN*/", "<script>\n" + i18n + "\n</script>\n<script>\n/*PLAN*/")
+assert "__i18n" in shell
 out = shell.replace("/*CSS*/", css).replace("/*PLAN*/", plan).replace("/*APP*/", app)
 (root / "index.html").write_text(out)
 print(f"praxis/index.html: {len(out)//1024} KB")
@@ -20,6 +24,7 @@ SWAPS = {  # wording that only makes sense on claude.ai
     "Synced with claude.ai on all your devices": "Synced on all your devices",
     "Saved on this device only (open PraxisAI on claude.ai to sync)": "Saved on this device only",
     "Backup download works on claude.ai.": "",
+    "Send your dietitian's plan to Claude in chat and it will appear here.": "Your plan is in your backup file. Load it in Settings, Restore from file.",
 }
 sa = app
 for old, new in SWAPS.items():

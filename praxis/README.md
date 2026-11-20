@@ -47,6 +47,10 @@ Without Netlify the same app also runs at https://dimitrispapad.github.io/daily-
 
 Gmail (inbox to tasks, saving drafts) only works in the claude.ai version.
 
+## Language
+
+The interface is Greek by default (Settings has a Greek/English switch). The app is written in English; `src/i18n.js` translates what is shown using the phrase list in `src/el.json` and the patterns in `src/el-rx.json`. A phrase missing from the list stays in English: add it there.
+
 ## How it's built
 
 - One HTML page, no framework. `build.py` joins `src/shell.html`, `src/styles.css`, `../plan.js` (the Rhythm routine) and `src/1-core.js`, `src/2-views.js`, `src/2b-food.js`, `src/3-app.js`, `src/4-food.js` into `index.html`.

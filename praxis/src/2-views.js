@@ -1,7 +1,7 @@
 // ================= UI state =================
 const VIEW_IDS = VIEWS_META.map((v) => v[0]);
 const UI = {
-  view: "focus", tabs: { tasks: "board", simasia: "pipeline", mind: "books", create: "writing" },
+  view: FOCUSED ? "food" : "focus", tabs: { tasks: "board", simasia: "pipeline", mind: "books", create: "writing" },
   area: "all", editId: null, confirmDel: false, sheet: null, calm: lsGet("praxis-calm") === "1", weekOff: 0, moneyMonth: null,
   board: null, thread: null, ai: {}, inbox: { state: "idle", threads: [], err: "", at: 0 }, sort: null, q: "", writer: null, showMore: false, showDone: false, compose: {}
 };
@@ -514,6 +514,7 @@ function viewSettings() {
   return `<div class="page">${head("Settings", "How PraxisAI works for you.")}
     <div class="card"><h3>Sync</h3><p>${sync}</p><p class="note">${S.items.size} items · ${S.boards.size} boards · ${S.threads.size} conversations</p></div>
     ${window.__i18n ? window.__i18n.settingsHTML() : ""}
+    <div class="card"><h3>Sections</h3><p>${FOCUSED ? "Showing only Nutrition and Gym. Your other records are kept, just hidden." : "Showing every section."}</p><div class="row"><button class="btn ghost sm" data-act="sections">${FOCUSED ? "Show every section" : "Show only Nutrition and Gym"}</button></div></div>
     ${window.__standalone ? window.__standalone.settingsHTML() : ""}
     <div class="card"><h3>About me (what Claude knows)</h3><textarea class="input" id="s-about" data-setting="aboutMe" rows="6" placeholder="Who you are, what you're working towards, how you like answers. Claude reads this before every answer in PraxisAI.">${esc(s.aboutMe || "")}</textarea><p class="note">Private to you. Claude also sees a short summary of your open tasks, deadlines, goals and this month's money.</p></div>
     <div class="card"><h3>Focus timer</h3><div class="fgrid"><label class="f">Focus minutes<input class="input" type="number" id="s-focus" data-setting="focusLen" value="${esc(s.focusLen || 25)}"></label><label class="f">Break minutes<input class="input" type="number" id="s-break" data-setting="breakLen" value="${esc(s.breakLen || 5)}"></label></div></div>

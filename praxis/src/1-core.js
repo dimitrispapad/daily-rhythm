@@ -330,6 +330,7 @@ const ICONS = {
   mind: '<path d="M12 5a4 4 0 0 0-8 1 4 4 0 0 0 1 7 4 4 0 0 0 7 4zM12 5a4 4 0 0 1 8 1 4 4 0 0 1-1 7 4 4 0 0 1-7 4z"/>',
   create: '<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>',
   food: '<path d="M7 3v8a3 3 0 0 0 6 0V3M10 3v18M17 3c-2 0-3 3-3 7s1 4 3 4v7"/>',
+  gym: '<path d="M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12"/>',
   goals: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
   board: '<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="6" width="8" height="8" rx="1"/><rect x="6" y="13" width="8" height="8" rx="1"/>',
   think: '<path d="M4 5h16v11H9l-5 4z"/>',
@@ -341,9 +342,12 @@ const VIEWS_META = [
   ["focus", "Focus", "Now"], ["overview", "Overview", "Now"],
   ["tasks", "Tasks", "Plan"], ["plan", "Calendar", "Plan"], ["inbox", "Capture inbox", "Plan"],
   ["simasia", "SimasiaAI", "Work"], ["career", "Career & PhD", "Work"],
-  ["money", "Money", "Life"], ["food", "Nutrition", "Life"], ["goals", "Goals & habits", "Life"], ["mind", "Mind", "Life"], ["create", "Create", "Life"],
+  ["money", "Money", "Life"], ["food", "Nutrition", "Life"], ["gym", "Gym", "Life"], ["goals", "Goals & habits", "Life"], ["mind", "Mind", "Life"], ["create", "Create", "Life"],
   ["board", "Whiteboard", "Think"], ["think", "Think with Claude", "Think"], ["settings", "Settings", "Think"]
 ];
+// Focused mode (the default): only Nutrition and Gym. Settings has a switch to show every section again.
+const FOCUSED = lsGet("praxis-all") !== "1";
+if (FOCUSED) { const keep = ["food", "gym", "settings"]; for (let i = VIEWS_META.length - 1; i >= 0; i--) if (!keep.includes(VIEWS_META[i][0])) VIEWS_META.splice(i, 1); for (const v of VIEWS_META) v[2] = "Body"; }
 const viewTitle = (v) => (VIEWS_META.find((x) => x[0] === v) || [, "PraxisAI"])[1];
 
 function areaChip(a) { return `<span class="chip area" style="${ac(a)}"><span class="areadot"></span>${esc(AREAS[a] || a)}</span>`; }

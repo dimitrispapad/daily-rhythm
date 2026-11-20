@@ -25,7 +25,11 @@ function addEntry(date, entry) {
   const t = nutTotals(date);
   toast(`Saved. ${r5(t.kcal)} kcal and ${g0(t.eaten)} g protein so far.`);
 }
+function setGym(date, val) { const g = Object.assign({}, GLOG()), days = Object.assign({}, g.days || {}); if (val) days[date] = val; else delete days[date]; g.days = days; upsert("meta", "gymLog", g); }
 Object.assign(ACT, {
+  gymDay: (d) => { UI.gymDay = d.d; },
+  gymDel: (d) => { setGym(d.d, null); toast("Removed"); },
+  sections: () => { lsSet("praxis-all", FOCUSED ? "1" : "0"); location.hash = ""; location.reload(); },
   nutMeal: (d) => {
     const st = nutState(d.d), i = +d.i, t = nutTotals(d.d), m = t && t.meals[i]; if (!m) return;
     const on = st.log.some((e) => e.src === "plan" && +e.slot === i);
@@ -86,6 +90,12 @@ document.addEventListener("submit", (e) => {
     if (how === "ai" && CAP.sample) { f.reset(); estimateFood(date, D.text); }
     else { D.manual = true; D.items = null; D.m = {}; f.reset(); renderAll(); }
     return;
+  }
+  if (f.dataset.form === "gym") {
+    e.preventDefault(); e.stopImmediatePropagation();
+    const mins = Math.min(600, Math.max(0, num(f.elements.mins.value)));
+    setGym(f.dataset.d, { type: f.elements.type.value, mins, effort: num(f.elements.effort.value), note: String(f.elements.note.value || "").trim().slice(0, 600) });
+    toast("Session logged"); renderAll(); return;
   }
   if (f.dataset.form !== "weight") return;
   e.preventDefault(); e.stopImmediatePropagation();

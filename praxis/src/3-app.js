@@ -110,7 +110,8 @@ function renderRail() {
   $("#nav").innerHTML = html;
   $("#syncline").innerHTML = S.mode === "cloud" ? (S.err ? '<span class="dot bad"></span>Sync stopped' : S.cached ? '<span class="dot warn"></span>Connecting…' : '<span class="dot ok"></span>Synced on all devices') : S.mode === "local" ? '<span class="dot warn"></span>This device only' : '<span class="dot"></span>Loading…';
   $("#topname").textContent = viewTitle(UI.view);
-  $("#tabbar").innerHTML = [["focus", "Focus"], ["overview", "Overview"], ["tasks", "Tasks"], ["simasia", "SimasiaAI"]].map(([k, l]) => `<a href="#${k}" ${UI.view === k ? 'aria-current="page"' : ""}>${NAV_ICON(ICONS[k])}<span>${l}</span></a>`).join("") + `<button data-act="sheet" data-s="more" aria-label="More">${NAV_ICON(ICONS.more)}<span>More</span></button>`;
+  document.body.classList.toggle("focused", FOCUSED);
+  $("#tabbar").innerHTML = (FOCUSED ? [["food", "Nutrition"], ["gym", "Gym"], ["settings", "Settings"]] : [["focus", "Focus"], ["overview", "Overview"], ["tasks", "Tasks"], ["simasia", "SimasiaAI"]]).map(([k, l]) => `<a href="#${k}" ${UI.view === k ? 'aria-current="page"' : ""}>${NAV_ICON(ICONS[k])}<span>${l}</span></a>`).join("") + (FOCUSED ? "" : `<button data-act="sheet" data-s="more" aria-label="More">${NAV_ICON(ICONS.more)}<span>More</span></button>`);
 }
 function renderMain() {
   const main = $("#main");

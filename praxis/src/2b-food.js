@@ -66,6 +66,7 @@ function summaryHTML(date) {
 }
 
 // ---------- diary: what I actually ate ----------
+const srcChip = (x) => (x.src === "usda" ? `<div class="note"><span class="chip good">USDA</span> ${esc(x.ref || "")}</div>` : x.src === "ai" ? `<div class="note"><span class="chip">AI estimate</span></div>` : x.src === "mem" ? `<div class="note"><span class="chip brand">My foods</span></div>` : x.src === "none" ? `<div class="note"><span class="chip soon">Not found</span> type the numbers</div>` : "");
 function diaryHTML(date) {
   const st = nutState(date), t = nutTotals(date), D = UI.diary[date] || {};
   const meals = t ? t.meals : [];
@@ -74,29 +75,29 @@ function diaryHTML(date) {
   const slot = D.slot != null ? +D.slot : -1;
   const review = D.items ? (() => {
     const tot = D.items.reduce((s, x) => ({ kcal: s.kcal + num(x.kcal), p: s.p + num(x.protein), c: s.c + num(x.carbs), f: s.f + num(x.fat) }), { kcal: 0, p: 0, c: 0, f: 0 });
-    return `<div class="review"><div class="card-h"><b>Claude's estimate · check and adjust</b></div><p class="small" style="margin:0">"${esc(D.text || "")}"</p>
+    return `<div class="review"><div class="card-h"><b>${D.editId ? "Correct this entry" : "Estimate · check and adjust"}</b></div><p class="small" style="margin:0">"${esc(D.text || "")}"</p>
       <div class="tbl-scroll"><table class="foodtbl dz"><thead><tr><th>Food</th><th>kcal</th><th>Protein g</th><th>Carbs g</th><th>Fat g</th></tr></thead><tbody>
-      ${D.items.map((x, i) => `<tr><td>${esc(x.name)}${x.amount ? `<div class="note">${esc(x.amount)}</div>` : ""}</td>${["kcal", "protein", "carbs", "fat"].map((k) => `<td><input class="input" type="number" inputmode="decimal" min="0" id="dz-${date}-${i}-${k}" data-dz="${i}" data-dk="${k}" data-date="${date}" value="${esc(g0(x[k]))}" aria-label="${esc(x.name)} ${k}"></td>`).join("")}</tr>`).join("")}
+      ${D.items.map((x, i) => `<tr><td>${esc(x.name)}${x.amount ? `<div class="note">${esc(x.amount)}</div>` : ""}${srcChip(x)}</td>${["kcal", "protein", "carbs", "fat"].map((k) => `<td><input class="input" type="number" inputmode="decimal" min="0" id="dz-${date}-${i}-${k}" data-dz="${i}" data-dk="${k}" data-date="${date}" value="${esc(g0(x[k]))}" aria-label="${esc(x.name)} ${k}"></td>`).join("")}</tr>`).join("")}
       <tr class="tot"><td><b>Total</b></td><td id="dzt-kcal-${date}"><b>${r5(tot.kcal)}</b></td><td id="dzt-p-${date}"><b>${g0(tot.p)}</b></td><td id="dzt-c-${date}">${g0(tot.c)}</td><td id="dzt-f-${date}">${g0(tot.f)}</td></tr></tbody></table></div>
-      ${D.note ? `<p class="note">${esc(D.note)}</p>` : ""}
-      <div class="row"><button class="btn" data-act="diarySave" data-d="${date}">Save to ${esc(slotName(slot))}</button><button class="btn quiet" data-act="diaryCancel" data-d="${date}">Cancel</button></div></div>`;
+      ${[].concat(D.note || []).map((n) => `<p class="note">${esc(n)}</p>`).join("")}
+      <div class="row"><button class="btn" data-act="diarySave" data-d="${date}">${D.editId ? "Save the correction" : "Save to " + esc(slotName(slot))}</button><button class="btn quiet" data-act="diaryCancel" data-d="${date}">Cancel</button></div></div>`;
   })() : "";
   const manual = D.manual ? `<div class="review"><b>Enter the numbers yourself</b><p class="small" style="margin:0">"${esc(D.text || "")}"</p><div class="fgrid" style="grid-template-columns:repeat(auto-fit,minmax(100px,1fr))">${[["kcal", "kcal"], ["p", "Protein g"], ["c", "Carbs g"], ["f", "Fat g"]].map(([k, l]) => `<label class="f">${l}<input class="input" type="number" inputmode="decimal" min="0" id="dm-${date}-${k}" data-dm="${k}" data-date="${date}" value="${esc(D.m && D.m[k] != null ? D.m[k] : "")}"></label>`).join("")}</div>
       <div class="row"><button class="btn" data-act="diarySaveManual" data-d="${date}">Save</button><button class="btn quiet" data-act="diaryCancel" data-d="${date}">Cancel</button></div></div>` : "";
   const list = st.log.map((e) => `<div class="it" style="${ac("body")}"><span class="chip">${esc(e.at || "—")}</span>
       <div style="min-width:0"><div class="row" style="gap:6px"><b>${esc(e.src === "plan" ? slotName(+e.slot) + " · as planned" : e.name)}</b>${e.src !== "plan" && e.slot >= 0 ? `<span class="chip brand">${esc(slotName(+e.slot))}</span>` : ""}</div>
       ${e.items && e.items.length ? `<div class="s">${esc(e.items.map((x) => x.name + (x.amount ? " (" + x.amount + ")" : "")).join(" · "))}</div>` : ""}<div class="m">${macroChips(e)}</div></div>
-      <button class="btn quiet sm" data-act="diaryDel" data-d="${date}" data-id="${esc(e.id)}" aria-label="Remove ${esc(e.name)}">×</button></div>`).join("");
+      <div class="entry-acts">${e.src !== "plan" ? `<button class="btn quiet sm" data-act="favPin" data-d="${date}" data-id="${esc(e.id)}" aria-pressed="${isPinned(e.name)}" aria-label="Remember this food" title="Remember this food">${isPinned(e.name) ? "★" : "☆"}</button><button class="btn quiet sm" data-act="diaryEdit" data-d="${date}" data-id="${esc(e.id)}" aria-label="Correct the numbers" title="Correct the numbers">✎</button>` : ""}<button class="btn quiet sm" data-act="diaryDel" data-d="${date}" data-id="${esc(e.id)}" aria-label="Remove ${esc(e.name)}" title="Delete">×</button></div></div>`).join("");
   return `<div class="card" id="diary-${date}"><div class="card-h"><h3>What I ate</h3><span class="note">${st.log.length} ${st.log.length === 1 ? "entry" : "entries"}</span></div>
     <form class="stack" data-form="diary" data-d="${date}">
       <textarea class="input" id="diary-text-${date}" name="t" rows="2" placeholder="e.g. 2 αυγά, 1 φέτα ψωμί ολικής, καφές με γάλα" aria-label="What did you eat?"></textarea>
       <div class="addrow"><select class="input" name="slot" id="diary-slot-${date}" aria-label="Which meal">${opts.map(([i, l]) => `<option value="${i}" ${i === slot ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>
         <input class="input" type="time" name="at" id="diary-at-${date}" value="${date === today() ? nowHM() : "13:00"}" aria-label="Time" style="flex:0 1 120px">
-        ${CAP.sample ? `<button class="btn ai" type="submit" value="ai" ${D.loading ? "disabled" : ""}>${D.loading ? "Estimating…" : "Estimate with Claude"}</button>` : ""}
+        ${CAP.sample || USDA_ON() ? `<button class="btn ai" type="submit" value="ai" ${D.loading ? "disabled" : ""}>${D.loading ? "Estimating…" : CAP.sample ? "Estimate with Claude" : "Estimate from the USDA database"}</button>` : ""}
         <button class="btn ghost" type="submit" value="manual">Enter numbers</button></div>
     </form>
     ${quickHTML(date)}
-    ${D.err ? `<div class="banner warn">${esc(D.err)}</div>` : ""}${review}${manual}
+    ${D.err && D.err.length ? `<div class="banner warn"><span>${[].concat(D.err).map((n) => `<span>${esc(n)}</span>`).join(" ")}</span></div>` : ""}${review}${manual}
     <div class="list">${list || '<p class="note">Nothing logged yet. Tick a planned meal below, or write what you ate above.</p>'}</div></div>`;
 }
 
@@ -146,16 +147,6 @@ function feelHTML(date) {
     <textarea class="input" id="feel-note" rows="2" placeholder="What is behind it? e.g. slept badly, stressful meeting, proud of the session" aria-label="Feelings note">${esc(F.note || "")}</textarea>
     <div class="row"><button class="btn ghost" data-act="feelSave" data-d="${date}">Save how I feel</button></div>
     <div class="list">${st.feel.map((f) => `<div class="it"><span class="chip">${esc(f.at || "—")}</span><div style="min-width:0"><div class="m">${FEEL.filter(([k]) => f[k]).map(([k, l]) => `<span class="chip">${l} ${f[k]}/5</span>`).join("")}</div>${f.note ? `<div class="s">${esc(f.note)}</div>` : ""}</div><button class="btn quiet sm" data-act="feelDel" data-d="${date}" data-id="${esc(f.id)}" aria-label="Remove">×</button></div>`).join("")}</div></div>`;
-}
-// ---------- what I usually eat ----------
-function favourites() {
-  const m = new Map();
-  for (const [date, doc] of S.nutri) for (const e of doc.log || []) { if (e.src === "plan" || !e.name) continue; const k = e.name.trim().toLowerCase(), x = m.get(k) || { n: 0, last: "", e }; x.n++; if (date >= x.last) { x.last = date; x.e = e; } m.set(k, x); }
-  return [...m.values()].sort((a, b) => b.n - a.n || (a.last < b.last ? 1 : -1)).slice(0, 10);
-}
-function quickHTML(date) {
-  const fav = favourites(); if (!fav.length) return "";
-  return `<div><span class="eyebrow">What I usually eat · tap to add</span><div class="chips" style="margin-top:6px">${fav.map((x, i) => `<button class="pill" data-act="quickAdd" data-d="${date}" data-i="${i}">+ ${esc(x.e.name.length > 38 ? x.e.name.slice(0, 36) + "…" : x.e.name)} <span class="muted">${r5(x.e.kcal)} kcal</span></button>`).join("")}</div></div>`;
 }
 function waterHTML(date) {
   const n = glasses(), w = nutState(date).water, litres = num(NUT().waterL) || 2.5;

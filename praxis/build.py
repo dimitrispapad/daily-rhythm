@@ -8,7 +8,7 @@ src = root / "src"
 shell = (src / "shell.html").read_text()
 css = (src / "styles.css").read_text()
 plan = (root.parent / "plan.js").read_text()
-app = "\n".join((src / f).read_text() for f in ["1-core.js", "2-views.js", "2b-food.js", "2c-gym.js", "3-app.js", "4-food.js"])
+app = "\n".join((src / f).read_text() for f in ["1-core.js", "2-views.js", "2b-food.js", "2c-gym.js", "2d-foodbase.js", "3-app.js", "4-food.js"])
 
 import json
 i18n = (src / "i18n.js").read_text().replace("/*I18N_DICT*/{}", json.dumps(json.loads((src / "el.json").read_text()), ensure_ascii=False)).replace("/*I18N_RX*/[]", json.dumps(json.loads((src / "el-rx.json").read_text()), ensure_ascii=False))

@@ -40,6 +40,7 @@ Netlify setup, once:
    - `APP_PASSCODE`: a long passphrase only I know (12+ characters). It protects my data.
    - `GEMINI_API_KEY`: from aistudio.google.com/apikey.
    - optional `GEMINI_MODEL`: a specific model id; by default the newest Flash model is used.
+   - optional `FDC_API_KEY`: my own free key for the USDA food database, from fdc.nal.usda.gov/api-key-signup. Without it the shared test key is used (about 30 lookups an hour).
 3. Deploys → Trigger deploy. Open the site, type the passcode, then Settings → Restore from file to load a backup.
 4. On the phone: open the site, Share → Add to Home Screen.
 
@@ -47,13 +48,22 @@ Without Netlify the same app also runs at https://dimitrispapad.github.io/daily-
 
 Gmail (inbox to tasks, saving drafts) only works in the claude.ai version.
 
+## How calories are worked out
+
+1. A food I logged before: the same numbers again, no AI ("My foods"; ★ pins one, × forgets it).
+2. Otherwise Gemini reads what I wrote: which foods, how many grams, its own estimate.
+3. Each food is looked up in USDA FoodData Central (`netlify/functions/food.mjs`), the reference database, and its values per 100 g replace the guess. If the two disagree wildly the match is probably the wrong food, so the AI number stays. Every row says where its number came from.
+4. If Gemini is not available, a small built-in list of common Greek foods and typical portions (`src/2d-foodbase.js`) feeds the same USDA lookup.
+
+I check the table before saving, and ✎ corrects or × deletes an entry afterwards.
+
 ## Language
 
 The interface is Greek by default (Settings has a Greek/English switch). The app is written in English; `src/i18n.js` translates what is shown using the phrase list in `src/el.json` and the patterns in `src/el-rx.json`. A phrase missing from the list stays in English: add it there.
 
 ## How it's built
 
-- One HTML page, no framework. `build.py` joins `src/shell.html`, `src/styles.css`, `../plan.js` (the Rhythm routine) and `src/1-core.js`, `src/2-views.js`, `src/2b-food.js`, `src/3-app.js`, `src/4-food.js` into `index.html`.
+- One HTML page, no framework. `build.py` joins `src/shell.html`, `src/styles.css`, `../plan.js` (the Rhythm routine) and `src/1-core.js`, `src/2-views.js`, `src/2b-food.js`, `src/2c-gym.js`, `src/2d-foodbase.js`, `src/3-app.js`, `src/4-food.js` into `index.html`.
 - On claude.ai it uses the artifact runtime: `db` (private synced store, readable only by the owner), `sample` (Claude), `mcp` (Gmail: `search_threads`, `create_draft`), `downloads` (backup), `user`.
 - Outside claude.ai it still works, saving to the browser only.
 - My profile for Claude ("About me") is stored in the app's private settings, not in this code.

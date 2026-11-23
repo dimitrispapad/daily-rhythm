@@ -330,3 +330,11 @@ body.focused .fab,body.focused .search,body.focused .topbar [data-s="search"]{di
 .scale5{display:flex;gap:6px}
 .scale5 button{flex:1;min-height:38px;border:1.5px solid var(--line);background:none;border-radius:10px;font-weight:700;color:var(--muted)}
 .scale5 button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+
+.favchip{display:inline-flex;align-items:stretch;max-width:100%}
+.favchip .pill{border-radius:999px 0 0 999px;border-right:0;text-align:left;min-width:0}
+.favx{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:0 999px 999px 0;padding:0 11px 0 9px;font-size:16px;line-height:1;min-width:34px}
+.favx:hover{color:var(--ink);background:var(--sunk)}
+.entry-acts{display:flex;align-items:flex-start;gap:0;flex:none}
+.entry-acts .btn{padding-left:8px;padding-right:8px;min-width:34px}
+.entry-acts [aria-pressed="true"]{color:var(--ink)}

@@ -175,6 +175,11 @@
     const text = await gemini(input, opts, true);
     try { return JSON.parse(text.replace(/^\s*```(?:json)?\s*|\s*```\s*$/g, "")); } catch (_) { throw { code: "invalid_json" }; }
   };
+  // ---------- USDA FoodData Central, through the site's own function (it holds the key) ----------
+  window.__usda = async (queries) => {
+    try { const r = await fetch(api("food"), { method: "POST", headers: head(), body: JSON.stringify({ queries }) }); if (!r.ok) return null; return (await r.json()).foods || null; } catch (_) { return null; }
+  };
+  window.__usda.on = () => !!(st.cloud && st.server && st.server.food);
   const downloads = { save: async ({ filename, data }) => {
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], { type: "application/json" })); a.download = filename || "praxisai.json";
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); return {};
@@ -211,6 +216,7 @@
           ${light(s.sync, s.sync ? "Saving on your Netlify site is on (APP_PASSCODE is set)." : "Saving on Netlify is off: add APP_PASSCODE in Netlify, then redeploy. Until then data stays on this device and the server's AI key cannot be used.")}
           ${light(s.ai, s.ai ? "A Gemini key is set on your Netlify site (GEMINI_API_KEY)." : "No Gemini key on Netlify: add GEMINI_API_KEY in Netlify, then redeploy.")}
           ${light(st.cloud, st.cloud ? "This device is unlocked with your passcode." : "This device is not unlocked yet.")}
+          ${light(s.food && s.foodKey, s.foodKey ? "The USDA food database is on, with your own key (FDC_API_KEY)." : s.food ? "The USDA food database works with the shared test key (about 30 lookups an hour). For your own free key: fdc.nal.usda.gov/api-key-signup, then add FDC_API_KEY in Netlify." : "The USDA food database is not on this site yet: redeploy.")}
           <div class="row"><button class="btn ghost sm" data-sa="testai">Test the AI now</button></div><p class="note" id="sa-test" role="status"></p>
           <p class="note">On your phone: open this same address, type the passcode, then Share, Add to Home Screen.</p></div>` : "";
       return `${setup}<div class="card"><h3>This app</h3><p>${sync}</p><p class="note">Version ${BUILD}</p><div class="row"><button class="btn ghost sm" data-sa="check">Check for a new version</button></div>${st.cloud ? '<div class="row"><button class="btn ghost sm" data-sa="syncnow">Sync now</button><button class="btn quiet sm" data-sa="signout">Lock this device</button></div>' : ""}</div>

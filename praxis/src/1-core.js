@@ -229,7 +229,7 @@ const SAMPLE_COPY = {
   rate_limited: "Too many requests right now. Wait a minute and try again.", session_expired: "Sign in to claude.ai again, then retry.",
   refused: "Claude declined that request. Try rewording it.", empty_completion: "Claude returned nothing. Try asking for less.",
   invalid_json: "Claude's answer couldn't be read. Try again.", prompt_too_large: "That's too much text at once. Try a smaller piece.",
-  upstream_error: "Connection hiccup. Try again.", no_key: "The AI key is missing or not accepted. Check it in Settings."
+  upstream_error: "Connection hiccup. Try again.", too_slow: "The AI took too long to answer. Try again.", no_key: "The AI key is missing or not accepted. Check it in Settings."
 };
 const sampleErr = (e) => SAMPLE_COPY[e && e.code] || SAMPLE_COPY.upstream_error;
 function gmailErr(e) {

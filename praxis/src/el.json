@@ -920,5 +920,6 @@
 "You can also enter the numbers yourself.": "Μπορείς και να βάλεις εσύ τους αριθμούς.",
 "The USDA food database is on, with your own key (FDC_API_KEY).": "Η βάση τροφίμων USDA είναι ενεργή, με το δικό σου κλειδί (FDC_API_KEY).",
 "The USDA food database works with the shared test key (about 30 lookups an hour). For your own free key: fdc.nal.usda.gov/api-key-signup, then add FDC_API_KEY in Netlify.": "Η βάση τροφίμων USDA δουλεύει με το κοινόχρηστο δοκιμαστικό κλειδί (περίπου 30 αναζητήσεις την ώρα). Για δικό σου δωρεάν κλειδί: fdc.nal.usda.gov/api-key-signup και μετά βάλε FDC_API_KEY στο Netlify.",
-"The USDA food database is not on this site yet: redeploy.": "Η βάση τροφίμων USDA δεν είναι ακόμα ενεργή εδώ: κάνε redeploy."
+"The USDA food database is not on this site yet: redeploy.": "Η βάση τροφίμων USDA δεν είναι ακόμα ενεργή εδώ: κάνε redeploy.",
+"The AI took too long to answer. Try again.": "Το AI άργησε πολύ να απαντήσει. Δοκίμασε ξανά."
 }
